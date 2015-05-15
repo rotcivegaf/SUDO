@@ -6,9 +6,243 @@
 
 
 
+---------------------------------------------------------------------------
+			--  	Drop FK
+---------------------------------------------------------------------------
+---- PermisoXRol -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.PermisoXRol') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Rol DROP CONSTRAINT idRol;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.PermisoXRol') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Permiso DROP CONSTRAINT idPermiso;
+---- UsuarioXRol -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.UsuarioXRol') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Rol DROP CONSTRAINT idRol;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.UsuarioXRol') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Usuario DROP CONSTRAINT idUsuario;
+---- HistorialLogin -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.HistorialLogin') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Usuario DROP CONSTRAINT idUsuario;
+---- Cliente -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cliente') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Usuario DROP CONSTRAINT idUsuario;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cliente') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Domicilio DROP CONSTRAINT idDomicilio;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cliente') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.TipoIdentintificacion DROP CONSTRAINT idTipoIdentintificacion;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cliente') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.TipoIdentintificacion DROP CONSTRAINT idTipoIdentintificacion;
+---- Domicilio -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Domicilio') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Pais DROP CONSTRAINT idPais;
+---- Cuenta -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Usuario DROP CONSTRAINT idUsuario;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Pais DROP CONSTRAINT idPais;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Moneda DROP CONSTRAINT idMoneda;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.TipoCuenta DROP CONSTRAINT idTipoCuenta;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.EstadoCuenta DROP CONSTRAINT idEstadoCuenta;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Retiro DROP CONSTRAINT idRetiro;
+---- Retiro -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Retiro') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Cheque DROP CONSTRAINT idCheque;
+---- Cheque -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cheque') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Banco DROP CONSTRAINT idBanco;
+---- Deposito -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Deposito') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Cuenta DROP CONSTRAINT idCuenta;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Deposito') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Tarjeta DROP CONSTRAINT idTarjeta;
+---- Tarjeta -----
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Tarjeta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1
+)
+ALTER TABLE SUDO.Cliente DROP CONSTRAINT idCliente;
 
+---------------------------------------------------------------------------
+			--  	Drop tablas
+---------------------------------------------------------------------------
 
-
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Permiso') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Permiso
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.PermisoXRol') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.PermisoXRol
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Rol') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Rol
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.UsuarioXRol') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.UsuarioXRol
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Usuario') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Usuario
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.HistorialLogin') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.HistorialLogin
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cliente') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Cliente
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.TipoDoc') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.TipoDoc
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Domicilio') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Domicilio
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Pais') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Pais
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cuenta') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Cuenta
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Retiro') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Retiro
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Cheque') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Cheque
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Banco') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Banco
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.EstadoCuenta') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.EstadoCuenta
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.TipoCuenta') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.TipoCuenta
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Moneda') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Moneda
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Deposito') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Deposito
+;
+IF EXISTS (
+	SELECT * FROM dbo.sysobjects 
+	WHERE id = object_id('SUDO.Tarjeta') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1
+)
+DROP TABLE SUDO.Tarjeta
+;
 
 ---------------------------------------------------------------------------
 			--  	Creacion de tablas
@@ -41,7 +275,7 @@ CREATE TABLE SUDO.Rol (
 )
 ;
 -----------Tabla Usuario X Rol-----------
-CREATE TABLE SUDO.PermisoXRol ( 
+CREATE TABLE SUDO.UsuarioXRol ( 
 	idRol integer,
 	idUsuario integer,
 	
@@ -131,7 +365,7 @@ CREATE TABLE SUDO.Cuenta (
 	idCuenta integer IDENTITY(1,1),
 	idUsuario integer,
 	idPais integer,
-	nroCuenta integer NOT NULL UNIQUE,
+	nroCuenta integer NOidEstadoCuentaT NULL UNIQUE,
 	idMoneda integer,
 	fechaCreacion datetime,
 	fechaCierre datetime,
