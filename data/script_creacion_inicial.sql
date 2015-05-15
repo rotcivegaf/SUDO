@@ -365,7 +365,7 @@ CREATE TABLE SUDO.Cuenta (
 	idCuenta integer IDENTITY(1,1),
 	idUsuario integer,
 	idPais integer,
-	nroCuenta integer NOidEstadoCuentaT NULL UNIQUE,
+	nroCuenta integer NOT NULL UNIQUE,
 	idMoneda integer,
 	fechaCreacion datetime,
 	fechaCierre datetime,
@@ -427,7 +427,7 @@ CREATE TABLE SUDO.EstadoCuenta (
 CREATE TABLE SUDO.TipoCuenta ( 
 	idTipoCuenta integer IDENTITY(1,1),
 	nombre varchar(255),
-	duracion datetime,								//TODO
+	duracion datetime,							/*TODO*/
 	costo numeric(18,2), 
 	
 	primary key (idTipoCuenta)
@@ -451,7 +451,7 @@ CREATE TABLE SUDO.Deposito (
 	idTarjeta integer,
 	
 	primary key (idDeposito),
-	foreign key (idCuenta) references SUDO.Cuenta
+	foreign key (idCuenta) references SUDO.Cuenta,
 	foreign key (idTarjeta) references SUDO.Tarjeta
 )
 ;
@@ -463,7 +463,7 @@ CREATE TABLE SUDO.Tarjeta (
 	fechaEmision datetime,
 	idCliente integer,
 	fechaVencimiento datetime,
-	codigoSeguridad integar,				//TODO
+	codigoSeguridad integer,				/*TODO*/
 	estado integer DEFAULT 1,	
 	
 	primary key (idTarjeta),
