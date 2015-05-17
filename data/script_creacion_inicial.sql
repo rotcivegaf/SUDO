@@ -471,7 +471,7 @@ CREATE TABLE SUDO.Tarjeta (
 	emisorDesc 			varchar(255),
 	fechaEmision 		datetime NOT NULL,
 	fechaVencimiento 	datetime NOT NULL,
-	codigoSeguridad 	varchar(3) NOT NULL,				/*TODO integer????*/
+	codigoSeguridad 	varchar(3) NOT NULL,
 	estado 				BIT DEFAULT 1,	
 	
 	primary key (idTarjeta),
@@ -483,3 +483,11 @@ PRINT 'Tablas creadas'
 
 GO
 
+---------------------------------------------------------------------------
+			--  	Creacion Funciones, Stored Procedures y Triggers
+---------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------
+			--  	Migracion de datos
+---------------------------------------------------------------------------
