@@ -136,7 +136,6 @@ IF EXISTS (SELECT *
 
 
 PRINT 'FKs borradas'
-
 GO
 
 ---------------------------------------------------------------------------
@@ -240,7 +239,6 @@ IF EXISTS (SELECT *
 
 
 PRINT 'Tablas borradas'
-
 GO
 
 ---------------------------------------------------------------------------
@@ -480,14 +478,122 @@ CREATE TABLE SUDO.Tarjeta (
 
 
 PRINT 'Tablas creadas'
-
 GO
 
 ---------------------------------------------------------------------------
 			--  	Creacion Funciones, Stored Procedures y Triggers
 ---------------------------------------------------------------------------
+CREATE PROCEDURE SUDO.NuevaMonedaDesc(@Desc VARCHAR(15)) AS
+	BEGIN
+		INSERT INTO SUDO.Moneda(descripcion)
+		VALUES(@Desc)
+	END
+
+CREATE PROCEDURE SUDO.NuevoEstadoCuentaDesc(@Desc VARCHAR(25)) AS
+	BEGIN
+		INSERT INTO SUDO.NuevoEstadoCuentaDesc(descripcion)
+		VALUES(@Desc)
+	END
+
+CREATE PROCEDURE SUDO.AgregarPermisoNombre(@Nombre VARCHAR(40)) AS
+	BEGIN
+		INSERT INTO SUDO.Permiso(nombre)
+		VALUES(@Nombre)
+	END
+
+CREATE PROCEDURE SUDO.NuevoTipoCuenta(@Nombre VARCHAR(50), @Duracion SMALLINT, @Costo NUMERIC(10,2)) AS
+	BEGIN
+		INSERT INTO SUDO.TipoCuenta(nombre, duracion, costo)
+		VALUES(@Nombre, @Duracion, @Costo)
+	END
+
 
 
 ---------------------------------------------------------------------------
 			--  	Migracion de datos
 ---------------------------------------------------------------------------
+
+-----------Creacion de los 11 nombres de Permiso-----------
+
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'ABM de rol'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'ABM de usuario'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'ABM de cliente'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'ABM de cuenta'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'asociar/desasociar tarjetas de credito'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'depositos'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'retiro'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'transferencias'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'facturacion'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'consulta saldos'
+EXEC SUDO.AgregarPermisoNombre @Nombre = 'listado estadistico'
+
+PRINT 'Tabla SUDO.Permiso de los 11 nombres de Permiso'
+GO
+
+-----------Creacion Moneda 'Dolar'-----------
+EXEC SUDO.NuevaMonedaDesc @Desc = 'Dolar'
+
+PRINT 'Tabla SUDO.Moneda creacion moneda \'Dolar\''
+GO
+
+-----------Creacion de los 4 EstadoCuenta-----------
+EXEC SUDO.NuevoEstadoCuentaDesc @Desc = 'Pendiente de activacion'
+EXEC SUDO.NuevoEstadoCuentaDesc @Desc = 'Cerrada'
+EXEC SUDO.NuevoEstadoCuentaDesc @Desc = 'Inhabilitada'
+EXEC SUDO.NuevoEstadoCuentaDesc @Desc = 'Habilitada'
+
+PRINT 'Tabla SUDO.EstadoCuenta los 4 EstadoCuenta creados'
+GO
+
+-----------Creacion de los 4 TipoCuenta-----------
+
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'ORO', @Duracion = 1496, @Costo = 400     --4 AÑOS
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'PLATA', @Duracion = 1095, @Costo = 300   --3 AÑOS
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'BRONCE', @Duracion = 730, @Costo = 200   --2 AÑOS
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'GRATUITA', @Duracion = 365 , @Costo = 0  --1 AÑO
+
+PRINT 'Tabla SUDO.TipoCuenta de los 4 TipoCuenta'
+GO
+
+-----------Migracion Pais-----------
+SET IDENTITY_INSERT SUDO.Pais ON
+
+	INSERT INTO SUDO.Pais(codigo, descripcion)
+		SELECT * 
+		FROM (SELECT Cli_Pais_Codigo, Cli_Pais_Desc 
+			  FROM gd_esquema.Maestra 
+			  UNION
+			  	SELECT Cuenta_Pais_Codigo, Cuenta_Pais_Desc 
+			  	FROM gd_esquema.Maestra)
+	AS P /*TODO no entiendo por que P */
+
+SET IDENTITY_INSERT SUDO.Pais OFF
+
+PRINT 'Tabla SUDO.Pais Migrada'
+GO
+
+-----------Migracion TipoDoc-----------
+SET IDENTITY_INSERT SUDO.TipoDoc ON
+
+	INSERT INTO SUDO.TipoDoc(idTipoIdentintificacion, descripcion)
+		SELECT DISTINCT Cli_Tipo_Doc_Cod, Cli_Tipo_Doc_Desc 
+		FROM gd_esquema.Maestra
+
+SET IDENTITY_INSERT SUDO.TipoDoc OFF
+
+PRINT 'Tabla SUDO.TipoDoc Migrada'
+GO
+
+-----------Migracion Banco-----------
+SET IDENTITY_INSERT SUDO.Banco ON
+
+	INSERT INTO SUDO.Banco(codigo, nombre, direccion)
+		SELECT DISTINCT Banco_Cogido, Banco_Nombre, Banco_Direccion 
+		FROM gd_esquema.Maestra 
+		WHERE Banco_Cogido IS NOT NULL
+
+SET IDENTITY_INSERT SUDO.Banco OFF
+
+PRINT 'Tabla SUDO.Banco Migrada'
+GO
+
