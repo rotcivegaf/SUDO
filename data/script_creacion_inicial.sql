@@ -4,280 +4,108 @@ GO
 
 -----Creacion del esquema
 
-IF EXISTS (SELECT * 
-		   FROM sys.schemas
-		   WHERE name = N'SUDO')
-	DROP SCHEMA [SUDO]
+IF NOT EXISTS (SELECT * 
+			   FROM sys.schemas 
+			   WHERE name = N'SUDO') 
+	BEGIN
+		EXEC sys.sp_executesql N'CREATE SCHEMA [SUDO] AUTHORIZATION [gd]'
+		PRINT 'Esquema SUDO creado'
+	END
 
-GO
-
-CREATE SCHEMA SUDO AUTHORIZATION gd
-
-PRINT 'Esquema SUDO creado'
-GO
-
----------------------------------------------------------------------------
-			--  	Drop FK
----------------------------------------------------------------------------
----- PermisoXRol -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.PermisoXRol') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Rol DROP CONSTRAINT idRol;
-
-IF EXISTS (SELECT *
-  		   FROM dbo.sysobjects 
-	       WHERE id = object_id('SUDO.PermisoXRol') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Permiso DROP CONSTRAINT idPermiso;
-
----- UsuarioXRol -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.UsuarioXRol') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Rol DROP CONSTRAINT idRol;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.UsuarioXRol') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Usuario DROP CONSTRAINT idUsuario;
-
----- HistorialLogin -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.HistorialLogin') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Usuario DROP CONSTRAINT idUsuario;
-
----- Cliente -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cliente') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Usuario DROP CONSTRAINT idUsuario;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cliente') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Domicilio DROP CONSTRAINT idDomicilio;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cliente') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.TipoIdentintificacion DROP CONSTRAINT idTipoIdentintificacion;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cliente') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.TipoIdentintificacion DROP CONSTRAINT idTipoIdentintificacion;
-
----- Domicilio -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Domicilio') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Pais DROP CONSTRAINT idPais;
-
----- Cuenta -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Usuario DROP CONSTRAINT idUsuario;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Pais DROP CONSTRAINT idPais;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Moneda DROP CONSTRAINT idMoneda;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.TipoCuenta DROP CONSTRAINT idTipoCuenta;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.EstadoCuenta DROP CONSTRAINT idEstadoCuenta;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cuenta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Retiro DROP CONSTRAINT idRetiro;
-
----- Retiro -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Retiro') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Cheque DROP CONSTRAINT idCheque;
-
----- Cheque -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cheque') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Banco DROP CONSTRAINT idBanco;
-
----- Deposito -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Deposito') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Cuenta DROP CONSTRAINT idCuenta;
-
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Deposito') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Tarjeta DROP CONSTRAINT idTarjeta;
-
----- Tarjeta -----
-IF EXISTS (SELECT * 
-	       FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Tarjeta') AND OBJECTPROPERTY(id, 'IsForeignKey') = 1)
-	ALTER TABLE SUDO.Cliente DROP CONSTRAINT idCliente;
-
-
-PRINT 'FKs borradas'
 GO
 
 ---------------------------------------------------------------------------
 			--  	Drop tablas
 ---------------------------------------------------------------------------
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Permiso') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Permiso;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.PermisoXRol') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.PermisoXRol;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Rol') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Rol;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.UsuarioXRol') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.UsuarioXRol;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Usuario') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Usuario;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.HistorialLogin') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.HistorialLogin;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cliente') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Cliente;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.TipoDoc') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.TipoDoc;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Domicilio') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Domicilio;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Pais') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Pais;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cuenta') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Cuenta;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Retiro') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Retiro;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Cheque') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Cheque;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Banco') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Banco;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.EstadoCuenta') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.EstadoCuenta;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.TipoCuenta') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.TipoCuenta;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Moneda') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Moneda;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Deposito') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Deposito;
-
-IF EXISTS (SELECT *
-		   FROM dbo.sysobjects 
-		   WHERE id = object_id('SUDO.Tarjeta') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-	DROP TABLE SUDO.Tarjeta;
-
+IF OBJECT_ID ('SUDO.Deposito') IS NOT NULL DROP TABLE SUDO.Deposito
+IF OBJECT_ID ('SUDO.Tarjeta') IS NOT NULL DROP TABLE SUDO.Tarjeta
+IF OBJECT_ID ('SUDO.Cuenta') IS NOT NULL DROP TABLE SUDO.Cuenta
+IF OBJECT_ID ('SUDO.Retiro') IS NOT NULL DROP TABLE SUDO.Retiro
+IF OBJECT_ID ('SUDO.Cheque') IS NOT NULL DROP TABLE SUDO.Cheque
+IF OBJECT_ID ('SUDO.Cliente') IS NOT NULL DROP TABLE SUDO.Cliente
+IF OBJECT_ID ('SUDO.Domicilio') IS NOT NULL DROP TABLE SUDO.Domicilio
+IF OBJECT_ID ('SUDO.HistorialLogin') IS NOT NULL DROP TABLE SUDO.HistorialLogin
+IF OBJECT_ID ('SUDO.UsuarioXRol') IS NOT NULL DROP TABLE SUDO.UsuarioXRol
+IF OBJECT_ID ('SUDO.PermisoXRol') IS NOT NULL DROP TABLE SUDO.PermisoXRol
+IF OBJECT_ID ('SUDO.Rol') IS NOT NULL DROP TABLE SUDO.Rol
+IF OBJECT_ID ('SUDO.Permiso') IS NOT NULL DROP TABLE SUDO.Permiso
+IF OBJECT_ID ('SUDO.Usuario') IS NOT NULL DROP TABLE SUDO.Usuario
+IF OBJECT_ID ('SUDO.TipoDoc') IS NOT NULL DROP TABLE SUDO.TipoDoc
+IF OBJECT_ID ('SUDO.Pais') IS NOT NULL DROP TABLE SUDO.Pais
+IF OBJECT_ID ('SUDO.Moneda') IS NOT NULL DROP TABLE SUDO.Moneda
+IF OBJECT_ID ('SUDO.TipoCuenta') IS NOT NULL DROP TABLE SUDO.TipoCuenta
+IF OBJECT_ID ('SUDO.EstadoCuenta') IS NOT NULL DROP TABLE SUDO.EstadoCuenta
+IF OBJECT_ID ('SUDO.Banco') IS NOT NULL DROP TABLE SUDO.Banco
 
 PRINT 'Tablas borradas'
+GO
+
+---------------------------------------------------------------------------
+			--  	Drop procedures
+---------------------------------------------------------------------------
+IF OBJECT_ID ('SUDO.NuevaMonedaDesc') IS NOT NULL DROP PROCEDURE SUDO.NuevaMonedaDesc
+IF OBJECT_ID ('SUDO.NuevoEstadoCuentaDesc') IS NOT NULL DROP PROCEDURE SUDO.NuevoEstadoCuentaDesc
+IF OBJECT_ID ('SUDO.AgregarPermisoNombre') IS NOT NULL DROP PROCEDURE SUDO.AgregarPermisoNombre
+IF OBJECT_ID ('SUDO.NuevoTipoCuenta') IS NOT NULL DROP PROCEDURE SUDO.NuevoTipoCuenta
+
+PRINT 'Procesos borrados'
 GO
 
 ---------------------------------------------------------------------------
 			--  	Creacion de tablas
 ---------------------------------------------------------------------------
 
------------Tabla Permiso-----------
-CREATE TABLE SUDO.Permiso ( 
-	idPermiso 	integer IDENTITY(1,1),
+-----------Tabla Banco-----------
+CREATE TABLE SUDO.Banco ( 
+	idBanco 	integer IDENTITY(1,1),
+	codigo 		integer NOT NULL UNIQUE,
 	nombre 		varchar(255),
+	direccion 	varchar(255),
 	
-	primary key (idPermiso)
+	primary key (idBanco)
 );
 
------------Tabla Permiso X Rol-----------
-CREATE TABLE SUDO.PermisoXRol ( 
-	idRol 		integer,
-	idPermiso 	integer,
+-----------Tabla EstadoCuenta-----------
+CREATE TABLE SUDO.EstadoCuenta ( 
+	idEstadoCuenta 	integer IDENTITY(1,1),
+	descripcion 	varchar(255),
 	
-	foreign key (idRol) references SUDO.Rol,
-	foreign key (idPermiso) references SUDO.Permiso
+	primary key (idEstadoCuenta)
 );
 
------------Tabla Rol-----------
-CREATE TABLE SUDO.Rol ( 
-	idRol 		integer IDENTITY(1,1),
-	nombreRol 	varchar(255),
-	estado 		BIT DEFAULT 1,
+-----------Tabla TipoCuenta-----------
+CREATE TABLE SUDO.TipoCuenta ( 
+	idTipoCuenta 	integer IDENTITY(1,1),
+	nombre 			varchar(255),
+	duracionEnDias 	SMALLINT NOT NULL,
+	costo 			numeric(18,2) NOT NULL, 
 	
-	primary key (idRol)
+	primary key (idTipoCuenta)
 );
 
------------Tabla Usuario X Rol-----------
-CREATE TABLE SUDO.UsuarioXRol ( 
-	idRol 		integer,
-	idUsuario 	integer,
+-----------Tabla Moneda-----------
+CREATE TABLE SUDO.Moneda ( 
+	idMoneda 		integer IDENTITY(1,1),
+	descripcion 	varchar(255),
 	
-	foreign key (idRol) references SUDO.Rol,
-	foreign key (idUsuario) references SUDO.Usuario
+	primary key (idMoneda)
+);
+
+-----------Tabla Pais-----------
+CREATE TABLE SUDO.Pais ( 
+	idPais 			integer IDENTITY(1,1),
+	codigo 			varchar(5) NOT NULL UNIQUE,
+	descripcion 	varchar(255),
+	
+	primary key (idPais)
+);
+
+-----------Tabla TipoDoc-----------
+CREATE TABLE SUDO.TipoDoc ( 
+	idTipoIdentintificacion		integer IDENTITY(1,1),
+	descripcion 				varchar(255),
+	
+	primary key (idTipoIdentintificacion)
 );
 
 -----------Tabla Usuario-----------
@@ -295,7 +123,42 @@ CREATE TABLE SUDO.Usuario (
 	primary key (idUsuario)
 );
 
------------TABLA HistorialLogin-----------
+-----------Tabla Permiso-----------
+CREATE TABLE SUDO.Permiso ( 
+	idPermiso 	integer IDENTITY(1,1),
+	nombre 		varchar(255),
+	
+	primary key (idPermiso)
+);
+
+-----------Tabla Rol-----------
+CREATE TABLE SUDO.Rol ( 
+	idRol 		integer IDENTITY(1,1),
+	nombreRol 	varchar(255),
+	estado 		BIT DEFAULT 1,
+	
+	primary key (idRol)
+);
+
+-----------Tabla Permiso X Rol-----------
+CREATE TABLE SUDO.PermisoXRol ( 
+	idRol 		integer,
+	idPermiso 	integer,
+	
+	foreign key (idRol) references SUDO.Rol,
+	foreign key (idPermiso) references SUDO.Permiso
+);
+
+-----------Tabla Usuario X Rol-----------
+CREATE TABLE SUDO.UsuarioXRol ( 
+	idRol 		integer,
+	idUsuario 	integer,
+	
+	foreign key (idRol) references SUDO.Rol,
+	foreign key (idUsuario) references SUDO.Usuario
+);
+
+-----------Tabla HistorialLogin-----------
 CREATE TABLE SUDO.HistorialLogin ( 
 	idHistorialLogin 		integer IDENTITY(1,1),
 	idUsuario 				integer,
@@ -306,6 +169,21 @@ CREATE TABLE SUDO.HistorialLogin (
 	
 	primary key (idHistorialLogin),
 	foreign key (idUsuario) references SUDO.Usuario
+);
+
+-----------Tabla Domicilio-----------
+CREATE TABLE SUDO.Domicilio ( 
+	idDomicilio 	integer IDENTITY(1,1),
+	idPais 			integer,
+	
+	numero 			integer,
+	calle 			varchar(255),
+	piso 			varchar(255),
+	depto 			varchar(255),
+	localidad 		varchar(255),
+	
+	primary key (idDomicilio),
+	foreign key (idPais) references SUDO.Pais
 );
 
 -----------Tabla Cliente-----------
@@ -328,36 +206,28 @@ CREATE TABLE SUDO.Cliente (
 	foreign key (idTipoIdentintificacion) references SUDO.TipoDoc
 );
 
------------Tabla TipoDoc-----------
-CREATE TABLE SUDO.TipoDoc ( 
-	idTipoIdentintificacion		integer IDENTITY(1,1),
-	descripcion 				varchar(255),
+-----------Tabla Cheque-----------
+CREATE TABLE SUDO.Cheque ( 
+	idCheque 	integer IDENTITY(1,1),
+	idBanco 	integer,
 	
-	primary key (idTipoIdentintificacion)
+	fecha 		datetime,
+	importe 	numeric(18,2) NOT NULL,
+	
+	primary key (idCheque),
+	foreign key (idBanco) references SUDO.Banco
 );
 
------------Tabla Domicilio-----------
-CREATE TABLE SUDO.Domicilio ( 
-	idDomicilio 	integer IDENTITY(1,1),
-	idPais 			integer,
+-----------Tabla Retiro-----------
+CREATE TABLE SUDO.Retiro ( 
+	codigo 		integer IDENTITY(1,1),
+	idCheque 	integer,
 	
-	numero 			integer,
-	calle 			varchar(255),
-	piso 			varchar(255),
-	depto 			varchar(255),
-	localidad 		varchar(255),
+	fecha 		datetime NOT NULL,
+	importe 	numeric(18,2) NOT NULL,
 	
-	primary key (idDomicilio),
-	foreign key (idPais) references SUDO.Pais
-);
-
------------Tabla Pais-----------
-CREATE TABLE SUDO.Pais ( 
-	idPais 			integer IDENTITY(1,1),
-	codigo 			varchar(5) NOT NULL UNIQUE,
-	descripcion 	varchar(255),
-	
-	primary key (idPais)
+	primary key (codigo),
+	foreign key (idCheque) references SUDO.Cheque
 );
 
 -----------Tabla Cuenta-----------
@@ -384,81 +254,6 @@ CREATE TABLE SUDO.Cuenta (
 	foreign key (idRetiro) references SUDO.Retiro
 );
 
------------Tabla Retiro-----------
-CREATE TABLE SUDO.Retiro ( 
-	codigo 		integer IDENTITY(1,1),
-	idCheque 	integer,
-	
-	fecha 		datetime NOT NULL,
-	importe 	numeric(18,2) NOT NULL,
-	
-	primary key (codigo),
-	foreign key (idCheque) references SUDO.Cheque
-);
-
------------Tabla Cheque-----------
-CREATE TABLE SUDO.Cheque ( 
-	idCheque 	integer IDENTITY(1,1),
-	idBanco 	integer,
-	
-	fecha 		datetime,
-	importe 	numeric(18,2) NOT NULL,
-	
-	primary key (idCheque),
-	foreign key (idBanco) references SUDO.Banco
-);
-
------------Tabla Banco-----------
-CREATE TABLE SUDO.Banco ( 
-	idBanco 	integer IDENTITY(1,1),
-	codigo 		integer NOT NULL UNIQUE,
-	nombre 		varchar(255),
-	direccion 	varchar(255),
-	
-	primary key (idBanco)
-);
-
------------Tabla EstadoCuenta-----------
-CREATE TABLE SUDO.EstadoCuenta ( 
-	idEstadoCuenta 	integer IDENTITY(1,1),
-	descripcion 	varchar(255),
-	
-	primary key (idEstadoCuenta)
-);
-
------------Tabla TipoCuenta-----------
-CREATE TABLE SUDO.TipoCuenta ( 
-	idTipoCuenta 	integer IDENTITY(1,1),
-	nombre 			varchar(255),
-	duracion 		datetime,					/*TODO datatime???, duracion_dias integer???*/
-	costo 			numeric(18,2) NOT NULL, 
-	
-	primary key (idTipoCuenta)
-);
-
------------Tabla Moneda-----------
-CREATE TABLE SUDO.Moneda ( 
-	idMoneda 		integer IDENTITY(1,1),
-	descripcion 	varchar(255),
-	
-	primary key (idMoneda)
-);
-
------------Tabla Deposito-----------
-CREATE TABLE SUDO.Deposito ( 
-	idDeposito 		integer IDENTITY(1,1),
-	idCuenta 		integer,
-	idTarjeta 		integer,
-	idMoneda 		integer,
-	
-	importe 		numeric(18,2),
-	fecha 			datetime,
-	
-	primary key (idDeposito),
-	foreign key (idCuenta) references SUDO.Cuenta,
-	foreign key (idTarjeta) references SUDO.Tarjeta,
-	foreign key (idMoneda) references SUDO.Tarjeta
-);
 
 -----------Tabla Tarjeta-----------
 CREATE TABLE SUDO.Tarjeta ( 
@@ -475,6 +270,21 @@ CREATE TABLE SUDO.Tarjeta (
 	primary key (idTarjeta),
 	foreign key (idCliente) references SUDO.Cliente
 );
+-----------Tabla Deposito-----------
+CREATE TABLE SUDO.Deposito ( 
+	idDeposito 		integer IDENTITY(1,1),
+	idCuenta 		integer,
+	idTarjeta 		integer,
+	idMoneda 		integer,
+	
+	importe 		numeric(18,2),
+	fecha 			datetime,
+	
+	primary key (idDeposito),
+	foreign key (idCuenta) references SUDO.Cuenta,
+	foreign key (idTarjeta) references SUDO.Tarjeta,
+	foreign key (idMoneda) references SUDO.Tarjeta
+);
 
 
 PRINT 'Tablas creadas'
@@ -483,30 +293,30 @@ GO
 ---------------------------------------------------------------------------
 			--  	Creacion Funciones, Stored Procedures y Triggers
 ---------------------------------------------------------------------------
-CREATE PROCEDURE SUDO.NuevaMonedaDesc(@Desc VARCHAR(15)) AS
+CREATE PROC SUDO.NuevaMonedaDesc @Desc VARCHAR(15) AS
 	BEGIN
 		INSERT INTO SUDO.Moneda(descripcion)
 		VALUES(@Desc)
-	END
-
-CREATE PROCEDURE SUDO.NuevoEstadoCuentaDesc(@Desc VARCHAR(25)) AS
+	END;
+GO
+CREATE PROC SUDO.NuevoEstadoCuentaDesc @Desc VARCHAR(25) AS
 	BEGIN
-		INSERT INTO SUDO.NuevoEstadoCuentaDesc(descripcion)
+		INSERT INTO SUDO.EstadoCuenta(descripcion)
 		VALUES(@Desc)
-	END
-
-CREATE PROCEDURE SUDO.AgregarPermisoNombre(@Nombre VARCHAR(40)) AS
+	END;
+GO
+CREATE PROC SUDO.AgregarPermisoNombre(@Nombre VARCHAR(40)) AS
 	BEGIN
 		INSERT INTO SUDO.Permiso(nombre)
 		VALUES(@Nombre)
-	END
-
-CREATE PROCEDURE SUDO.NuevoTipoCuenta(@Nombre VARCHAR(50), @Duracion SMALLINT, @Costo NUMERIC(10,2)) AS
+	END;
+GO
+CREATE PROC SUDO.NuevoTipoCuenta(@Nombre VARCHAR(50), @Duracion SMALLINT, @Costo NUMERIC(10,2)) AS
 	BEGIN
-		INSERT INTO SUDO.TipoCuenta(nombre, duracion, costo)
+		INSERT INTO SUDO.TipoCuenta(nombre, duracionEnDias, costo)
 		VALUES(@Nombre, @Duracion, @Costo)
-	END
-
+	END;
+GO
 
 
 ---------------------------------------------------------------------------
@@ -533,7 +343,7 @@ GO
 -----------Creacion Moneda 'Dolar'-----------
 EXEC SUDO.NuevaMonedaDesc @Desc = 'Dolar'
 
-PRINT 'Tabla SUDO.Moneda creacion moneda \'Dolar\''
+PRINT 'Tabla SUDO.Moneda creacion moneda Dolar'
 GO
 
 -----------Creacion de los 4 EstadoCuenta-----------
