@@ -366,18 +366,14 @@ PRINT 'Tabla SUDO.TipoCuenta de los 4 TipoCuenta'
 GO
 
 -----------Migracion Pais-----------
-SET IDENTITY_INSERT SUDO.Pais ON
-
-	INSERT INTO SUDO.Pais(codigo, descripcion)
-		SELECT * 
-		FROM (SELECT Cli_Pais_Codigo, Cli_Pais_Desc 
-			  FROM gd_esquema.Maestra 
-			  UNION
-			  	SELECT Cuenta_Pais_Codigo, Cuenta_Pais_Desc 
-			  	FROM gd_esquema.Maestra)
-	AS P /*TODO no entiendo por que P */
-
-SET IDENTITY_INSERT SUDO.Pais OFF
+INSERT INTO SUDO.Pais(codigo, descripcion)
+	SELECT * 
+	FROM (SELECT Cli_Pais_Codigo, Cli_Pais_Desc 
+		  FROM gd_esquema.Maestra 
+		  UNION
+		  	SELECT Cuenta_Pais_Codigo, Cuenta_Pais_Desc 
+		  	FROM gd_esquema.Maestra)
+AS P /*TODO no entiendo por que P */
 
 PRINT 'Tabla SUDO.Pais Migrada'
 GO
@@ -395,14 +391,10 @@ PRINT 'Tabla SUDO.TipoDoc Migrada'
 GO
 
 -----------Migracion Banco-----------
-SET IDENTITY_INSERT SUDO.Banco ON
-
-	INSERT INTO SUDO.Banco(codigo, nombre, direccion)
-		SELECT DISTINCT Banco_Cogido, Banco_Nombre, Banco_Direccion 
-		FROM gd_esquema.Maestra 
-		WHERE Banco_Cogido IS NOT NULL
-
-SET IDENTITY_INSERT SUDO.Banco OFF
+INSERT INTO SUDO.Banco(codigo, nombre, direccion)
+	SELECT DISTINCT Banco_Cogido, Banco_Nombre, Banco_Direccion 
+	FROM gd_esquema.Maestra 
+	WHERE Banco_Cogido IS NOT NULL
 
 PRINT 'Tabla SUDO.Banco Migrada'
 GO
