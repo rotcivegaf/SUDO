@@ -57,12 +57,11 @@ GO
 
 -----------Tabla Banco-----------
 CREATE TABLE SUDO.Banco ( 
-	idBanco 	integer IDENTITY(1,1),
-	codigo 		integer NOT NULL UNIQUE,
+	codigo		integer IDENTITY(1,1),
 	nombre 		varchar(255),
 	direccion 	varchar(255),
 	
-	primary key (idBanco)
+	primary key (codigo)
 );
 
 -----------Tabla EstadoCuenta-----------
@@ -93,11 +92,10 @@ CREATE TABLE SUDO.Moneda (
 
 -----------Tabla Pais-----------
 CREATE TABLE SUDO.Pais ( 
-	idPais 			integer IDENTITY(1,1),
-	codigo 			varchar(5) NOT NULL UNIQUE,
+	codigoPais 		integer IDENTITY(1,1),
 	descripcion 	varchar(255),
 	
-	primary key (idPais)
+	primary key (codigoPais)
 );
 
 -----------Tabla TipoDoc-----------
@@ -174,16 +172,15 @@ CREATE TABLE SUDO.HistorialLogin (
 -----------Tabla Domicilio-----------
 CREATE TABLE SUDO.Domicilio ( 
 	idDomicilio 	integer IDENTITY(1,1),
-	idPais 			integer,
+	codigoPais 			integer,
 	
 	numero 			integer,
 	calle 			varchar(255),
 	piso 			varchar(255),
 	depto 			varchar(255),
-	localidad 		varchar(255),
 	
 	primary key (idDomicilio),
-	foreign key (idPais) references SUDO.Pais
+	foreign key (codigoPais) references SUDO.Pais
 );
 
 -----------Tabla Cliente-----------
@@ -208,14 +205,14 @@ CREATE TABLE SUDO.Cliente (
 
 -----------Tabla Cheque-----------
 CREATE TABLE SUDO.Cheque ( 
-	idCheque 	integer IDENTITY(1,1),
-	idBanco 	integer,
+	idCheque 		integer IDENTITY(1,1),
+	codigoBanco 	integer,
 	
-	fecha 		datetime,
-	importe 	numeric(18,2) NOT NULL,
+	fecha 			datetime,
+	importe 		numeric(18,2) NOT NULL,
 	
 	primary key (idCheque),
-	foreign key (idBanco) references SUDO.Banco
+	foreign key (codigoBanco) references SUDO.Banco
 );
 
 -----------Tabla Retiro-----------
@@ -234,7 +231,7 @@ CREATE TABLE SUDO.Retiro (
 CREATE TABLE SUDO.Cuenta ( 
 	idCuenta 		integer IDENTITY(1,1),
 	idUsuario 		integer,
-	idPais 			integer,
+	codigoPais 			integer,
 	idMoneda 		integer,
 	idTipoCuenta 	integer,
 	idEstadoCuenta 	integer,
@@ -247,7 +244,7 @@ CREATE TABLE SUDO.Cuenta (
 	
 	primary key (idCuenta),
 	foreign key (idUsuario) references SUDO.Usuario,
-	foreign key (idPais) references SUDO.Pais,
+	foreign key (codigoPais) references SUDO.Pais,
 	foreign key (idMoneda) references SUDO.Moneda,
 	foreign key (idTipoCuenta) references SUDO.TipoCuenta,
 	foreign key (idEstadoCuenta) references SUDO.EstadoCuenta,
@@ -357,23 +354,29 @@ GO
 
 -----------Creacion de los 4 TipoCuenta-----------
 
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'ORO', @Duracion = 1496, @Costo = 400     --4 AÑOS
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'PLATA', @Duracion = 1095, @Costo = 300   --3 AÑOS
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'BRONCE', @Duracion = 730, @Costo = 200   --2 AÑOS
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'GRATUITA', @Duracion = 365 , @Costo = 0  --1 AÑO
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'ORO', @Duracion = 1456, @Costo = 300     --4 AÑOS
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'PLATA', @Duracion = 1092, @Costo = 200   --3 AÑOS
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'BRONCE', @Duracion = 728, @Costo = 100   --2 AÑOS
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'GRATUITA', @Duracion = 364 , @Costo = 0  --1 AÑO
 
 PRINT 'Tabla SUDO.TipoCuenta de los 4 TipoCuenta'
 GO
 
 -----------Migracion Pais-----------
-INSERT INTO SUDO.Pais(codigo, descripcion)
-	SELECT * 
-	FROM (SELECT Cli_Pais_Codigo, Cli_Pais_Desc 
-		  FROM gd_esquema.Maestra 
-		  UNION
-		  	SELECT Cuenta_Pais_Codigo, Cuenta_Pais_Desc 
-		  	FROM gd_esquema.Maestra)
-AS P /*TODO no entiendo por que P */
+SET IDENTITY_INSERT SUDO.Pais ON
+
+	INSERT INTO SUDO.Pais(codigoPais, descripcion)
+		SELECT * 
+		FROM (SELECT DISTINCT Cli_Pais_Codigo, Cli_Pais_Desc 
+			  FROM gd_esquema.Maestra 
+			  WHERE Cli_Pais_Codigo IS NOT NULL
+			  	UNION
+			  		SELECT DISTINCT Cuenta_Pais_Codigo, Cuenta_Pais_Desc 
+			  		FROM gd_esquema.Maestra
+			  		WHERE Cuenta_Pais_Codigo IS NOT NULL)
+	AS P /*TODO no entiendo por que P */
+
+SET IDENTITY_INSERT SUDO.Pais OFF
 
 PRINT 'Tabla SUDO.Pais Migrada'
 GO
@@ -391,11 +394,37 @@ PRINT 'Tabla SUDO.TipoDoc Migrada'
 GO
 
 -----------Migracion Banco-----------
-INSERT INTO SUDO.Banco(codigo, nombre, direccion)
-	SELECT DISTINCT Banco_Cogido, Banco_Nombre, Banco_Direccion 
-	FROM gd_esquema.Maestra 
-	WHERE Banco_Cogido IS NOT NULL
+SET IDENTITY_INSERT SUDO.Banco ON
+
+	INSERT INTO SUDO.Banco(codigo, nombre, direccion)
+		SELECT DISTINCT Banco_Cogido, Banco_Nombre, Banco_Direccion 
+		FROM gd_esquema.Maestra 
+		WHERE Banco_Cogido IS NOT NULL
+		
+SET IDENTITY_INSERT SUDO.Banco OFF
 
 PRINT 'Tabla SUDO.Banco Migrada'
 GO
 
+-----------Migracion Cheque-----------
+
+SET IDENTITY_INSERT SUDO.Cheque ON
+
+	INSERT INTO SUDO.Cheque(idCheque, fecha, importe, codigoBanco)
+		SELECT DISTINCT Cheque_Numero, Cheque_Fecha, Cheque_Importe, Banco_Cogido 
+		FROM gd_esquema.Maestra 
+		WHERE Cheque_Numero IS NOT NULL
+
+SET IDENTITY_INSERT SUDO.Cheque OFF
+
+PRINT 'Tabla SUDO.Cheque Migrada'
+
+GO
+
+-----------Migracion Domicilio-----------
+INSERT INTO SUDO.Domicilio(calle, numero, piso, depto, codigoPais)
+	SELECT DISTINCT Cli_Dom_Calle, Cli_Dom_Nro, Cli_Dom_Piso, Cli_Dom_Depto, Cli_Pais_Codigo
+	FROM gd_esquema.Maestra 
+	WHERE Cheque_Numero IS NOT NULL
+
+GO
