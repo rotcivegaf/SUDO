@@ -75,16 +75,16 @@ CREATE TABLE SUDO.EstadoCuenta (
 -----------Tabla TipoCuenta-----------
 CREATE TABLE SUDO.TipoCuenta ( 
 	idTipoCuenta 	integer IDENTITY(1,1),
-	nombre 			varchar(255),
+	nombre 		varchar(255),
 	duracionEnDias 	SMALLINT NOT NULL,
-	costo 			numeric(18,2) NOT NULL, 
+	costo 		numeric(18,2) NOT NULL, 
 	
 	primary key (idTipoCuenta)
 );
 
 -----------Tabla Moneda-----------
 CREATE TABLE SUDO.Moneda ( 
-	idMoneda 		integer IDENTITY(1,1),
+	idMoneda 	integer IDENTITY(1,1),
 	descripcion 	varchar(255),
 	
 	primary key (idMoneda)
@@ -92,7 +92,7 @@ CREATE TABLE SUDO.Moneda (
 
 -----------Tabla Pais-----------
 CREATE TABLE SUDO.Pais ( 
-	codigoPais 		integer IDENTITY(1,1),
+	codigoPais 	integer IDENTITY(1,1),
 	descripcion 	varchar(255),
 	
 	primary key (codigoPais)
@@ -101,22 +101,22 @@ CREATE TABLE SUDO.Pais (
 -----------Tabla TipoDoc-----------
 CREATE TABLE SUDO.TipoDoc ( 
 	idTipoIdentintificacion		integer IDENTITY(1,1),
-	descripcion 				varchar(255),
+	descripcion 			varchar(255),
 	
 	primary key (idTipoIdentintificacion)
 );
 
 -----------Tabla Usuario-----------
 CREATE TABLE SUDO.Usuario ( 
-	idUsuario 					integer IDENTITY(1,1),
-	userName 					varchar(255) NOT NULL UNIQUE,
-	password 					varchar(255) NOT NULL,
-	fechaCreacion 				datetime NOT NULL,
+	idUsuario 			integer IDENTITY(1,1),
+	userName 			varchar(255) NOT NULL UNIQUE,
+	password 			varchar(255) NOT NULL,
+	fechaCreacion 			datetime NOT NULL,
 	fechaDeUltimaModificacion 	datetime,
-	preguntaSecreta 			varchar(255) NOT NULL,
-	respuestaSecreta 			varchar(255) NOT NULL,
+	preguntaSecreta 		varchar(255) NOT NULL,
+	respuestaSecreta 		varchar(255) NOT NULL,
 	contIntentosFallidos 		TINYINT DEFAULT 0,
-	estado 						BIT DEFAULT 1,
+	estado 				BIT DEFAULT 1,
 	
 	primary key (idUsuario)
 );
@@ -159,11 +159,11 @@ CREATE TABLE SUDO.UsuarioXRol (
 -----------Tabla HistorialLogin-----------
 CREATE TABLE SUDO.HistorialLogin ( 
 	idHistorialLogin 		integer IDENTITY(1,1),
-	idUsuario 				integer,
+	idUsuario 			integer,
 	
-	fechaHora 				datetime,
-	estado 					BIT DEFAULT 0,
-	numeroIntentoFallido 	TINYINT DEFAULT 0,
+	fechaHora 			datetime,
+	estado 				BIT DEFAULT 0,
+	numeroIntentoFallido 		TINYINT DEFAULT 0,
 	
 	primary key (idHistorialLogin),
 	foreign key (idUsuario) references SUDO.Usuario
@@ -172,12 +172,12 @@ CREATE TABLE SUDO.HistorialLogin (
 -----------Tabla Domicilio-----------
 CREATE TABLE SUDO.Domicilio ( 
 	idDomicilio 	integer IDENTITY(1,1),
-	codigoPais 			integer,
+	codigoPais 	integer,
 	
-	numero 			integer,
-	calle 			varchar(255),
-	piso 			varchar(255),
-	depto 			varchar(255),
+	numero 		integer,
+	calle 		varchar(255),
+	piso 		varchar(255),
+	depto 		varchar(255),
 	
 	primary key (idDomicilio),
 	foreign key (codigoPais) references SUDO.Pais
@@ -185,17 +185,17 @@ CREATE TABLE SUDO.Domicilio (
 
 -----------Tabla Cliente-----------
 CREATE TABLE SUDO.Cliente ( 
-	idCliente 					integer IDENTITY(1,1),
-	idUsuario 					integer,
-	idDomicilio 				integer,
+	idCliente 			integer IDENTITY(1,1),
+	idUsuario 			integer,
+	idDomicilio 			integer,
 	idTipoIdentintificacion 	integer,
 	
-	nombre 						varchar(255) NOT NULL,
-	apellido 					varchar(255) NOT NULL,
-	mail 						varchar(255) NOT NULL,
-	fechaDeNac 					datetime,
+	nombre 				varchar(255) NOT NULL,
+	apellido 			varchar(255) NOT NULL,
+	mail 				varchar(255) NOT NULL,
+	fechaDeNac 			datetime,
 	numeroIdentintificacion 	integer,
-	estado 						BIT DEFAULT 1,
+	estado 				BIT DEFAULT 1,
 	
 	primary key (idCliente),
 	foreign key (idUsuario) references SUDO.Usuario,
@@ -205,11 +205,11 @@ CREATE TABLE SUDO.Cliente (
 
 -----------Tabla Cheque-----------
 CREATE TABLE SUDO.Cheque ( 
-	idCheque 		integer IDENTITY(1,1),
+	idCheque 	integer IDENTITY(1,1),
 	codigoBanco 	integer,
 	
-	fecha 			datetime,
-	importe 		numeric(18,2) NOT NULL,
+	fecha 		datetime,
+	importe 	numeric(18,2) NOT NULL,
 	
 	primary key (idCheque),
 	foreign key (codigoBanco) references SUDO.Banco
@@ -229,18 +229,18 @@ CREATE TABLE SUDO.Retiro (
 
 -----------Tabla Cuenta-----------
 CREATE TABLE SUDO.Cuenta ( 
-	idCuenta 		integer IDENTITY(1,1),
-	idUsuario 		integer,
-	codigoPais 			integer,
-	idMoneda 		integer,
+	idCuenta 	integer IDENTITY(1,1),
+	idUsuario 	integer,
+	codigoPais 	integer,
+	idMoneda 	integer,
 	idTipoCuenta 	integer,
 	idEstadoCuenta 	integer,
-	idRetiro 		integer,
+	idRetiro 	integer,
 	
-	nroCuenta 		integer NOT NULL UNIQUE,
+	nroCuenta 	integer NOT NULL UNIQUE,
 	fechaCreacion 	datetime NOT NULL,
 	fechaCierre 	datetime,
-	estado 			BIT DEFAULT 1,
+	estado 		BIT DEFAULT 1,
 	
 	primary key (idCuenta),
 	foreign key (idUsuario) references SUDO.Usuario,
@@ -254,15 +254,15 @@ CREATE TABLE SUDO.Cuenta (
 
 -----------Tabla Tarjeta-----------
 CREATE TABLE SUDO.Tarjeta ( 
-	idTarjeta 			integer IDENTITY(1,1),
-	idCliente 			integer,
+	idTarjeta 		integer IDENTITY(1,1),
+	idCliente 		integer,
 
-	numero 				numeric(16) NOT NULL UNIQUE,
-	emisorDesc 			varchar(255),
+	numero 			numeric(16) NOT NULL UNIQUE,
+	emisorDesc 		varchar(255),
 	fechaEmision 		datetime NOT NULL,
 	fechaVencimiento 	datetime NOT NULL,
 	codigoSeguridad 	varchar(3) NOT NULL,
-	estado 				BIT DEFAULT 1,	
+	estado 			BIT DEFAULT 1,	
 	
 	primary key (idTarjeta),
 	foreign key (idCliente) references SUDO.Cliente
