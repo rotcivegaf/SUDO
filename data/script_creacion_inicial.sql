@@ -24,6 +24,8 @@ IF OBJECT_ID ('SUDO.Deposito') IS NOT NULL DROP TABLE SUDO.Deposito
 IF OBJECT_ID ('SUDO.Transferencia') IS NOT NULL DROP TABLE SUDO.Transferencia
 IF OBJECT_ID ('SUDO.Tarjeta') IS NOT NULL DROP TABLE SUDO.Tarjeta
 IF OBJECT_ID ('SUDO.Cliente') IS NOT NULL DROP TABLE SUDO.Cliente
+IF OBJECT_ID ('SUDO.Item') IS NOT NULL DROP TABLE SUDO.Item
+IF OBJECT_ID ('SUDO.Factura') IS NOT NULL DROP TABLE SUDO.Factura
 IF OBJECT_ID ('SUDO.Domicilio') IS NOT NULL DROP TABLE SUDO.Domicilio
 IF OBJECT_ID ('SUDO.HistorialLogin') IS NOT NULL DROP TABLE SUDO.HistorialLogin
 IF OBJECT_ID ('SUDO.Rol') IS NOT NULL DROP TABLE SUDO.Rol
@@ -50,7 +52,9 @@ IF OBJECT_ID ('SUDO.NuevoEstadoCuentaDesc') IS NOT NULL DROP PROCEDURE SUDO.Nuev
 IF OBJECT_ID ('SUDO.AgregarFuncionalidadNombre') IS NOT NULL DROP PROCEDURE SUDO.AgregarFuncionalidadNombre
 IF OBJECT_ID ('SUDO.NuevoTipoCuenta') IS NOT NULL DROP PROCEDURE SUDO.NuevoTipoCuenta
 IF OBJECT_ID ('SUDO.NuevoRol') IS NOT NULL DROP PROCEDURE SUDO.NuevoRol
-IF OBJECT_ID ('SUDO.AgregarFuncionalidadAlRol') IS NOT NULL DROP PROCEDURE SUDO.AgregarFuncionalidadAlRol
+IF OBJECT_ID ('SUDO.AsociarFuncionalidadXRol') IS NOT NULL DROP PROCEDURE SUDO.AsociarFuncionalidadXRol
+IF OBJECT_ID ('SUDO.AsociarUsuarioXRol') IS NOT NULL DROP PROCEDURE SUDO.AsociarUsuarioXRol
+IF OBJECT_ID ('SUDO.NuevoUsuario') IS NOT NULL DROP PROCEDURE SUDO.NuevoUsuario
 
 PRINT 'Procesos borrados'
 GO
@@ -63,6 +67,12 @@ CREATE TABLE SUDO.Banco (
 	codigo		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
 	nombre 		varchar(255),
 	direccion 	varchar(255)
+);
+
+-----------Tabla Factura-----------
+CREATE TABLE SUDO.Factura ( 
+	numero		numeric(18,0) PRIMARY KEY,
+	fecha 		datetime,
 );
 
 -----------Tabla EstadoCuenta-----------
@@ -102,11 +112,11 @@ CREATE TABLE SUDO.Usuario (
 	idUsuario 					integer IDENTITY(1,1) PRIMARY KEY,
 	userName 					varchar(255) NOT NULL UNIQUE,
 	password 					varchar(255) NOT NULL,
-	fechaCreacion 				datetime NOT NULL,
+	fechaCreacion 				datetime,
 	fechaDeUltimaModificacion 	datetime,
 	preguntaSecreta 			varchar(255) NOT NULL,
 	respuestaSecreta 			varchar(255) NOT NULL,
-	contIntentosFallidos 		TINYINT DEFAULT 0,
+	cantIntentosFallidos 		TINYINT DEFAULT 0,
 	estado 						BIT DEFAULT 1,
 );
 
@@ -154,12 +164,21 @@ CREATE TABLE SUDO.Domicilio (
 	depto 			varchar(10),
 );
 
+-----------Tabla Item (Factura)-----------
+CREATE TABLE SUDO.Item ( 
+	idItem			integer IDENTITY(1,1) PRIMARY KEY,
+	importe 		numeric(18,2) NOT NULL,
+	descripcion 	varchar(255),
+	numeroFactura	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Factura,
+);
+
 -----------Tabla Cliente-----------
 CREATE TABLE SUDO.Cliente ( 
 	idCliente 					integer IDENTITY(1,1) PRIMARY KEY,
 	idUsuario 					integer FOREIGN KEY REFERENCES SUDO.Usuario,
 	idDomicilio 				integer FOREIGN KEY REFERENCES SUDO.Domicilio,
 	idTipoDoc				 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.TipoDoc,
+	numeroFactura			 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Factura,
 	nombre 						varchar(255) NOT NULL,
 	apellido 					varchar(255) NOT NULL,
 	mail 						varchar(255) NOT NULL,
@@ -244,45 +263,61 @@ GO
 ---------------------------------------------------------------------------
 			--  	Creacion Funciones, Stored Procedures y Triggers
 ---------------------------------------------------------------------------
-CREATE PROCEDURE SUDO.AgregarFuncionalidadAlRol(@NombreRol VARCHAR(255), @NombreFuncionalidad VARCHAR(255)) AS
+CREATE PROCEDURE SUDO.AsociarFuncionalidadXRol(@NombreRol VARCHAR(255), @NombreFuncionalidad VARCHAR(255)) AS
 	BEGIN
 		INSERT INTO SUDO.FuncionalidadXRol(idRol, idFuncionalidad)
 			SELECT r.idRol, f.idFuncionalidad
 			FROM SUDO.Rol r JOIN SUDO.Funcionalidad f ON (r.nombreRol = @NombreRol AND f.nombre = @NombreFuncionalidad)
 	END;
 GO
+CREATE PROCEDURE SUDO.AsociarUsuarioXRol(@UserName VARCHAR(255), @NombreRol VARCHAR(255)) AS
+	BEGIN
+		INSERT INTO SUDO.UsuarioXRol(idRol, idUsuario)
+			SELECT r.idRol, u.idUsuario
+			FROM SUDO.Rol r JOIN SUDO.Usuario u ON (r.nombreRol = @NombreRol AND u.userName = @UserName)
+	END;
+GO
 CREATE PROC SUDO.NuevaMonedaDesc @Desc VARCHAR(15) AS
 	BEGIN
 		INSERT INTO SUDO.Moneda(descripcion)
-		VALUES(@Desc)
+			VALUES(@Desc)
 	END;
 GO
 CREATE PROC SUDO.NuevoEstadoCuentaDesc @Desc VARCHAR(25) AS
 	BEGIN
 		INSERT INTO SUDO.EstadoCuenta(descripcion)
-		VALUES(@Desc)
+			VALUES(@Desc)
 	END;
 GO
 CREATE PROC SUDO.AgregarFuncionalidadNombre(@Nombre VARCHAR(40)) AS
 	BEGIN
 		INSERT INTO SUDO.Funcionalidad(nombre)
-		VALUES(@Nombre)
+			VALUES(@Nombre)
 	END;
 GO
 CREATE PROC SUDO.NuevoTipoCuenta(@Nombre VARCHAR(50), @Duracion SMALLINT, @Costo NUMERIC(10,2)) AS
 	BEGIN
 		INSERT INTO SUDO.TipoCuenta(nombre, duracionEnDias, costo)
-		VALUES(@Nombre, @Duracion, @Costo)
+			VALUES(@Nombre, @Duracion, @Costo)
 	END;
 GO
-CREATE PROCEDURE SUDO.NuevoRol(@Nombre VARCHAR(255)) AS
+CREATE PROCEDURE SUDO.NuevoRol(@Nombre VARCHAR(255), @Estado BIT) AS
 	BEGIN
 		INSERT INTO SUDO.Rol(nombreRol, estado)
-		VALUES(@Nombre, 1)
+			VALUES(@Nombre, @Estado)
 	END;
 GO
+/*TODO ENCRIPTAR PASSWORD*/
+CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime,
+									@PreguntaSecreta VARCHAR(255), @RespuestaSecreta VARCHAR(255), @CantIntentosFallidos TINYINT, @Estado BIT) AS
+	BEGIN
+		INSERT INTO SUDO.Usuario(userName, password, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado)
+		VALUES(@UserName, @Password, @FechaCreacion, @FechaDeUltimaModificacion,@PreguntaSecreta, @RespuestaSecreta, @CantIntentosFallidos, @Estado)
+	END;
+GO
+
 ---------------------------------------------------------------------------
-			--  	Migracion de datos
+			--  	Creacion de datos
 ---------------------------------------------------------------------------
 
 -----------Creacion de los 11 nombres de Funcionalidad-----------
@@ -302,11 +337,11 @@ PRINT 'Tabla SUDO.Funcionalidad creacion de los 11 nombres de Funcionalidad'
 GO
 
 -----------Creacion de roles-----------
-EXEC SUDO.NuevoRol @Nombre = 'Administrador'
-EXEC SUDO.AgregarFuncionalidadAlRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'ABM de rol'
-EXEC SUDO.AgregarFuncionalidadAlRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'ABM de usuario'
+EXEC SUDO.NuevoRol @Nombre = 'Administrador', @Estado = 1
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'ABM de rol'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'ABM de usuario'
 
-PRINT 'Tabla SUDO.rol de rol admin'
+PRINT 'Tabla SUDO.rol creacion de rol admin'
 GO
 -----------Creacion Moneda 'Dolar'-----------
 EXEC SUDO.NuevaMonedaDesc @Desc = 'Dolar'
@@ -329,7 +364,35 @@ EXEC SUDO.NuevoTipoCuenta @Nombre = 'Plata', @Duracion = 1092, @Costo = 200   --
 EXEC SUDO.NuevoTipoCuenta @Nombre = 'Bronce', @Duracion = 728, @Costo = 100   --2 AÑOS
 EXEC SUDO.NuevoTipoCuenta @Nombre = 'Gratuita', @Duracion = 364 , @Costo = 0  --1 AÑO
 
-PRINT 'Tabla SUDO.TipoCuenta de los 4 TipoCuenta'
+PRINT 'Tabla SUDO.TipoCuenta creacion de los 4 TipoCuenta'
+GO
+
+-----------Creacion de los Usuarios-----------
+EXEC SUDO.NuevoUsuario @UserName= 'elViejoPepe1950', @Password= 'w23e', @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
+
+EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador', @UserName= 'elViejoPepe1950'
+
+PRINT 'Tabla SUDO.Usuario creacion de Usuarios'
+GO
+---------------------------------------------------------------------------
+			--  	Migracion de datos
+---------------------------------------------------------------------------
+-----------Migracion Factura-----------
+INSERT INTO SUDO.Factura(numero, fecha)
+	SELECT Factura_Numero, Factura_Fecha
+	FROM gd_esquema.Maestra 
+	WHERE Factura_Numero IS NOT NULL
+
+PRINT 'Tabla SUDO.Factura Migrada'
+GO
+
+-----------Migracion Item-----------
+INSERT INTO SUDO.Item(importe, descripcion, numeroFactura)
+	SELECT Item_Factura_Importe, Item_Factura_Descr, f.numero
+	FROM gd_esquema.Maestra m join SUDO.Factura f on (f.numero = m.Factura_Numero)
+	WHERE Item_Factura_Importe IS NOT NULL
+
+PRINT 'Tabla SUDO.Item Migrada'
 GO
 
 -----------Migracion Pais-----------
@@ -413,4 +476,4 @@ SET IDENTITY_INSERT SUDO.Transferencia OFF
 
 PRINT 'Tabla SUDO.Transferencia Migrada'
 GO
-ARREGLAR*/
+*/	
