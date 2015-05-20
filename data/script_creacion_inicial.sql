@@ -18,28 +18,27 @@ GO
 			--  	Drop tablas
 ---------------------------------------------------------------------------
 IF OBJECT_ID ('SUDO.Comprobante') IS NOT NULL DROP TABLE SUDO.Comprobante
-IF OBJECT_ID ('SUDO.UsuarioXRol') IS NOT NULL DROP TABLE SUDO.UsuarioXRol
-IF OBJECT_ID ('SUDO.FuncionalidadXRol') IS NOT NULL DROP TABLE SUDO.FuncionalidadXRol
 IF OBJECT_ID ('SUDO.Deposito') IS NOT NULL DROP TABLE SUDO.Deposito
 IF OBJECT_ID ('SUDO.Transferencia') IS NOT NULL DROP TABLE SUDO.Transferencia
 IF OBJECT_ID ('SUDO.Tarjeta') IS NOT NULL DROP TABLE SUDO.Tarjeta
-IF OBJECT_ID ('SUDO.Cliente') IS NOT NULL DROP TABLE SUDO.Cliente
-IF OBJECT_ID ('SUDO.Item') IS NOT NULL DROP TABLE SUDO.Item
-IF OBJECT_ID ('SUDO.Factura') IS NOT NULL DROP TABLE SUDO.Factura
-IF OBJECT_ID ('SUDO.Domicilio') IS NOT NULL DROP TABLE SUDO.Domicilio
-IF OBJECT_ID ('SUDO.HistorialLogin') IS NOT NULL DROP TABLE SUDO.HistorialLogin
-IF OBJECT_ID ('SUDO.Rol') IS NOT NULL DROP TABLE SUDO.Rol
-IF OBJECT_ID ('SUDO.Funcionalidad') IS NOT NULL DROP TABLE SUDO.Funcionalidad
-IF OBJECT_ID ('SUDO.TipoDoc') IS NOT NULL DROP TABLE SUDO.TipoDoc
 IF OBJECT_ID ('SUDO.Cuenta') IS NOT NULL DROP TABLE SUDO.Cuenta
 IF OBJECT_ID ('SUDO.Retiro') IS NOT NULL DROP TABLE SUDO.Retiro
 IF OBJECT_ID ('SUDO.Cheque') IS NOT NULL DROP TABLE SUDO.Cheque
-IF OBJECT_ID ('SUDO.Banco') IS NOT NULL DROP TABLE SUDO.Banco
+IF OBJECT_ID ('SUDO.Item') IS NOT NULL DROP TABLE SUDO.Item
+IF OBJECT_ID ('SUDO.Factura') IS NOT NULL DROP TABLE SUDO.Factura
+IF OBJECT_ID ('SUDO.Cliente') IS NOT NULL DROP TABLE SUDO.Cliente
+IF OBJECT_ID ('SUDO.HistorialLogin') IS NOT NULL DROP TABLE SUDO.HistorialLogin
+IF OBJECT_ID ('SUDO.UsuarioXRol') IS NOT NULL DROP TABLE SUDO.UsuarioXRol
+IF OBJECT_ID ('SUDO.FuncionalidadXRol') IS NOT NULL DROP TABLE SUDO.FuncionalidadXRol
+IF OBJECT_ID ('SUDO.Rol') IS NOT NULL DROP TABLE SUDO.Rol
+IF OBJECT_ID ('SUDO.Funcionalidad') IS NOT NULL DROP TABLE SUDO.Funcionalidad
 IF OBJECT_ID ('SUDO.Usuario') IS NOT NULL DROP TABLE SUDO.Usuario
+IF OBJECT_ID ('SUDO.TipoDoc') IS NOT NULL DROP TABLE SUDO.TipoDoc
 IF OBJECT_ID ('SUDO.Pais') IS NOT NULL DROP TABLE SUDO.Pais
 IF OBJECT_ID ('SUDO.Moneda') IS NOT NULL DROP TABLE SUDO.Moneda
 IF OBJECT_ID ('SUDO.TipoCuenta') IS NOT NULL DROP TABLE SUDO.TipoCuenta
 IF OBJECT_ID ('SUDO.EstadoCuenta') IS NOT NULL DROP TABLE SUDO.EstadoCuenta
+IF OBJECT_ID ('SUDO.Banco') IS NOT NULL DROP TABLE SUDO.Banco
 PRINT 'Tablas borradas'
 GO
 
@@ -67,12 +66,6 @@ CREATE TABLE SUDO.Banco (
 	codigo		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
 	nombre 		varchar(255),
 	direccion 	varchar(255)
-);
-
------------Tabla Factura-----------
-CREATE TABLE SUDO.Factura ( 
-	numero		numeric(18,0) PRIMARY KEY,
-	fecha 		datetime,
 );
 
 -----------Tabla EstadoCuenta-----------
@@ -154,14 +147,29 @@ CREATE TABLE SUDO.HistorialLogin (
 	numeroIntentoFallido 	TINYINT DEFAULT 0,
 );
 
------------Tabla Domicilio-----------
-CREATE TABLE SUDO.Domicilio ( 
-	idDomicilio 	integer IDENTITY(1,1) PRIMARY KEY,
+-----------Tabla Cliente-----------
+CREATE TABLE SUDO.Cliente ( 
+	idCliente 		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
+	idUsuario 		integer DEFAULT NULL,
+	idTipoDoc		numeric(18,0) FOREIGN KEY REFERENCES SUDO.TipoDoc,
 	codigoPais 		numeric(18,0) FOREIGN KEY REFERENCES SUDO.Pais,
-	numero 			numeric(18,0),
-	calle 			varchar(255),
-	piso 			numeric(18,0),
-	depto 			varchar(10),
+	nombre 			varchar(255) NOT NULL,
+	apellido 		varchar(255) NOT NULL,
+	mail 			varchar(255) NOT NULL,
+	fechaDeNac 		datetime,
+	nroDoc			numeric(18,0) NOT NULL,
+	estado 			BIT DEFAULT 1,
+	dirNumero 		numeric(18,0),
+	dirCalle 		varchar(255),
+	dirPiso 		numeric(18,0),
+	dirDepto 		varchar(10),
+);
+
+-----------Tabla Factura-----------
+CREATE TABLE SUDO.Factura ( 
+	numero		numeric(18,0) PRIMARY KEY,
+	idCliente	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cliente,
+	fecha 		datetime,
 );
 
 -----------Tabla Item (Factura)-----------
@@ -170,21 +178,6 @@ CREATE TABLE SUDO.Item (
 	importe 		numeric(18,2) NOT NULL,
 	descripcion 	varchar(255),
 	numeroFactura	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Factura,
-);
-
------------Tabla Cliente-----------
-CREATE TABLE SUDO.Cliente ( 
-	idCliente 					integer IDENTITY(1,1) PRIMARY KEY,
-	idUsuario 					integer FOREIGN KEY REFERENCES SUDO.Usuario,
-	idDomicilio 				integer FOREIGN KEY REFERENCES SUDO.Domicilio,
-	idTipoDoc				 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.TipoDoc,
-	numeroFactura			 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Factura,
-	nombre 						varchar(255) NOT NULL,
-	apellido 					varchar(255) NOT NULL,
-	mail 						varchar(255) NOT NULL,
-	fechaDeNac 					datetime,
-	nroDoc					 	numeric(18,0) NOT NULL,
-	estado 						BIT DEFAULT 1,
 );
 
 -----------Tabla Cheque-----------
@@ -221,7 +214,7 @@ CREATE TABLE SUDO.Cuenta (
 -----------Tabla Tarjeta-----------
 CREATE TABLE SUDO.Tarjeta ( 
 	idTarjeta 			integer IDENTITY(1,1) PRIMARY KEY,
-	idCliente 			integer FOREIGN KEY REFERENCES SUDO.Cliente,
+	idCliente 			numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cliente,
 	numero 				numeric(16) NOT NULL UNIQUE,
 	emisorDesc 			varchar(255),
 	fechaEmision 		datetime NOT NULL,
@@ -377,24 +370,6 @@ GO
 ---------------------------------------------------------------------------
 			--  	Migracion de datos
 ---------------------------------------------------------------------------
------------Migracion Factura-----------
-INSERT INTO SUDO.Factura(numero, fecha)
-	SELECT Factura_Numero, Factura_Fecha
-	FROM gd_esquema.Maestra 
-	WHERE Factura_Numero IS NOT NULL
-
-PRINT 'Tabla SUDO.Factura Migrada'
-GO
-
------------Migracion Item-----------
-INSERT INTO SUDO.Item(importe, descripcion, numeroFactura)
-	SELECT Item_Factura_Importe, Item_Factura_Descr, f.numero
-	FROM gd_esquema.Maestra m join SUDO.Factura f on (f.numero = m.Factura_Numero)
-	WHERE Item_Factura_Importe IS NOT NULL
-
-PRINT 'Tabla SUDO.Item Migrada'
-GO
-
 -----------Migracion Pais-----------
 SET IDENTITY_INSERT SUDO.Pais ON
 	INSERT INTO SUDO.Pais(codigoPais, descripcion)
@@ -444,15 +419,6 @@ SET IDENTITY_INSERT SUDO.Cheque OFF
 PRINT 'Tabla SUDO.Cheque Migrada'
 GO
 
------------Migracion Domicilio-----------
-INSERT INTO SUDO.Domicilio(calle, numero, piso, depto, codigoPais)
-	SELECT Cli_Dom_Calle, Cli_Dom_Nro, Cli_Dom_Piso, Cli_Dom_Depto, Cli_Pais_Codigo
-	FROM gd_esquema.Maestra 
-	GROUP BY Cli_Dom_Calle, Cli_Dom_Nro, Cli_Dom_Piso, Cli_Dom_Depto, Cli_Pais_Codigo
-
-PRINT 'Tabla SUDO.Domicilio Migrada'
-GO
-
 -----------Migracion Retiro-----------
 SET IDENTITY_INSERT SUDO.Retiro ON
 	INSERT INTO SUDO.Retiro(codigo, idCheque, fecha, importe)
@@ -464,12 +430,40 @@ SET IDENTITY_INSERT SUDO.Retiro OFF
 PRINT 'Tabla SUDO.Retiro Migrada'
 GO
 
+-----------Migracion Cliente-----------
+INSERT INTO SUDO.Cliente(nroDoc, nombre, apellido, mail, fechaDeNac, idTipoDoc, dirCalle, dirNumero, dirPiso, dirDepto, codigoPais)
+	SELECT Cli_Nro_Doc, Cli_Nombre, Cli_apellido, Cli_Mail, Cli_Fecha_Nac, idTipoDoc, Cli_Dom_Calle, Cli_Dom_Nro, Cli_Dom_Piso, Cli_Dom_Depto, Cli_Pais_Codigo
+		FROM (SELECT DISTINCT Cli_Nro_Doc, Cli_Nombre, Cli_apellido, Cli_Mail, Cli_Fecha_Nac, idTipoDoc, Cli_Dom_Calle, Cli_Dom_Nro, Cli_Dom_Piso, Cli_Dom_Depto, Cli_Pais_Codigo
+			  FROM gd_esquema.Maestra m JOIN SUDO.TipoDoc d ON (m.Cli_Tipo_Doc_Cod = d.idTipoDoc)
+			  WHERE (Cli_Tipo_Doc_Cod IS NOT NULL)
+		) MConDoc JOIN SUDO.Pais P ON (MConDoc.Cli_Pais_Codigo = P.codigoPais)
+
+PRINT 'Tabla SUDO.Cliente Migrada'
+GO
+
+-----------Migracion Factura-----------
+INSERT INTO SUDO.Factura(numero, fecha)
+	SELECT Factura_Numero, Factura_Fecha
+	FROM gd_esquema.Maestra 
+	WHERE Factura_Numero IS NOT NULL
+
+PRINT 'Tabla SUDO.Factura Migrada'
+GO
+
+-----------Migracion Item-----------
+INSERT INTO SUDO.Item(importe, descripcion, numeroFactura)
+	SELECT Item_Factura_Importe, Item_Factura_Descr, f.numero
+	FROM gd_esquema.Maestra m join SUDO.Factura f on (f.numero = m.Factura_Numero)
+	WHERE Item_Factura_Importe IS NOT NULL
+
+PRINT 'Tabla SUDO.Item Migrada'
+GO
 
 
 -----------Migracion Transferencia-----------
 /*SET IDENTITY_INSERT SUDO.Transferencia ON
-	INSERT INTO SUDO.Transferencia(nroCuentaDest, nroCuentaOrigen, costo, importe, fecha)
-		SELECT Trans_Importe, Trans_Costo_Trans, Trans_Fecha
+	INSERT INTO SUDO.Transferencia(nroCuentaDest, costo, importe, fecha)
+		SELECT , Trans_Importe, Trans_Costo_Trans, Transf_Fecha
 		FROM gd_esquema.Maestra 
 		WHERE Transferencia_Codigo IS NOT NULL
 SET IDENTITY_INSERT SUDO.Transferencia OFF
