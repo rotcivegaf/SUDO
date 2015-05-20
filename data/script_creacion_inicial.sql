@@ -216,8 +216,8 @@ CREATE TABLE SUDO.Tarjeta (
 	idTarjeta 			integer IDENTITY(1,1) PRIMARY KEY,
 	idCliente 			numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cliente,
 	numero 				numeric(16) NOT NULL UNIQUE,
-	emisorDesc 			varchar(255),
-	fechaEmision 		datetime NOT NULL,
+	descEmisor 			varchar(255),
+	fechaEmisor 		datetime NOT NULL,
 	fechaVencimiento 	datetime NOT NULL,
 	codigoSeguridad 	varchar(3) NOT NULL,
 	estado 				BIT DEFAULT 1,	
@@ -442,9 +442,9 @@ PRINT 'Tabla SUDO.Cliente Migrada'
 GO
 
 -----------Migracion Factura-----------
-INSERT INTO SUDO.Factura(numero, fecha)
-	SELECT Factura_Numero, Factura_Fecha
-	FROM gd_esquema.Maestra 
+INSERT INTO SUDO.Factura(numero, fecha, idCliente)
+	SELECT DISTINCT Factura_Numero, Factura_Fecha, c.idCliente
+	FROM gd_esquema.Maestra m join SUDO.Cliente c on ((m.Cli_Nro_Doc = c.nroDoc)AND(m.Cli_Tipo_Doc_Cod = c.idTipoDoc))
 	WHERE Factura_Numero IS NOT NULL
 
 PRINT 'Tabla SUDO.Factura Migrada'
@@ -459,6 +459,14 @@ INSERT INTO SUDO.Item(importe, descripcion, numeroFactura)
 PRINT 'Tabla SUDO.Item Migrada'
 GO
 
+-----------Migracion Tarjeta-----------
+INSERT INTO SUDO.Tarjeta(numero, fechaEmisor, fechaVencimiento, codigoSeguridad, descEmisor, idCliente)
+	SELECT DISTINCT Tarjeta_Numero, Tarjeta_Fecha_Emision, Tarjeta_Fecha_Vencimiento, Tarjeta_Codigo_Seg, Tarjeta_Emisor_Descripcion, c.idCliente
+	FROM gd_esquema.Maestra m join SUDO.Cliente c on ((m.Cli_Nro_Doc = c.nroDoc)AND(m.Cli_Tipo_Doc_Cod = c.idTipoDoc))
+	WHERE Tarjeta_Numero IS NOT NULL
+
+PRINT 'Tabla SUDO.Tarjeta Migrada'
+GO
 
 -----------Migracion Transferencia-----------
 /*SET IDENTITY_INSERT SUDO.Transferencia ON
