@@ -306,11 +306,11 @@ CREATE PROCEDURE SUDO.NuevoRol(@Nombre VARCHAR(255), @Estado BIT) AS
 	END;
 GO
 /*TODO ENCRIPTAR PASSWORD*/
-CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime,
+CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime,
 									@PreguntaSecreta VARCHAR(255), @RespuestaSecreta VARCHAR(255), @CantIntentosFallidos TINYINT, @Estado BIT) AS
 	BEGIN
 		INSERT INTO SUDO.Usuario(userName, password, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado)
-		VALUES(@UserName, @Password, @FechaCreacion, @FechaDeUltimaModificacion,@PreguntaSecreta, @RespuestaSecreta, @CantIntentosFallidos, @Estado)
+		VALUES(@UserName, 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7' , @FechaCreacion, @FechaDeUltimaModificacion,@PreguntaSecreta, @RespuestaSecreta, @CantIntentosFallidos, @Estado)
 	END;
 GO
 
@@ -335,11 +335,48 @@ PRINT 'Tabla SUDO.Funcionalidad creacion de los 11 nombres de Funcionalidad'
 GO
 
 -----------Creacion de roles-----------
-EXEC SUDO.NuevoRol @Nombre = 'Administrador', @Estado = 1
-EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'ABM de rol'
-EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'ABM de usuario'
+-----------Creacion Administrador General-----------
+EXEC SUDO.NuevoRol @Nombre = 'Administrador General', @Estado = 1
 
-PRINT 'Tabla SUDO.rol creacion de rol admin'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'ABM de rol'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'ABM de usuario'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'ABM de cliente'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'ABM de cuenta'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'asociar/desasociar tarjetas de credito'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'depositos'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'retiro'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'transferencias'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'facturacion'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'consulta saldos'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador General', @NombreFuncionalidad  = 'listado estadistico'
+
+PRINT 'Tabla SUDO.rol creacion de rol Administrador General'
+GO
+-----------Creacion Administrador-----------
+EXEC SUDO.NuevoRol @Nombre = 'Administrador', @Estado = 1
+
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'ABM de usuario'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'ABM de cliente'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'ABM de cuenta'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'facturacion'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'consulta saldos'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'listado estadistico'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'asociar/desasociar tarjetas de credito'
+
+PRINT 'Tabla SUDO.rol creacion de rol Administrador'
+GO
+
+-----------Creacion Cliente-----------
+EXEC SUDO.NuevoRol @Nombre = 'Cliente', @Estado = 1
+
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'ABM de cuenta'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'depositos'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'retiro'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'transferencias'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'facturacion'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'consulta saldos'
+
+PRINT 'Tabla SUDO.rol creacion de rol Cliente'
 GO
 -----------Creacion Moneda 'Dolar'-----------
 EXEC SUDO.NuevaMonedaDesc @Desc = 'Dolar'
@@ -366,9 +403,9 @@ PRINT 'Tabla SUDO.TipoCuenta creacion de los 4 TipoCuenta'
 GO
 
 -----------Creacion de los Usuarios-----------
-EXEC SUDO.NuevoUsuario @UserName= 'elViejoPepe1950', @Password= 'w23e', @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
+EXEC SUDO.NuevoUsuario @UserName= 'admin', @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
 
-EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador', @UserName= 'elViejoPepe1950'
+EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador', @UserName= 'admin'
 
 PRINT 'Tabla SUDO.Usuario creacion de Usuarios'
 GO
@@ -529,3 +566,4 @@ INSERT INTO SUDO.Transferencia(fecha, importe, costo, nroCuentaOrigen, nroCuenta
 
 PRINT 'Tabla SUDO.Transferencia Migrada'
 GO
+
