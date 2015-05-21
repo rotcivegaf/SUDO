@@ -163,7 +163,7 @@ CREATE TABLE SUDO.Cliente (
 	dirCalle 		varchar(255),
 	dirPiso 		numeric(18,0),
 	dirDepto 		varchar(10),
-	nacionalidad	varchar(255) DEFAULT 'Argentino',
+	nacionalidad	varchar(255) DEFAULT 'Argentina',
 );
 
 -----------Tabla Factura-----------
@@ -257,7 +257,25 @@ GO
 ---------------------------------------------------------------------------
 			--  	Creacion Triggers
 ---------------------------------------------------------------------------
+--------al hacer un retiro, registrar el cheque--------
+/*CREATE TRIGGER nombre
+ON SUDO.Retiro
+INSTEAD OF INSERT
+AS
+BEGIN
+	
+END
+GO
+PRINT 'Trigger Retiro-Cheque'
+--------al hacer un deposito, registrar el comprobante--------
 
+GO
+PRINT 'Trigger Cuenta Deposito-Comprobante'
+--------al hacer un movimiento, registrarlos en historialMovimientos--------
+
+GO
+PRINT 'Trigger Cuenta HistorialMovimientos'
+*/
 ---------------------------------------------------------------------------
 			--  	Creacion Stored Procedures
 ---------------------------------------------------------------------------
