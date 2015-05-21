@@ -163,6 +163,7 @@ CREATE TABLE SUDO.Cliente (
 	dirCalle 		varchar(255),
 	dirPiso 		numeric(18,0),
 	dirDepto 		varchar(10),
+	nacionalidad	varchar(255) DEFAULT 'Argentino',
 );
 
 -----------Tabla Factura-----------
@@ -256,7 +257,6 @@ GO
 ---------------------------------------------------------------------------
 			--  	Creacion Triggers
 ---------------------------------------------------------------------------
-
 
 ---------------------------------------------------------------------------
 			--  	Creacion Stored Procedures
