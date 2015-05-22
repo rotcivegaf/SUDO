@@ -323,14 +323,15 @@ CREATE PROCEDURE SUDO.NuevoRol(@Nombre VARCHAR(255), @Estado BIT) AS
 			VALUES(@Nombre, @Estado)
 	END;
 GO
-/*TODO ENCRIPTAR PASSWORD*/
-CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime,
+CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime,
 									@PreguntaSecreta VARCHAR(255), @RespuestaSecreta VARCHAR(255), @CantIntentosFallidos TINYINT, @Estado BIT) AS
 	BEGIN
 		INSERT INTO SUDO.Usuario(userName, password, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado)
-		VALUES(@UserName, 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7' , @FechaCreacion, @FechaDeUltimaModificacion,@PreguntaSecreta, @RespuestaSecreta, @CantIntentosFallidos, @Estado)
+		VALUES(@UserName, ISNULL (@Password , 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7'),
+			   ISNULL (@FechaCreacion , GETDATE()), ISNULL (@FechaDeUltimaModificacion , GETDATE()),@PreguntaSecreta, @RespuestaSecreta, @CantIntentosFallidos, @Estado)
 	END;
 GO
+
 
 ---------------------------------------------------------------------------
 			--  	Creacion de datos
@@ -421,7 +422,7 @@ PRINT 'Tabla SUDO.TipoCuenta creacion de los 4 TipoCuenta'
 GO
 
 -----------Creacion de los Usuarios-----------
-EXEC SUDO.NuevoUsuario @UserName= 'admin', @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
+EXEC SUDO.NuevoUsuario @UserName= 'admin', @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
 
 EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador', @UserName= 'admin'
 
@@ -585,3 +586,26 @@ INSERT INTO SUDO.Transferencia(fecha, importe, costo, nroCuentaOrigen, nroCuenta
 PRINT 'Tabla SUDO.Transferencia Migrada'
 GO
 
+-----------Creacion de Usuarios y creacion de la relacion con los clientes-----------
+DECLARE @idUsuario numeric(18,0)
+DECLARE @mail varchar(255)
+
+DECLARE CursorCli CURSOR FOR (SELECT mail, idUsuario
+							  FROM SUDO.Cliente)
+OPEN CursorCli FETCH NEXT FROM CursorCli INTO @mail, @idUsuario
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		EXEC SUDO.NuevoUsuario @UserName= @Mail, @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,
+							   @PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
+		EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Cliente', @UserName= @Mail
+		UPDATE SUDO.Cliente SET idUsuario =	(SELECT TOP(1) idUsuario
+											 FROM SUDO.Usuario
+											 ORDER BY idUsuario DESC)
+		WHERE CURRENT OF CursorCli;									 
+		FETCH NEXT FROM CursorCli INTO @Mail, @idUsuario
+	END
+CLOSE CursorCli
+DEALLOCATE CursorCli
+
+PRINT 'Usuarios creados y relacionados con Cliente'
+GO
