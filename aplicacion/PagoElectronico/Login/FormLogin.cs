@@ -38,7 +38,7 @@ namespace PagoElectronico.Login
             GestorLogin gestorLogin = new GestorLogin();
             if (gestorLogin.VerificarUsuario(usuario, textBoxUser.Text, textBoxPassword.Text))
             {
-                FormRoles formRoles = new FormRoles(usuario.idUser);
+                FormRolesFuncionalidades formRoles = new FormRolesFuncionalidades(usuario.idUser);
                 formRoles.Show(this); 
                 this.Hide();
             }

@@ -79,7 +79,7 @@
       <DependentUpon>FormConsultaSaldo.cs</DependentUpon>
     </Compile>
     <Compile Include="DAO\ConexionDB.cs" />
-    <Compile Include="DAO\ManejadorDeRoles.cs" />
+    <Compile Include="Dominio\Roles.cs" />
     <Compile Include="Dominio\Usuario.cs" />
     <Compile Include="Encriptador.cs" />
     <Compile Include="Listados\FormListado.cs">
@@ -94,11 +94,11 @@
     <Compile Include="Facturacion\FormFacturacion.Designer.cs">
       <DependentUpon>FormFacturacion.cs</DependentUpon>
     </Compile>
-    <Compile Include="Login\FormRoles.cs">
+    <Compile Include="Login\FormRolesFuncionalidades.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Login\FormRoles.Designer.cs">
-      <DependentUpon>FormRoles.cs</DependentUpon>
+    <Compile Include="Login\FormRolesFuncionalidades.Designer.cs">
+      <DependentUpon>FormRolesFuncionalidades.cs</DependentUpon>
     </Compile>
     <Compile Include="Login\GestorLogin.cs" />
     <Compile Include="Transferencias\FormTransferencia.cs">
@@ -163,8 +163,8 @@
     <EmbeddedResource Include="Login\FormLogin.resx">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Login\FormRoles.resx">
-      <DependentUpon>FormRoles.cs</DependentUpon>
+    <EmbeddedResource Include="Login\FormRolesFuncionalidades.resx">
+      <DependentUpon>FormRolesFuncionalidades.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -70,11 +70,13 @@ namespace PagoElectronico.Login
             }
             return false;
         }
-        public SqlDataReader GetRoles(int idUsuario)
+        public Roles GetRolesXFuncionalidades(int idUsuario)
         {
             List<SqlParameter> parametros = new List<SqlParameter>();
             parametros.Add(new SqlParameter("@idUsuario", idUsuario));
-            return DAO.ConexionDB.ejecReaderProc("SUDO.GetRoles", parametros);
+            Roles roles = new Roles(DAO.ConexionDB.ejecReaderProc("SUDO.GetRolesXFuncionalidades", parametros));
+  
+            return roles;
         }
     }
 }

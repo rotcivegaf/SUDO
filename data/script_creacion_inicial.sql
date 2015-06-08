@@ -61,7 +61,7 @@ IF OBJECT_ID ('SUDO.GetUser') IS NOT NULL DROP PROCEDURE SUDO.GetUser
 IF OBJECT_ID ('SUDO.RegistrarLogin') IS NOT NULL DROP PROCEDURE SUDO.RegistrarLogin
 IF OBJECT_ID ('SUDO.RegistrarLoginUsuarioInexistente') IS NOT NULL DROP PROCEDURE SUDO.RegistrarLoginUsuarioInexistente
 IF OBJECT_ID ('SUDO.BlockearUsuario') IS NOT NULL DROP PROCEDURE SUDO.BlockearUsuario
-IF OBJECT_ID ('SUDO.GetRoles') IS NOT NULL DROP PROCEDURE SUDO.GetRoles
+IF OBJECT_ID ('SUDO.GetRolesXFuncionalidades') IS NOT NULL DROP PROCEDURE SUDO.GetRolesXFuncionalidades
 
 PRINT 'Procesos borrados'
 GO
@@ -287,11 +287,16 @@ CREATE PROCEDURE SUDO.BlockearUsuario(@idUsuario integer) AS
 		WHERE (idUsuario = @idUsuario)
 	END;
 GO
-CREATE PROCEDURE SUDO.GetRoles(@idUsuario integer) AS 
+CREATE PROCEDURE SUDO.GetRolesXFuncionalidades(@idUsuario integer) AS 
 	BEGIN
-		SELECT nombreRol
-		FROM SUDO.UsuarioXRol uxr JOIN SUDO.Rol r ON uxr.idRol = r.idRol
-		WHERE idUsuario = @idUsuario AND estado = 1
+		SELECT idRol, nombreRol, RyF.idFuncionalidad, nombre nombreFuncionalidad
+	  	FROM(SELECT RolesUsuario.nombreRol, RolesUsuario.idRol, idFuncionalidad
+	  		 FROM(SELECT r.idRol, r.nombreRol
+	  			  FROM SUDO.UsuarioXRol uxr JOIN SUDO.Rol r ON uxr.idRol = r.idRol
+	  			  WHERE idUsuario = @idUsuario AND estado = 1) RolesUsuario
+	  		 JOIN SUDO.FuncionalidadXRol FxR ON RolesUsuario.idRol = FxR.idRol) RyF
+	  	JOIN SUDO.Funcionalidad f ON RyF.idFuncionalidad = f.idFuncionalidad
+	  	ORDER BY idRol
 	END;
 GO
 CREATE PROCEDURE SUDO.RegistrarLogin(@userNameIng varchar(255), @userPasswordIng varchar(255), @fechaHora datetime, @estado BIT, @numeroIntentoFallido TINYINT, @descripcion varchar(255), @idUsuario integer) AS 
@@ -444,10 +449,10 @@ PRINT 'Tabla SUDO.EstadoCuenta creacion de 4 EstadoCuenta creados'
 GO
 
 -----------Creacion de los 4 TipoCuenta-----------
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'Oro', @Duracion = 1456, @Costo = 300     --4 Aﾃ前S
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'Plata', @Duracion = 1092, @Costo = 200   --3 Aﾃ前S
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'Bronce', @Duracion = 728, @Costo = 100   --2 Aﾃ前S
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'Gratuita', @Duracion = 364 , @Costo = 0  --1 Aﾃ前
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'Oro', @Duracion = 1456, @Costo = 300     --4 AﾑOS
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'Plata', @Duracion = 1092, @Costo = 200   --3 AﾑOS
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'Bronce', @Duracion = 728, @Costo = 100   --2 AﾑOS
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'Gratuita', @Duracion = 364 , @Costo = 0  --1 AﾑO
 
 PRINT 'Tabla SUDO.TipoCuenta creacion de los 4 TipoCuenta'
 GO
