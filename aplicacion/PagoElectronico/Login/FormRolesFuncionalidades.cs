@@ -134,5 +134,12 @@ namespace PagoElectronico.Login
         {
 
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            FormLogin formLogin = new FormLogin();
+            formLogin.Show();
+            this.Hide();
+        }
     }
 }

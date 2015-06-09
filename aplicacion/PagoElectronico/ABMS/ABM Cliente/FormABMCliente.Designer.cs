@@ -37,6 +37,7 @@
             this.ClientSize = new System.Drawing.Size(284, 262);
             this.Name = "FormABMCliente";
             this.Text = "ABM Cliente";
+            this.Load += new System.EventHandler(this.FormABMCliente_Load_1);
             this.ResumeLayout(false);
 
         }

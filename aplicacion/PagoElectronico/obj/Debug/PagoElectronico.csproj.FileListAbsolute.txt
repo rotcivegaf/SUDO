@@ -8,7 +8,6 @@ C:\Documents and Settings\Victor\Escritorio\tp-gdd-2015-master\aplicacion\PagoEl
 C:\Documents and Settings\Victor\Escritorio\tp-gdd-2015-master\aplicacion\PagoElectronico\obj\Debug\PagoElectronico.Consulta_Saldos.FormConsultaSaldo.resources
 C:\Documents and Settings\Victor\Escritorio\tp-gdd-2015-master\aplicacion\PagoElectronico\obj\Debug\PagoElectronico.Depositos.FormDeposito.resources
 C:\Documents and Settings\Victor\Escritorio\tp-gdd-2015-master\aplicacion\PagoElectronico\obj\Debug\PagoElectronico.Facturacion.FormFacturacion.resources
-C:\Documents and Settings\Victor\Escritorio\tp-gdd-2015-master\aplicacion\PagoElectronico\obj\Debug\PagoElectronico.FormPrincipal.resources
 C:\Documents and Settings\Victor\Escritorio\tp-gdd-2015-master\aplicacion\PagoElectronico\obj\Debug\PagoElectronico.Listados.FormListado.resources
 C:\Documents and Settings\Victor\Escritorio\tp-gdd-2015-master\aplicacion\PagoElectronico\obj\Debug\PagoElectronico.Login.FormLogin.resources
 C:\Documents and Settings\Victor\Escritorio\tp-gdd-2015-master\aplicacion\PagoElectronico\obj\Debug\PagoElectronico.Properties.Resources.resources

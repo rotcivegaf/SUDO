@@ -20,5 +20,10 @@ namespace PagoElectronico.ABM_Cliente
         {
 
         }
+
+        private void FormABMCliente_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

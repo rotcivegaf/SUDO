@@ -34,13 +34,14 @@
             this.labelUser = new System.Windows.Forms.Label();
             this.labelPassword = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
             // 
             this.button1.ForeColor = System.Drawing.SystemColors.Desktop;
-            this.button1.Location = new System.Drawing.Point(50, 115);
+            this.button1.Location = new System.Drawing.Point(165, 116);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
@@ -52,7 +53,7 @@
             // 
             this.textBoxUser.Location = new System.Drawing.Point(15, 41);
             this.textBoxUser.Name = "textBoxUser";
-            this.textBoxUser.Size = new System.Drawing.Size(158, 20);
+            this.textBoxUser.Size = new System.Drawing.Size(225, 20);
             this.textBoxUser.TabIndex = 1;
             // 
             // textBoxPassword
@@ -60,7 +61,7 @@
             this.textBoxPassword.HideSelection = false;
             this.textBoxPassword.Location = new System.Drawing.Point(15, 80);
             this.textBoxPassword.Name = "textBoxPassword";
-            this.textBoxPassword.Size = new System.Drawing.Size(158, 20);
+            this.textBoxPassword.Size = new System.Drawing.Size(225, 20);
             this.textBoxPassword.TabIndex = 2;
             // 
             // labelUser
@@ -84,6 +85,7 @@
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.textBoxPassword);
             this.groupBox1.Controls.Add(this.labelUser);
             this.groupBox1.Controls.Add(this.labelPassword);
@@ -92,11 +94,21 @@
             this.groupBox1.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.groupBox1.Location = new System.Drawing.Point(0, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(185, 157);
+            this.groupBox1.Size = new System.Drawing.Size(243, 149);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Pago Electronico - Login";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(15, 116);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 5;
+            this.button2.Text = "Salir";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // FormLogin
             // 
@@ -104,7 +116,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(186, 164);
+            this.ClientSize = new System.Drawing.Size(255, 164);
             this.Controls.Add(this.groupBox1);
             this.Name = "FormLogin";
             this.Text = "Login";
@@ -123,5 +135,6 @@
         private System.Windows.Forms.Label labelUser;
         private System.Windows.Forms.Label labelPassword;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button2;
     }
 }
