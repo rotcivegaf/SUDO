@@ -42,6 +42,7 @@
             this.groupBoxClienteList = new System.Windows.Forms.GroupBox();
             this.buttonNewCliente = new System.Windows.Forms.Button();
             this.dataGridViewCliente = new System.Windows.Forms.DataGridView();
+            this.buttonCancelar = new System.Windows.Forms.Button();
             this.groupBoxFiltros.SuspendLayout();
             this.groupBoxClienteList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCliente)).BeginInit();
@@ -156,6 +157,7 @@
             // 
             this.groupBoxClienteList.AutoSize = true;
             this.groupBoxClienteList.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.groupBoxClienteList.Controls.Add(this.buttonCancelar);
             this.groupBoxClienteList.Controls.Add(this.buttonNewCliente);
             this.groupBoxClienteList.Controls.Add(this.dataGridViewCliente);
             this.groupBoxClienteList.Controls.Add(this.groupBoxFiltros);
@@ -169,7 +171,7 @@
             // 
             // buttonNewCliente
             // 
-            this.buttonNewCliente.Location = new System.Drawing.Point(593, 429);
+            this.buttonNewCliente.Location = new System.Drawing.Point(36, 429);
             this.buttonNewCliente.Name = "buttonNewCliente";
             this.buttonNewCliente.Size = new System.Drawing.Size(75, 23);
             this.buttonNewCliente.TabIndex = 14;
@@ -184,6 +186,16 @@
             this.dataGridViewCliente.Name = "dataGridViewCliente";
             this.dataGridViewCliente.Size = new System.Drawing.Size(632, 228);
             this.dataGridViewCliente.TabIndex = 13;
+            // 
+            // buttonCancelar
+            // 
+            this.buttonCancelar.Location = new System.Drawing.Point(133, 429);
+            this.buttonCancelar.Name = "buttonCancelar";
+            this.buttonCancelar.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancelar.TabIndex = 15;
+            this.buttonCancelar.Text = "Cancelar";
+            this.buttonCancelar.UseVisualStyleBackColor = true;
+            this.buttonCancelar.Click += new System.EventHandler(this.buttonCancelar_Click);
             // 
             // FormModificacionCliente
             // 
@@ -220,6 +232,7 @@
         private System.Windows.Forms.TextBox textBoxApellido;
         private System.Windows.Forms.TextBox textBoxNroIdentif;
         private System.Windows.Forms.TextBox textBoxMail;
+        private System.Windows.Forms.Button buttonCancelar;
 
 
     }

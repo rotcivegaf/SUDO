@@ -30,5 +30,11 @@ namespace PagoElectronico.ABM_Cliente
         {
 
         }
+
+        private void buttonCancelAlta_Click(object sender, EventArgs e)
+        {
+            Owner.Show();
+            this.Close();
+        }
     }
 }
