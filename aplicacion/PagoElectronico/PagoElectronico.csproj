@@ -54,12 +54,6 @@
     <Compile Include="ABMS\ABM Rol\FormABMRol.Designer.cs">
       <DependentUpon>FormABMRol.cs</DependentUpon>
     </Compile>
-    <Compile Include="ABMS\ABM Usuario\FormABMUsuario.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ABMS\ABM Usuario\FormABMUsuario.Designer.cs">
-      <DependentUpon>FormABMUsuario.cs</DependentUpon>
-    </Compile>
     <Compile Include="ABMS\ABM Cliente\FormABMCliente.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +65,18 @@
     </Compile>
     <Compile Include="ABMS\ABM Cuenta\FormABMCuenta.Designer.cs">
       <DependentUpon>FormABMCuenta.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ABMS\ABM Usuario\FormAltaUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABMS\ABM Usuario\FormAltaUsuario.designer.cs">
+      <DependentUpon>FormAltaUsuario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ABMS\ABM Usuario\FormModificacionUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABMS\ABM Usuario\FormModificacionUsuario.designer.cs">
+      <DependentUpon>FormModificacionUsuario.cs</DependentUpon>
     </Compile>
     <Compile Include="Consulta Saldos\FormConsultaSaldo.cs">
       <SubType>Form</SubType>
@@ -101,6 +107,18 @@
       <DependentUpon>FormRolesFuncionalidades.cs</DependentUpon>
     </Compile>
     <Compile Include="Login\GestorLogin.cs" />
+    <Compile Include="Tarjetas\FormNuevaTarjeta.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tarjetas\FormNuevaTarjeta.Designer.cs">
+      <DependentUpon>FormNuevaTarjeta.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tarjetas\FormTarjetas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tarjetas\FormTarjetas.Designer.cs">
+      <DependentUpon>FormTarjetas.cs</DependentUpon>
+    </Compile>
     <Compile Include="Transferencias\FormTransferencia.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -136,8 +154,11 @@
     <EmbeddedResource Include="ABMS\ABM Rol\FormABMRol.resx">
       <DependentUpon>FormABMRol.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ABMS\ABM Usuario\FormABMUsuario.resx">
-      <DependentUpon>FormABMUsuario.cs</DependentUpon>
+    <EmbeddedResource Include="ABMS\ABM Usuario\FormAltaUsuario.resx">
+      <DependentUpon>FormAltaUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABMS\ABM Usuario\FormModificacionUsuario.resx">
+      <DependentUpon>FormModificacionUsuario.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Consulta Saldos\FormConsultaSaldo.resx">
       <DependentUpon>FormConsultaSaldo.cs</DependentUpon>
@@ -164,6 +185,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Retiros\FormRetiro.resx">
       <DependentUpon>FormRetiro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tarjetas\FormNuevaTarjeta.resx">
+      <DependentUpon>FormNuevaTarjeta.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tarjetas\FormTarjetas.resx">
+      <DependentUpon>FormTarjetas.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Transferencias\FormTransferencia.resx">
       <DependentUpon>FormTransferencia.cs</DependentUpon>

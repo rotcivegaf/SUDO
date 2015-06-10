@@ -92,10 +92,10 @@ namespace PagoElectronico.Login
                     FormABMCuenta formABMCuenta = new FormABMCuenta();
                     formABMCuenta.Show(this);
                     break;
-                /*case "asociar/desasociar tarjetas de credito":
-                    Form form = new Form();
-                    form.Show(this);
-                    break;TODO*/
+                case "asociar/desasociar tarjetas de credito":
+                    FormTarjetas formTarjetas = new FormTarjetas(idUser);
+                    formTarjetas.Show(this);
+                    break;
                 case "depositos":
                     FormDeposito formDeposito = new FormDeposito();
                     formDeposito.Show(this);
