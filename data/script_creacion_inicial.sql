@@ -45,27 +45,6 @@ IF OBJECT_ID ('SUDO.TipoMovimiento') IS NOT NULL DROP TABLE SUDO.TipoMovimiento
 PRINT 'Tablas borradas'
 GO
 
-
----------------------------------------------------------------------------
-			--  	Drop procedures
----------------------------------------------------------------------------
-IF OBJECT_ID ('SUDO.NuevaMonedaDesc') IS NOT NULL DROP PROCEDURE SUDO.NuevaMonedaDesc
-IF OBJECT_ID ('SUDO.NuevoEstadoCuentaDesc') IS NOT NULL DROP PROCEDURE SUDO.NuevoEstadoCuentaDesc
-IF OBJECT_ID ('SUDO.AgregarFuncionalidadNombre') IS NOT NULL DROP PROCEDURE SUDO.AgregarFuncionalidadNombre
-IF OBJECT_ID ('SUDO.NuevoTipoCuenta') IS NOT NULL DROP PROCEDURE SUDO.NuevoTipoCuenta
-IF OBJECT_ID ('SUDO.NuevoRol') IS NOT NULL DROP PROCEDURE SUDO.NuevoRol
-IF OBJECT_ID ('SUDO.AsociarFuncionalidadXRol') IS NOT NULL DROP PROCEDURE SUDO.AsociarFuncionalidadXRol
-IF OBJECT_ID ('SUDO.AsociarUsuarioXRol') IS NOT NULL DROP PROCEDURE SUDO.AsociarUsuarioXRol
-IF OBJECT_ID ('SUDO.NuevoUsuario') IS NOT NULL DROP PROCEDURE SUDO.NuevoUsuario
-IF OBJECT_ID ('SUDO.GetUser') IS NOT NULL DROP PROCEDURE SUDO.GetUser
-IF OBJECT_ID ('SUDO.RegistrarLogin') IS NOT NULL DROP PROCEDURE SUDO.RegistrarLogin
-IF OBJECT_ID ('SUDO.RegistrarLoginUsuarioInexistente') IS NOT NULL DROP PROCEDURE SUDO.RegistrarLoginUsuarioInexistente
-IF OBJECT_ID ('SUDO.BlockearUsuario') IS NOT NULL DROP PROCEDURE SUDO.BlockearUsuario
-IF OBJECT_ID ('SUDO.GetRolesXFuncionalidades') IS NOT NULL DROP PROCEDURE SUDO.GetRolesXFuncionalidades
-
-PRINT 'Procesos borrados'
-GO
-
 ---------------------------------------------------------------------------
 			--  	Creacion de tablas
 ---------------------------------------------------------------------------
@@ -247,7 +226,7 @@ CREATE TABLE SUDO.Transferencia (
 	nroCuentaDest 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
 	nroCuentaOrigen	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
 	costo 			numeric(18,2),
-	importe 		numeric(18,2),  /*mayor o igual a uno  TODO*/
+	importe 		numeric(18,2),
 	fecha 			datetime,
 );
 
@@ -257,7 +236,7 @@ CREATE TABLE SUDO.Deposito (
 	nroCuenta 		numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
 	idTarjeta 		integer FOREIGN KEY REFERENCES SUDO.tarjeta,
 	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda,
-	importe 		numeric(18,2),  /*mayor o igual a uno  TODO*/
+	importe 		numeric(18,2),
 	fecha 			datetime,
 );
 
@@ -271,10 +250,73 @@ CREATE TABLE SUDO.Comprobante (
 PRINT 'Tablas creadas'
 GO
 
+---------------------------------------------------------------------------
+			--  	Drop procedures
+---------------------------------------------------------------------------
+IF OBJECT_ID ('SUDO.NuevaMonedaDesc') IS NOT NULL DROP PROCEDURE SUDO.NuevaMonedaDesc
+IF OBJECT_ID ('SUDO.NuevoEstadoCuentaDesc') IS NOT NULL DROP PROCEDURE SUDO.NuevoEstadoCuentaDesc
+IF OBJECT_ID ('SUDO.AgregarFuncionalidadNombre') IS NOT NULL DROP PROCEDURE SUDO.AgregarFuncionalidadNombre
+IF OBJECT_ID ('SUDO.NuevoTipoCuenta') IS NOT NULL DROP PROCEDURE SUDO.NuevoTipoCuenta
+IF OBJECT_ID ('SUDO.NuevoRol') IS NOT NULL DROP PROCEDURE SUDO.NuevoRol
+IF OBJECT_ID ('SUDO.AsociarFuncionalidadXRol') IS NOT NULL DROP PROCEDURE SUDO.AsociarFuncionalidadXRol
+IF OBJECT_ID ('SUDO.AsociarUsuarioXRol') IS NOT NULL DROP PROCEDURE SUDO.AsociarUsuarioXRol
+IF OBJECT_ID ('SUDO.NuevoUsuario') IS NOT NULL DROP PROCEDURE SUDO.NuevoUsuario
+IF OBJECT_ID ('SUDO.GetUser') IS NOT NULL DROP PROCEDURE SUDO.GetUser
+IF OBJECT_ID ('SUDO.RegistrarLogin') IS NOT NULL DROP PROCEDURE SUDO.RegistrarLogin
+IF OBJECT_ID ('SUDO.RegistrarLoginUsuarioInexistente') IS NOT NULL DROP PROCEDURE SUDO.RegistrarLoginUsuarioInexistente
+IF OBJECT_ID ('SUDO.BlockearUsuario') IS NOT NULL DROP PROCEDURE SUDO.BlockearUsuario
+IF OBJECT_ID ('SUDO.GetRolesXFuncionalidades') IS NOT NULL DROP PROCEDURE SUDO.GetRolesXFuncionalidades
+IF OBJECT_ID ('SUDO.GetCuentas') IS NOT NULL DROP PROCEDURE SUDO.GetCuentas
+IF OBJECT_ID ('SUDO.GetSaldo') IS NOT NULL DROP PROCEDURE SUDO.GetSaldo
+IF OBJECT_ID ('SUDO.GetUltimos5depositos') IS NOT NULL DROP PROCEDURE SUDO.GetUltimos5depositos
+IF OBJECT_ID ('SUDO.GetUltimos5Retiros') IS NOT NULL DROP PROCEDURE SUDO.GetUltimos5Retiros
+IF OBJECT_ID ('SUDO.GetUltimas10Transferencias') IS NOT NULL DROP PROCEDURE SUDO.GetUltimas10Transferencias
+
+PRINT 'Procesos borrados'
+GO
 
 ---------------------------------------------------------------------------
 			--  	Creacion Stored Procedures
 ---------------------------------------------------------------------------
+CREATE PROCEDURE SUDO.GetCuentas(@idUsuario integer) AS 
+	BEGIN
+		select nroCuenta
+		from SUDO.Cuenta c join (Select idCliente
+								 from SUDO.Cliente
+								 where idUsuario = @idUsuario)idCliente ON (idCliente.idCliente = c.idCliente)
+	END;
+GO
+CREATE PROCEDURE SUDO.GetUltimas10Transferencias(@nroCuenta bigint) AS 
+	BEGIN
+		select TOP 10 idTrans, fecha, importe, costo, nroCuentaDest
+		from SUDO.Transferencia
+		where nroCuentaOrigen = @nroCuenta
+		order by fecha desc
+	END;
+GO
+CREATE PROCEDURE SUDO.GetUltimos5Retiros(@nroCuenta bigint) AS 
+	BEGIN
+		select TOP 5 codigo, fecha, importe, idCheque
+		from SUDO.Retiro
+		where idCuenta = @nroCuenta
+		order by fecha desc
+	END;
+GO
+CREATE PROCEDURE SUDO.GetUltimos5depositos(@nroCuenta bigint) AS 
+	BEGIN
+		select TOP 5 codigo, fecha, importe, SUBSTRING(CONVERT(varchar(20),T.numero), DATALENGTH(CONVERT(varchar(20),T.numero))-3, 4) ult4NumTarj
+		from SUDO.Deposito D join SUDO.Tarjeta T ON (D.idTarjeta = T.idTarjeta)
+		where nroCuenta = @nroCuenta
+		order by fecha desc
+	END;
+GO
+CREATE PROCEDURE SUDO.GetSaldo(@nroCuenta bigint) AS 
+	BEGIN
+		select saldo
+		from SUDO.Cuenta
+		where nroCuenta = @nroCuenta
+	END;
+GO
 CREATE PROCEDURE SUDO.RegistrarLoginUsuarioInexistente(@userNameIng varchar(255), @userPasswordIng varchar(255), @fechaHora datetime, @descripcion varchar(255)) AS 
 	BEGIN
 		INSERT INTO SUDO.HistorialLogin (userNameIngreasdo, userPasswordIngresado, fechaHora, descripcion)
@@ -378,12 +420,12 @@ EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'ABM de rol'
 EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'ABM de usuario'
 EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'ABM de cliente'
 EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'ABM de cuenta'
+EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'consulta saldos'
 EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'asociar/desasociar tarjetas de credito'
 EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'depositos'
 EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'retiro'
 EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'transferencias'
 EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'facturacion'
-EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'consulta saldos'
 EXEC SUDO.AgregarFuncionalidadNombre @Nombre = 'listado estadistico'
 
 PRINT 'Tabla SUDO.Funcionalidad creacion de los 11 nombres de Funcionalidad'
@@ -449,10 +491,10 @@ PRINT 'Tabla SUDO.EstadoCuenta creacion de 4 EstadoCuenta creados'
 GO
 
 -----------Creacion de los 4 TipoCuenta-----------
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'Oro', @Duracion = 1456, @Costo = 300     --4 AﾑOS
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'Plata', @Duracion = 1092, @Costo = 200   --3 AﾑOS
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'Bronce', @Duracion = 728, @Costo = 100   --2 AﾑOS
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'Gratuita', @Duracion = 364 , @Costo = 0  --1 AﾑO
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'Oro', @Duracion = 1456, @Costo = 300     --4 Aﾃ前S
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'Plata', @Duracion = 1092, @Costo = 200   --3 Aﾃ前S
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'Bronce', @Duracion = 728, @Costo = 100   --2 Aﾃ前S
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'Gratuita', @Duracion = 364 , @Costo = 0  --1 Aﾃ前
 
 PRINT 'Tabla SUDO.TipoCuenta creacion de los 4 TipoCuenta'
 GO

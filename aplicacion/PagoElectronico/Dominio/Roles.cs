@@ -16,11 +16,8 @@ namespace PagoElectronico.Dominio
             List<string> auxList = new List<string>();
             List<string> auxList2 = new List<string>();
 
-            for (; reader.Read();)
-            {
-                auxList.Add(reader["nombreRol"].ToString());
-                auxList2.Add(reader["nombreFuncionalidad"].ToString());
-            }
+            for (; reader.Read(); auxList.Add(reader["nombreRol"].ToString()), auxList2.Add(reader["nombreFuncionalidad"].ToString())) ;
+
             string auxAnt;
             int i;
             List<string> funcionalidades;

@@ -28,9 +28,11 @@ namespace PagoElectronico.Login
     {
         Roles roles;
         List<string> listaFuncionalidades;
+        public int idUser;
 
-        public FormRolesFuncionalidades(int idUser)
+        public FormRolesFuncionalidades(int idUsuario)
         {
+            idUser = idUsuario;
             InitializeComponent();
             GestorLogin gestorLogin = new GestorLogin();
             roles = gestorLogin.GetRolesXFuncionalidades(idUser);
@@ -60,7 +62,6 @@ namespace PagoElectronico.Login
         }
         private void FormRoles_Load(object sender, EventArgs e)
         {
-            
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -112,17 +113,25 @@ namespace PagoElectronico.Login
                     formFacturacion.Show(this);
                     break;
                 case "consulta saldos":
-                    FormConsultaSaldo formConsultaSaldo = new FormConsultaSaldo();
+                    FormConsultaSaldo formConsultaSaldo = new FormConsultaSaldo(idUser);
                     formConsultaSaldo.Show(this);
                     break;
                 case "listado estadistico":
-                    FormListado formListado = new FormListado();
+                    FormListado formListado = new FormListado(idUser);
                     formListado.Show(this);
                     break;
                 default:
                     break;
             }
-            this.Hide();
+            if (comboBox2.Text != "Seleccione Funcionalidad")
+            {
+                this.Hide();
+            }
+            else
+            {
+                MessageBox.Show("Elija un Rol/Funcionalidad");
+            }
+
         }
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
@@ -137,8 +146,7 @@ namespace PagoElectronico.Login
 
         private void button2_Click(object sender, EventArgs e)
         {
-            FormLogin formLogin = new FormLogin();
-            formLogin.Show();
+            Owner.Show();
             this.Hide();
         }
     }

@@ -25,7 +25,7 @@ namespace PagoElectronico.Login
             InitializeComponent();
         }
 
-        private void FormLogin_Load(object sender, EventArgs e){   
+        private void FormLogin_Load(object sender, EventArgs e){  
         }
 
         private void btnIngresar_Click(object sender, EventArgs e)
@@ -38,6 +38,8 @@ namespace PagoElectronico.Login
             GestorLogin gestorLogin = new GestorLogin();
             if (gestorLogin.VerificarUsuario(usuario, textBoxUser.Text, textBoxPassword.Text))
             {
+                textBoxUser.Text = null;
+                textBoxPassword.Text = null;
                 FormRolesFuncionalidades formRoles = new FormRolesFuncionalidades(usuario.idUser);
                 formRoles.Show(this); 
                 this.Hide();
@@ -51,6 +53,11 @@ namespace PagoElectronico.Login
 
         private void button2_Click(object sender, EventArgs e)
         {
+        }
+
+        private void textBoxUser_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

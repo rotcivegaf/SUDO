@@ -11,7 +11,7 @@ namespace PagoElectronico.Listados
 {
     public partial class FormListado : Form
     {
-        public FormListado()
+        public FormListado(int idUser)
         {
             InitializeComponent();
         }
@@ -34,6 +34,12 @@ namespace PagoElectronico.Listados
         private void label3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Owner.Show();
+            this.Hide();
         }
     }
 }
