@@ -56,10 +56,16 @@ namespace PagoElectronico.ABM_Usuario
 
         }
 
-        private void buttonNewCliente_Click(object sender, EventArgs e)
+        private void buttonNewUsuario_Click(object sender, EventArgs e)
         {
             FormAltaUsuario formAltaUsuario = new FormAltaUsuario();
             formAltaUsuario.ShowDialog(this);
+        }
+
+        private void buttonCancelar_Click(object sender, EventArgs e)
+        {
+            Owner.Show();
+            this.Close();
         }
     }
 }

@@ -41,6 +41,7 @@
             this.labelPassw = new System.Windows.Forms.Label();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
             this.labelUsername = new System.Windows.Forms.Label();
+            this.buttonCancelAltaUser = new System.Windows.Forms.Button();
             this.groupBoxUsuarioAlta.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -48,6 +49,7 @@
             // 
             this.groupBoxUsuarioAlta.AutoSize = true;
             this.groupBoxUsuarioAlta.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.groupBoxUsuarioAlta.Controls.Add(this.buttonCancelAltaUser);
             this.groupBoxUsuarioAlta.Controls.Add(this.buttonGuardar);
             this.groupBoxUsuarioAlta.Controls.Add(this.buttonLimpiar);
             this.groupBoxUsuarioAlta.Controls.Add(this.textBoxRtaSecreta);
@@ -62,7 +64,7 @@
             this.groupBoxUsuarioAlta.Controls.Add(this.labelUsername);
             this.groupBoxUsuarioAlta.Location = new System.Drawing.Point(12, 12);
             this.groupBoxUsuarioAlta.Name = "groupBoxUsuarioAlta";
-            this.groupBoxUsuarioAlta.Size = new System.Drawing.Size(516, 289);
+            this.groupBoxUsuarioAlta.Size = new System.Drawing.Size(685, 492);
             this.groupBoxUsuarioAlta.TabIndex = 0;
             this.groupBoxUsuarioAlta.TabStop = false;
             this.groupBoxUsuarioAlta.Text = "Alta Usuario";
@@ -70,16 +72,17 @@
             // 
             // buttonGuardar
             // 
-            this.buttonGuardar.Location = new System.Drawing.Point(188, 247);
+            this.buttonGuardar.Location = new System.Drawing.Point(142, 428);
             this.buttonGuardar.Name = "buttonGuardar";
             this.buttonGuardar.Size = new System.Drawing.Size(75, 23);
             this.buttonGuardar.TabIndex = 11;
             this.buttonGuardar.Text = "Guardar";
             this.buttonGuardar.UseVisualStyleBackColor = true;
+            this.buttonGuardar.Click += new System.EventHandler(this.buttonGuardar_Click);
             // 
             // buttonLimpiar
             // 
-            this.buttonLimpiar.Location = new System.Drawing.Point(36, 247);
+            this.buttonLimpiar.Location = new System.Drawing.Point(36, 428);
             this.buttonLimpiar.Name = "buttonLimpiar";
             this.buttonLimpiar.Size = new System.Drawing.Size(75, 23);
             this.buttonLimpiar.TabIndex = 10;
@@ -88,23 +91,24 @@
             // 
             // textBoxRtaSecreta
             // 
-            this.textBoxRtaSecreta.Location = new System.Drawing.Point(142, 211);
+            this.textBoxRtaSecreta.Location = new System.Drawing.Point(142, 190);
             this.textBoxRtaSecreta.Name = "textBoxRtaSecreta";
-            this.textBoxRtaSecreta.Size = new System.Drawing.Size(121, 20);
+            this.textBoxRtaSecreta.Size = new System.Drawing.Size(169, 20);
             this.textBoxRtaSecreta.TabIndex = 9;
             // 
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(142, 166);
+            this.comboBox1.Location = new System.Drawing.Point(142, 139);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.Size = new System.Drawing.Size(169, 21);
             this.comboBox1.TabIndex = 8;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // labelRtaSecreta
             // 
             this.labelRtaSecreta.AutoSize = true;
-            this.labelRtaSecreta.Location = new System.Drawing.Point(33, 211);
+            this.labelRtaSecreta.Location = new System.Drawing.Point(33, 193);
             this.labelRtaSecreta.Name = "labelRtaSecreta";
             this.labelRtaSecreta.Size = new System.Drawing.Size(98, 13);
             this.labelRtaSecreta.TabIndex = 7;
@@ -114,7 +118,7 @@
             // labelPregSecreta
             // 
             this.labelPregSecreta.AutoSize = true;
-            this.labelPregSecreta.Location = new System.Drawing.Point(33, 169);
+            this.labelPregSecreta.Location = new System.Drawing.Point(33, 142);
             this.labelPregSecreta.Name = "labelPregSecreta";
             this.labelPregSecreta.Size = new System.Drawing.Size(90, 13);
             this.labelPregSecreta.TabIndex = 6;
@@ -123,15 +127,15 @@
             // comboBoxRoles
             // 
             this.comboBoxRoles.FormattingEnabled = true;
-            this.comboBoxRoles.Location = new System.Drawing.Point(142, 123);
+            this.comboBoxRoles.Location = new System.Drawing.Point(142, 85);
             this.comboBoxRoles.Name = "comboBoxRoles";
-            this.comboBoxRoles.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxRoles.Size = new System.Drawing.Size(169, 21);
             this.comboBoxRoles.TabIndex = 5;
             // 
             // labelRol
             // 
             this.labelRol.AutoSize = true;
-            this.labelRol.Location = new System.Drawing.Point(33, 126);
+            this.labelRol.Location = new System.Drawing.Point(33, 88);
             this.labelRol.Name = "labelRol";
             this.labelRol.Size = new System.Drawing.Size(69, 13);
             this.labelRol.TabIndex = 4;
@@ -140,15 +144,15 @@
             // 
             // textBoxPassw
             // 
-            this.textBoxPassw.Location = new System.Drawing.Point(142, 82);
+            this.textBoxPassw.Location = new System.Drawing.Point(444, 38);
             this.textBoxPassw.Name = "textBoxPassw";
-            this.textBoxPassw.Size = new System.Drawing.Size(121, 20);
+            this.textBoxPassw.Size = new System.Drawing.Size(160, 20);
             this.textBoxPassw.TabIndex = 3;
             // 
             // labelPassw
             // 
             this.labelPassw.AutoSize = true;
-            this.labelPassw.Location = new System.Drawing.Point(33, 85);
+            this.labelPassw.Location = new System.Drawing.Point(362, 41);
             this.labelPassw.Name = "labelPassw";
             this.labelPassw.Size = new System.Drawing.Size(53, 13);
             this.labelPassw.TabIndex = 2;
@@ -158,7 +162,7 @@
             // 
             this.textBoxUsername.Location = new System.Drawing.Point(142, 38);
             this.textBoxUsername.Name = "textBoxUsername";
-            this.textBoxUsername.Size = new System.Drawing.Size(121, 20);
+            this.textBoxUsername.Size = new System.Drawing.Size(169, 20);
             this.textBoxUsername.TabIndex = 1;
             this.textBoxUsername.TextChanged += new System.EventHandler(this.textBoxUsername_TextChanged);
             // 
@@ -172,12 +176,22 @@
             this.labelUsername.Text = "Username";
             this.labelUsername.Click += new System.EventHandler(this.label1_Click);
             // 
+            // buttonCancelAltaUser
+            // 
+            this.buttonCancelAltaUser.Location = new System.Drawing.Point(529, 428);
+            this.buttonCancelAltaUser.Name = "buttonCancelAltaUser";
+            this.buttonCancelAltaUser.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancelAltaUser.TabIndex = 12;
+            this.buttonCancelAltaUser.Text = "Cancelar";
+            this.buttonCancelAltaUser.UseVisualStyleBackColor = true;
+            this.buttonCancelAltaUser.Click += new System.EventHandler(this.buttonCancelAltaUser_Click);
+            // 
             // FormAltaUsuario
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(540, 300);
+            this.ClientSize = new System.Drawing.Size(709, 505);
             this.Controls.Add(this.groupBoxUsuarioAlta);
             this.Name = "FormAltaUsuario";
             this.Text = "ABM Usuario";
@@ -204,6 +218,7 @@
         private System.Windows.Forms.Button buttonGuardar;
         private System.Windows.Forms.Button buttonLimpiar;
         private System.Windows.Forms.TextBox textBoxRtaSecreta;
+        private System.Windows.Forms.Button buttonCancelAltaUser;
 
     }
 }

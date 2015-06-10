@@ -35,6 +35,9 @@
             this.buttonNewUsuario = new System.Windows.Forms.Button();
             this.dataGridViewCliente = new System.Windows.Forms.DataGridView();
             this.groupBoxFiltros = new System.Windows.Forms.GroupBox();
+            this.dateTimePickerFechaModif = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePickerFechaCrea = new System.Windows.Forms.DateTimePicker();
+            this.comboBoxRol = new System.Windows.Forms.ComboBox();
             this.buttonBuscarUsuario = new System.Windows.Forms.Button();
             this.buttonLimpiarU = new System.Windows.Forms.Button();
             this.labelFechaCreac = new System.Windows.Forms.Label();
@@ -42,9 +45,7 @@
             this.labelRol = new System.Windows.Forms.Label();
             this.labelUserL = new System.Windows.Forms.Label();
             this.textBoxUserL = new System.Windows.Forms.TextBox();
-            this.comboBoxRol = new System.Windows.Forms.ComboBox();
-            this.dateTimePickerFechaCrea = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePickerFechaModif = new System.Windows.Forms.DateTimePicker();
+            this.buttonCancelar = new System.Windows.Forms.Button();
             this.groupBoxUserList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCliente)).BeginInit();
             this.groupBoxFiltros.SuspendLayout();
@@ -75,6 +76,7 @@
             // 
             this.groupBoxUserList.AutoSize = true;
             this.groupBoxUserList.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.groupBoxUserList.Controls.Add(this.buttonCancelar);
             this.groupBoxUserList.Controls.Add(this.buttonNewUsuario);
             this.groupBoxUserList.Controls.Add(this.dataGridViewCliente);
             this.groupBoxUserList.Controls.Add(this.groupBoxFiltros);
@@ -87,13 +89,13 @@
             // 
             // buttonNewUsuario
             // 
-            this.buttonNewUsuario.Location = new System.Drawing.Point(593, 429);
+            this.buttonNewUsuario.Location = new System.Drawing.Point(36, 445);
             this.buttonNewUsuario.Name = "buttonNewUsuario";
             this.buttonNewUsuario.Size = new System.Drawing.Size(75, 23);
             this.buttonNewUsuario.TabIndex = 14;
             this.buttonNewUsuario.Text = "Nuevo";
             this.buttonNewUsuario.UseVisualStyleBackColor = true;
-            this.buttonNewUsuario.Click += new System.EventHandler(this.buttonNewCliente_Click);
+            this.buttonNewUsuario.Click += new System.EventHandler(this.buttonNewUsuario_Click);
             // 
             // dataGridViewCliente
             // 
@@ -122,6 +124,28 @@
             this.groupBoxFiltros.TabStop = false;
             this.groupBoxFiltros.Text = "Filtros de Búsqueda";
             this.groupBoxFiltros.Enter += new System.EventHandler(this.groupBoxFiltros_Enter);
+            // 
+            // dateTimePickerFechaModif
+            // 
+            this.dateTimePickerFechaModif.Location = new System.Drawing.Point(411, 56);
+            this.dateTimePickerFechaModif.Name = "dateTimePickerFechaModif";
+            this.dateTimePickerFechaModif.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePickerFechaModif.TabIndex = 21;
+            // 
+            // dateTimePickerFechaCrea
+            // 
+            this.dateTimePickerFechaCrea.Location = new System.Drawing.Point(411, 19);
+            this.dateTimePickerFechaCrea.Name = "dateTimePickerFechaCrea";
+            this.dateTimePickerFechaCrea.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePickerFechaCrea.TabIndex = 20;
+            // 
+            // comboBoxRol
+            // 
+            this.comboBoxRol.FormattingEnabled = true;
+            this.comboBoxRol.Location = new System.Drawing.Point(116, 57);
+            this.comboBoxRol.Name = "comboBoxRol";
+            this.comboBoxRol.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxRol.TabIndex = 19;
             // 
             // buttonBuscarUsuario
             // 
@@ -184,27 +208,15 @@
             this.textBoxUserL.Size = new System.Drawing.Size(121, 20);
             this.textBoxUserL.TabIndex = 9;
             // 
-            // comboBoxRol
+            // buttonCancelar
             // 
-            this.comboBoxRol.FormattingEnabled = true;
-            this.comboBoxRol.Location = new System.Drawing.Point(116, 57);
-            this.comboBoxRol.Name = "comboBoxRol";
-            this.comboBoxRol.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxRol.TabIndex = 19;
-            // 
-            // dateTimePickerFechaCrea
-            // 
-            this.dateTimePickerFechaCrea.Location = new System.Drawing.Point(411, 19);
-            this.dateTimePickerFechaCrea.Name = "dateTimePickerFechaCrea";
-            this.dateTimePickerFechaCrea.Size = new System.Drawing.Size(200, 20);
-            this.dateTimePickerFechaCrea.TabIndex = 20;
-            // 
-            // dateTimePickerFechaModif
-            // 
-            this.dateTimePickerFechaModif.Location = new System.Drawing.Point(411, 56);
-            this.dateTimePickerFechaModif.Name = "dateTimePickerFechaModif";
-            this.dateTimePickerFechaModif.Size = new System.Drawing.Size(200, 20);
-            this.dateTimePickerFechaModif.TabIndex = 21;
+            this.buttonCancelar.Location = new System.Drawing.Point(152, 445);
+            this.buttonCancelar.Name = "buttonCancelar";
+            this.buttonCancelar.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancelar.TabIndex = 15;
+            this.buttonCancelar.Text = "Cancelar";
+            this.buttonCancelar.UseVisualStyleBackColor = true;
+            this.buttonCancelar.Click += new System.EventHandler(this.buttonCancelar_Click);
             // 
             // FormModificacionUsuario
             // 
@@ -251,6 +263,7 @@
         private System.Windows.Forms.ComboBox comboBoxRol;
         private System.Windows.Forms.DateTimePicker dateTimePickerFechaCrea;
         private System.Windows.Forms.DateTimePicker dateTimePickerFechaModif;
+        private System.Windows.Forms.Button buttonCancelar;
 
 
     }

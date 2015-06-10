@@ -45,5 +45,21 @@ namespace PagoElectronico.ABM_Usuario
         {
 
         }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonGuardar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonCancelAltaUser_Click(object sender, EventArgs e)
+        {
+            Owner.Show();
+            this.Close();
+        }
     }
 }
