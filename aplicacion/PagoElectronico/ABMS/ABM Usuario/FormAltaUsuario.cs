@@ -21,11 +21,6 @@ namespace PagoElectronico.ABM_Usuario
 
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
         private void label1_Click(object sender, EventArgs e)
         {
 
@@ -42,6 +37,11 @@ namespace PagoElectronico.ABM_Usuario
         }
 
         private void textBoxUsername_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBoxUsuarioAlta_Enter(object sender, EventArgs e)
         {
 
         }

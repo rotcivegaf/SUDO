@@ -66,7 +66,7 @@
             this.groupBoxUsuarioAlta.TabIndex = 0;
             this.groupBoxUsuarioAlta.TabStop = false;
             this.groupBoxUsuarioAlta.Text = "Alta Usuario";
-            this.groupBoxUsuarioAlta.Enter += new System.EventHandler(this.groupBox1_Enter);
+            this.groupBoxUsuarioAlta.Enter += new System.EventHandler(this.groupBoxUsuarioAlta_Enter);
             // 
             // buttonGuardar
             // 

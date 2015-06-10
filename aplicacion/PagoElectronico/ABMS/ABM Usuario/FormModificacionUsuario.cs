@@ -21,11 +21,6 @@ namespace PagoElectronico.ABM_Usuario
 
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
         private void label1_Click(object sender, EventArgs e)
         {
 
@@ -36,22 +31,7 @@ namespace PagoElectronico.ABM_Usuario
 
         }
 
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void textBoxUsername_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox1_Enter_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click_2(object sender, EventArgs e)
         {
 
         }
@@ -66,10 +46,20 @@ namespace PagoElectronico.ABM_Usuario
 
         }
 
-        private void buttonNewUser_Click(object sender, EventArgs e)
+        private void FormModificacionUsuario_Load(object sender, EventArgs e)
         {
-            FormAltaUsuario formAltaUser = new FormAltaUsuario();
-            formAltaUser.ShowDialog(this);
+
+        }
+
+        private void groupBoxFiltros_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonNewCliente_Click(object sender, EventArgs e)
+        {
+            FormAltaUsuario formAltaUsuario = new FormAltaUsuario();
+            formAltaUsuario.ShowDialog(this);
         }
     }
 }
