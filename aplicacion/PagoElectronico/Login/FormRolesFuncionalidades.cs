@@ -81,8 +81,8 @@ namespace PagoElectronico.Login
                     formABMRol.Show(this);
                     break;
                 case "ABM de usuario":
-                    FormABMUsuario formABMUsuario = new FormABMUsuario();
-                    formABMUsuario.Show(this);
+                    FormModificacionUsuario formModificacionUsuario = new FormModificacionUsuario();
+                    formModificacionUsuario.Show(this);
                     break;
                 case "ABM de cliente":
                     FormABMCliente formABMCliente = new FormABMCliente();
