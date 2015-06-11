@@ -53,11 +53,13 @@
             // 
             // EmisorTarjetaCombobox
             // 
+            this.EmisorTarjetaCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EmisorTarjetaCombobox.FormattingEnabled = true;
             this.EmisorTarjetaCombobox.Location = new System.Drawing.Point(108, 38);
             this.EmisorTarjetaCombobox.Name = "EmisorTarjetaCombobox";
             this.EmisorTarjetaCombobox.Size = new System.Drawing.Size(208, 21);
             this.EmisorTarjetaCombobox.TabIndex = 5;
+            this.EmisorTarjetaCombobox.SelectedIndexChanged += new System.EventHandler(this.EmisorTarjetaCombobox_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -101,6 +103,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(208, 20);
             this.textBox1.TabIndex = 10;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox2
             // 
@@ -108,6 +111,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(208, 20);
             this.textBox2.TabIndex = 11;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // dateTimePickerUM
             // 
@@ -115,6 +119,7 @@
             this.dateTimePickerUM.Name = "dateTimePickerUM";
             this.dateTimePickerUM.Size = new System.Drawing.Size(208, 20);
             this.dateTimePickerUM.TabIndex = 16;
+            this.dateTimePickerUM.ValueChanged += new System.EventHandler(this.dateTimePickerUM_ValueChanged);
             // 
             // dateTimePicker1
             // 
@@ -122,6 +127,7 @@
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(208, 20);
             this.dateTimePicker1.TabIndex = 17;
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // button1
             // 
@@ -141,6 +147,7 @@
             this.button2.TabIndex = 19;
             this.button2.Text = "Asociar";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // FormNuevaTarjeta
             // 
@@ -161,6 +168,7 @@
             this.Controls.Add(this.emisorTarjetaLabel);
             this.Name = "FormNuevaTarjeta";
             this.Text = "Asociar Nueva Tarjeta";
+            this.Load += new System.EventHandler(this.FormNuevaTarjeta_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

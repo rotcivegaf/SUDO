@@ -78,5 +78,21 @@ namespace PagoElectronico.Login
   
             return roles;
         }
+        public SqlDataReader ConsultarConIdCuenta(long idCuenta, string consulta)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>();
+            SqlParameter parametroIdCuenta = new SqlParameter("@nroCuenta", idCuenta);
+            parametros.Add(parametroIdCuenta);
+
+            return DAO.ConexionDB.ejecReaderProc(consulta, parametros);
+        }
+        public SqlDataReader ConsultarConIdUsuario(int idUsuario, string consulta)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>();
+            SqlParameter paramentroIdUsuario = new SqlParameter("@idUsuario", idUsuario);
+            parametros.Add(paramentroIdUsuario);
+            
+            return DAO.ConexionDB.ejecReaderProc(consulta, parametros);
+        }
     }
 }

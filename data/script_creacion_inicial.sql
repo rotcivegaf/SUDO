@@ -272,6 +272,9 @@ IF OBJECT_ID ('SUDO.GetUltimos5depositos') IS NOT NULL DROP PROCEDURE SUDO.GetUl
 IF OBJECT_ID ('SUDO.GetUltimos5Retiros') IS NOT NULL DROP PROCEDURE SUDO.GetUltimos5Retiros
 IF OBJECT_ID ('SUDO.GetUltimas10Transferencias') IS NOT NULL DROP PROCEDURE SUDO.GetUltimas10Transferencias
 IF OBJECT_ID ('SUDO.GetTarjetas') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetas
+IF OBJECT_ID ('SUDO.GetEmisores') IS NOT NULL DROP PROCEDURE SUDO.GetEmisores
+IF OBJECT_ID ('SUDO.ExisteNumeroTarjeta') IS NOT NULL DROP PROCEDURE SUDO.ExisteNumeroTarjeta
+IF OBJECT_ID ('SUDO.AsociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.AsociarTarjeta
 
 IF OBJECT_ID ('SUDO.GetSaldoInicial') IS NOT NULL DROP FUNCTION SUDO.GetSaldoInicial;
 
@@ -281,6 +284,23 @@ GO
 ---------------------------------------------------------------------------
 			--  	Creacion Stored Procedures y funciones
 ---------------------------------------------------------------------------
+CREATE PROCEDURE SUDO.AsociarTarjeta(@numero bigint, @emisorDesc varchar(255), @fechaEmision varchar(255), @fechaVencimiento varchar(255), @codigoSeguridad varchar(255), @idUser integer) AS 
+	BEGIN
+		DECLARE @idCliente int
+		DECLARE @idEmisor int
+
+		SELECT @idEmisor = idEmisor
+		FROM SUDO.Emisor
+		WHERE descripcion = @emisorDesc
+
+		SELECT @idCliente = idCliente
+		FROM SUDO.Cliente
+		WHERE idUsuario = @idUser
+
+		INSERT INTO SUDO.Tarjeta (idCliente, numero, idEmisor, fechaEmision, fechaVencimiento, codigoSeguridad)
+		VALUES(@idCliente, @numero, @idEmisor,Convert(dateTime, @fechaEmision, 121),Convert(dateTime, @fechaVencimiento, 121), @codigoSeguridad);
+	END;
+GO
 CREATE PROCEDURE SUDO.GetTarjetas(@idUsuario integer) AS 
 	BEGIN
 		SELECT estado, E.descripcion, fechaVencimiento, fechaEmision, SUBSTRING(CONVERT(varchar(20), numero), DATALENGTH(CONVERT(varchar(20),numero))-3, 4) ult4NumTarj
@@ -290,6 +310,19 @@ CREATE PROCEDURE SUDO.GetTarjetas(@idUsuario integer) AS
 			 	   WHERE idUsuario = @idUsuario)idCliente
 	  		  JOIN SUDO.Tarjeta c  ON idCliente.idCliente = c.idCliente) H
 	    JOIN SUDO.Emisor E ON E.idEmisor = H.idEmisor
+	END;
+GO
+CREATE PROCEDURE SUDO.ExisteNumeroTarjeta(@numero bigint) AS 
+	BEGIN
+		select idTarjeta
+		from SUDO.Tarjeta
+		where numero = @numero
+	END;
+GO
+CREATE PROCEDURE SUDO.GetEmisores AS 
+	BEGIN
+		select descripcion
+		from SUDO.Emisor
 	END;
 GO
 CREATE PROCEDURE SUDO.GetCuentas(@idUsuario integer) AS 
