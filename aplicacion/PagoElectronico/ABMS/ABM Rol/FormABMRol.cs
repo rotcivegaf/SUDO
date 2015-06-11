@@ -24,10 +24,10 @@ namespace PagoElectronico.ABM_Rol
             dataGridRoles.DataSource = findAll();         
         }
         
-        private List<Rol> findAll()
+        private List<Roles> findAll()
         {
-            var roles = new List<Rol>();
-            Rol rol = null;
+            var roles = new List<Roles>();
+            Roles rol = null;
 
             try
             {
@@ -38,7 +38,7 @@ namespace PagoElectronico.ABM_Rol
 
                 while (myReader.Read())
                 {
-                    rol = new Rol(myReader);
+                    rol = new Roles(myReader);
                     roles.Add(rol);
                 }
 

@@ -48,17 +48,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ABMS\ABM Cliente\FormAltaCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABMS\ABM Cliente\FormAltaCliente.Designer.cs">
+      <DependentUpon>FormAltaCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ABMS\ABM Cliente\FormModificacionCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABMS\ABM Cliente\FormModificacionCliente.designer.cs">
+      <DependentUpon>FormModificacionCliente.cs</DependentUpon>
+    </Compile>
     <Compile Include="ABMS\ABM Rol\FormABMRol.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ABMS\ABM Rol\FormABMRol.Designer.cs">
       <DependentUpon>FormABMRol.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ABMS\ABM Cliente\FormABMCliente.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ABMS\ABM Cliente\FormABMCliente.Designer.cs">
-      <DependentUpon>FormABMCliente.cs</DependentUpon>
     </Compile>
     <Compile Include="ABMS\ABM Cuenta\FormABMCuenta.cs">
       <SubType>Form</SubType>
@@ -145,8 +151,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ABMS\ABM Cliente\FormABMCliente.resx">
-      <DependentUpon>FormABMCliente.cs</DependentUpon>
+    <EmbeddedResource Include="ABMS\ABM Cliente\FormAltaCliente.resx">
+      <DependentUpon>FormAltaCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABMS\ABM Cliente\FormModificacionCliente.resx">
+      <DependentUpon>FormModificacionCliente.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ABMS\ABM Cuenta\FormABMCuenta.resx">
       <DependentUpon>FormABMCuenta.cs</DependentUpon>

@@ -171,7 +171,7 @@
             // 
             // rolBindingSource
             // 
-            this.rolBindingSource.DataSource = typeof(PagoElectronico.Dominio.Rol);
+            this.rolBindingSource.DataSource = typeof(PagoElectronico.Dominio.Roles);
             // 
             // FormABMRol
             // 

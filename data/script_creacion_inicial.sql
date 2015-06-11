@@ -251,7 +251,7 @@ PRINT 'Tablas creadas'
 GO
 
 ---------------------------------------------------------------------------
-			--  	Drop procedures
+			--  	Drop procedures y funciones
 ---------------------------------------------------------------------------
 IF OBJECT_ID ('SUDO.NuevaMonedaDesc') IS NOT NULL DROP PROCEDURE SUDO.NuevaMonedaDesc
 IF OBJECT_ID ('SUDO.NuevoEstadoCuentaDesc') IS NOT NULL DROP PROCEDURE SUDO.NuevoEstadoCuentaDesc
@@ -271,13 +271,27 @@ IF OBJECT_ID ('SUDO.GetSaldo') IS NOT NULL DROP PROCEDURE SUDO.GetSaldo
 IF OBJECT_ID ('SUDO.GetUltimos5depositos') IS NOT NULL DROP PROCEDURE SUDO.GetUltimos5depositos
 IF OBJECT_ID ('SUDO.GetUltimos5Retiros') IS NOT NULL DROP PROCEDURE SUDO.GetUltimos5Retiros
 IF OBJECT_ID ('SUDO.GetUltimas10Transferencias') IS NOT NULL DROP PROCEDURE SUDO.GetUltimas10Transferencias
+IF OBJECT_ID ('SUDO.GetTarjetas') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetas
 
-PRINT 'Procesos borrados'
+IF OBJECT_ID ('SUDO.GetSaldoInicial') IS NOT NULL DROP FUNCTION SUDO.GetSaldoInicial;
+
+PRINT 'Procesos y funciones borrados'
 GO
 
 ---------------------------------------------------------------------------
-			--  	Creacion Stored Procedures
+			--  	Creacion Stored Procedures y funciones
 ---------------------------------------------------------------------------
+CREATE PROCEDURE SUDO.GetTarjetas(@idUsuario integer) AS 
+	BEGIN
+		SELECT estado, E.descripcion, fechaVencimiento, fechaEmision, SUBSTRING(CONVERT(varchar(20), numero), DATALENGTH(CONVERT(varchar(20),numero))-3, 4) ult4NumTarj
+	  	FROM (SELECT numero, fechaEmision, fechaVencimiento, estado, idEmisor
+	  		  FROM(SELECT idCliente
+			 	   FROM SUDO.Cliente
+			 	   WHERE idUsuario = @idUsuario)idCliente
+	  		  JOIN SUDO.Tarjeta c  ON idCliente.idCliente = c.idCliente) H
+	    JOIN SUDO.Emisor E ON E.idEmisor = H.idEmisor
+	END;
+GO
 CREATE PROCEDURE SUDO.GetCuentas(@idUsuario integer) AS 
 	BEGIN
 		select nroCuenta
@@ -409,8 +423,32 @@ CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255
 			   ISNULL (@FechaCreacion , GETDATE()), ISNULL (@FechaDeUltimaModificacion , GETDATE()),@PreguntaSecreta, @RespuestaSecreta, @CantIntentosFallidos, @Estado)
 	END;
 GO
+CREATE FUNCTION SUDO.GetSaldoInicial(@nroCuenta bigint)RETURNS bigint AS 
+BEGIN
+	DECLARE @sumaDeposito bigint
+	DECLARE @sumaRetiro bigint
+	DECLARE @sumaImporteTransferenciaEgreso bigint
+	DECLARE @sumaImporteTransferenciaIngreso bigint
+	
+	SELECT @sumaDeposito = SUM(importe)
+	FROM SUDO.Deposito 
+	WHERE nroCuenta = @nroCuenta
+	
+	SELECT @sumaRetiro = SUM(importe)
+	FROM SUDO.Retiro
+	WHERE idCuenta = @nroCuenta
+	
+	SELECT @sumaImporteTransferenciaEgreso = SUM(importe)
+	FROM SUDO.Transferencia
+	WHERE nroCuentaDest = @nroCuenta
+	
+	SELECT	@sumaImporteTransferenciaIngreso = SUM(importe)
+	FROM SUDO.Transferencia
+	WHERE nroCuentaOrigen = @nroCuenta
 
-
+	RETURN @sumaDeposito - @sumaRetiro - @sumaImporteTransferenciaEgreso + @sumaImporteTransferenciaIngreso;
+END;
+GO
 ---------------------------------------------------------------------------
 			--  	Creacion de datos
 ---------------------------------------------------------------------------
@@ -458,7 +496,6 @@ EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFunciona
 EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'facturacion'
 EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'consulta saldos'
 EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'listado estadistico'
-EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Administrador', @NombreFuncionalidad  = 'asociar/desasociar tarjetas de credito'
 
 PRINT 'Tabla SUDO.rol creacion de rol Administrador'
 GO
@@ -472,6 +509,7 @@ EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad 
 EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'transferencias'
 EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'facturacion'
 EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'consulta saldos'
+EXEC SUDO.AsociarFuncionalidadXRol @NombreRol = 'Cliente', @NombreFuncionalidad  = 'asociar/desasociar tarjetas de credito'
 
 PRINT 'Tabla SUDO.rol creacion de rol Cliente'
 GO
@@ -723,7 +761,7 @@ DECLARE @mail varchar(255)
 DECLARE CursorCli CURSOR FOR (SELECT mail, idUsuario
 							  FROM SUDO.Cliente)
 OPEN CursorCli FETCH NEXT FROM CursorCli INTO @mail, @idUsuario
-	WHILE (@@FETCH_STATUS = 0)
+WHILE (@@FETCH_STATUS = 0)
 	BEGIN
 		EXEC SUDO.NuevoUsuario @UserName= @Mail, @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,
 							   @PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
@@ -739,8 +777,28 @@ DEALLOCATE CursorCli
 
 PRINT 'Usuarios creados y relacionados con Cliente'
 GO
+-----------Actualizo el saldo de las cuentas con la ecuacion:-----------
+-----------SALDO = sumaDeposito - sumaRetiro + sumaImporteTransferenciaEgreso + sumaImporteTransferenciaIngreso - sumaCostoTransferencia -----------
+-----------cabe destacar que como el costo de transferencia para todas las CUENTAS es 0 no se tiene en cuenta
+DECLARE @idCuenta numeric(18,0)
+DECLARE @saldo numeric(18,2)
 
+DECLARE CursorCuenta CURSOR FOR (SELECT nroCuenta, saldo
+							  	 FROM SUDO.Cuenta)
+OPEN CursorCuenta FETCH NEXT FROM CursorCuenta INTO @idCuenta, @saldo
 
+WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		UPDATE SUDO.Cuenta SET saldo =SUDO.GetSaldoInicial(@idCuenta)
+		
+		WHERE CURRENT OF CursorCuenta;									 
+		FETCH NEXT FROM CursorCuenta INTO @idCuenta, @saldo
+	END
+CLOSE CursorCuenta
+DEALLOCATE CursorCuenta
+
+PRINT 'Saldo de cuentas calculado'
+GO
 -------------Creacion de AK cliente x mail
 
 USE [GD1C2015]

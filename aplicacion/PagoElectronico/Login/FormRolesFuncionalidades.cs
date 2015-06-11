@@ -19,6 +19,7 @@ using PagoElectronico.Facturacion;
 using PagoElectronico.Retiros;
 using PagoElectronico.Transferencias;
 using PagoElectronico.Listados;
+using PagoElectronico.Tarjetas;
 using PagoElectronico.DAO;
 using PagoElectronico.Dominio;
 
