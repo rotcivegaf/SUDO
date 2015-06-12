@@ -65,6 +65,11 @@ namespace PagoElectronico.Tarjetas
             {
                 MessageBox.Show("Numero de tarjeta existente o datos incompletos");
             }
+            textBox1.ResetText();
+            textBox2.ResetText();
+            EmisorTarjetaCombobox.ResetText();
+            dateTimePicker1.ResetText();
+            dateTimePickerUM.ResetText();            
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -90,6 +95,25 @@ namespace PagoElectronico.Tarjetas
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
 
+        }
+
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter || e.KeyData == Keys.Tab)
+            {
+                e.SuppressKeyPress = true;
+                SelectNextControl(ActiveControl, true, true, true, true);
+            }
+        }
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(char.IsNumber(e.KeyChar)) && (e.KeyChar != (char)Keys.Back))
+            {
+                MessageBox.Show("Solo se permiten numeros en el campo Importe", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                e.Handled = true;
+                return;
+            }
         }
     }
 }

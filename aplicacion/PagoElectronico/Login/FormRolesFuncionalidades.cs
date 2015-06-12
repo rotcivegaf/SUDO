@@ -98,7 +98,7 @@ namespace PagoElectronico.Login
                     formTarjetas.Show(this);
                     break;
                 case "depositos":
-                    FormDeposito formDeposito = new FormDeposito();
+                    FormDeposito formDeposito = new FormDeposito(idUser);
                     formDeposito.Show(this);
                     break;
                 case "retiro":

@@ -275,6 +275,9 @@ IF OBJECT_ID ('SUDO.GetTarjetas') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetas
 IF OBJECT_ID ('SUDO.GetEmisores') IS NOT NULL DROP PROCEDURE SUDO.GetEmisores
 IF OBJECT_ID ('SUDO.ExisteNumeroTarjeta') IS NOT NULL DROP PROCEDURE SUDO.ExisteNumeroTarjeta
 IF OBJECT_ID ('SUDO.AsociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.AsociarTarjeta
+IF OBJECT_ID ('SUDO.DesasociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.DesasociarTarjeta
+IF OBJECT_ID ('SUDO.GetMonedas') IS NOT NULL DROP PROCEDURE SUDO.GetMonedas
+IF OBJECT_ID ('SUDO.GetTarjetasCliente') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetasCliente
 
 IF OBJECT_ID ('SUDO.GetSaldoInicial') IS NOT NULL DROP FUNCTION SUDO.GetSaldoInicial;
 
@@ -284,6 +287,13 @@ GO
 ---------------------------------------------------------------------------
 			--  	Creacion Stored Procedures y funciones
 ---------------------------------------------------------------------------
+CREATE PROCEDURE SUDO.DesasociarTarjeta(@idTarjeta bigint) AS 
+	BEGIN
+		UPDATE SUDO.Tarjeta
+		SET estado = 0
+		WHERE idTarjeta = @idTarjeta
+	END;
+GO
 CREATE PROCEDURE SUDO.AsociarTarjeta(@numero bigint, @emisorDesc varchar(255), @fechaEmision varchar(255), @fechaVencimiento varchar(255), @codigoSeguridad varchar(255), @idUser integer) AS 
 	BEGIN
 		DECLARE @idCliente int
@@ -303,26 +313,45 @@ CREATE PROCEDURE SUDO.AsociarTarjeta(@numero bigint, @emisorDesc varchar(255), @
 GO
 CREATE PROCEDURE SUDO.GetTarjetas(@idUsuario integer) AS 
 	BEGIN
-		SELECT estado, E.descripcion, fechaVencimiento, fechaEmision, SUBSTRING(CONVERT(varchar(20), numero), DATALENGTH(CONVERT(varchar(20),numero))-3, 4) ult4NumTarj
-	  	FROM (SELECT numero, fechaEmision, fechaVencimiento, estado, idEmisor
+		SELECT idTarjeta, estado, E.descripcion, fechaVencimiento, fechaEmision, SUBSTRING(CONVERT(varchar(20), numero), DATALENGTH(CONVERT(varchar(20),numero))-3, 4) ult4NumTarj
+	  	FROM (SELECT idTarjeta ,numero, fechaEmision, fechaVencimiento, estado, idEmisor
 	  		  FROM(SELECT idCliente
 			 	   FROM SUDO.Cliente
 			 	   WHERE idUsuario = @idUsuario)idCliente
 	  		  JOIN SUDO.Tarjeta c  ON idCliente.idCliente = c.idCliente) H
 	    JOIN SUDO.Emisor E ON E.idEmisor = H.idEmisor
+	    WHERE estado = 1
+	END;
+GO
+CREATE PROCEDURE SUDO.GetTarjetasCliente(@idUsuario integer) AS 
+	BEGIN
+		SELECT idTarjeta, E.descripcion, fechaVencimiento, SUBSTRING(CONVERT(varchar(20), numero), DATALENGTH(CONVERT(varchar(20),numero))-3, 4) ult4NumTarj
+	  	FROM (SELECT idTarjeta ,numero, fechaVencimiento, idEmisor, estado
+	  		  FROM(SELECT idCliente
+			 	   FROM SUDO.Cliente
+			 	   WHERE idUsuario = @idUsuario)idCliente
+	  		  JOIN SUDO.Tarjeta c  ON idCliente.idCliente = c.idCliente) H
+	    JOIN SUDO.Emisor E ON E.idEmisor = H.idEmisor
+	    WHERE estado = 1
 	END;
 GO
 CREATE PROCEDURE SUDO.ExisteNumeroTarjeta(@numero bigint) AS 
 	BEGIN
 		select idTarjeta
 		from SUDO.Tarjeta
-		where numero = @numero
+		where numero = @numero AND estado = 1
 	END;
 GO
 CREATE PROCEDURE SUDO.GetEmisores AS 
 	BEGIN
 		select descripcion
 		from SUDO.Emisor
+	END;
+GO
+CREATE PROCEDURE SUDO.GetMonedas AS 
+	BEGIN
+		select descripcion
+		from SUDO.Moneda
 	END;
 GO
 CREATE PROCEDURE SUDO.GetCuentas(@idUsuario integer) AS 
