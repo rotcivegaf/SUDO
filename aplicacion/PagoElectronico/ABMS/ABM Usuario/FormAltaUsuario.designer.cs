@@ -29,19 +29,19 @@
         private void InitializeComponent()
         {
             this.groupBoxUsuarioAlta = new System.Windows.Forms.GroupBox();
+            this.buttonCancelAltaUser = new System.Windows.Forms.Button();
             this.buttonGuardar = new System.Windows.Forms.Button();
             this.buttonLimpiar = new System.Windows.Forms.Button();
-            this.textBoxRtaSecreta = new System.Windows.Forms.TextBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.rtaSecreta = new System.Windows.Forms.TextBox();
+            this.preguntaSecSelected = new System.Windows.Forms.ComboBox();
             this.labelRtaSecreta = new System.Windows.Forms.Label();
             this.labelPregSecreta = new System.Windows.Forms.Label();
-            this.comboBoxRoles = new System.Windows.Forms.ComboBox();
+            this.rolSelected = new System.Windows.Forms.ComboBox();
             this.labelRol = new System.Windows.Forms.Label();
-            this.textBoxPassw = new System.Windows.Forms.TextBox();
+            this.password = new System.Windows.Forms.TextBox();
             this.labelPassw = new System.Windows.Forms.Label();
-            this.textBoxUsername = new System.Windows.Forms.TextBox();
+            this.username = new System.Windows.Forms.TextBox();
             this.labelUsername = new System.Windows.Forms.Label();
-            this.buttonCancelAltaUser = new System.Windows.Forms.Button();
             this.groupBoxUsuarioAlta.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,15 +52,15 @@
             this.groupBoxUsuarioAlta.Controls.Add(this.buttonCancelAltaUser);
             this.groupBoxUsuarioAlta.Controls.Add(this.buttonGuardar);
             this.groupBoxUsuarioAlta.Controls.Add(this.buttonLimpiar);
-            this.groupBoxUsuarioAlta.Controls.Add(this.textBoxRtaSecreta);
-            this.groupBoxUsuarioAlta.Controls.Add(this.comboBox1);
+            this.groupBoxUsuarioAlta.Controls.Add(this.rtaSecreta);
+            this.groupBoxUsuarioAlta.Controls.Add(this.preguntaSecSelected);
             this.groupBoxUsuarioAlta.Controls.Add(this.labelRtaSecreta);
             this.groupBoxUsuarioAlta.Controls.Add(this.labelPregSecreta);
-            this.groupBoxUsuarioAlta.Controls.Add(this.comboBoxRoles);
+            this.groupBoxUsuarioAlta.Controls.Add(this.rolSelected);
             this.groupBoxUsuarioAlta.Controls.Add(this.labelRol);
-            this.groupBoxUsuarioAlta.Controls.Add(this.textBoxPassw);
+            this.groupBoxUsuarioAlta.Controls.Add(this.password);
             this.groupBoxUsuarioAlta.Controls.Add(this.labelPassw);
-            this.groupBoxUsuarioAlta.Controls.Add(this.textBoxUsername);
+            this.groupBoxUsuarioAlta.Controls.Add(this.username);
             this.groupBoxUsuarioAlta.Controls.Add(this.labelUsername);
             this.groupBoxUsuarioAlta.Location = new System.Drawing.Point(12, 12);
             this.groupBoxUsuarioAlta.Name = "groupBoxUsuarioAlta";
@@ -69,6 +69,16 @@
             this.groupBoxUsuarioAlta.TabStop = false;
             this.groupBoxUsuarioAlta.Text = "Alta Usuario";
             this.groupBoxUsuarioAlta.Enter += new System.EventHandler(this.groupBoxUsuarioAlta_Enter);
+            // 
+            // buttonCancelAltaUser
+            // 
+            this.buttonCancelAltaUser.Location = new System.Drawing.Point(529, 428);
+            this.buttonCancelAltaUser.Name = "buttonCancelAltaUser";
+            this.buttonCancelAltaUser.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancelAltaUser.TabIndex = 12;
+            this.buttonCancelAltaUser.Text = "Cancelar";
+            this.buttonCancelAltaUser.UseVisualStyleBackColor = true;
+            this.buttonCancelAltaUser.Click += new System.EventHandler(this.buttonCancelAltaUser_Click);
             // 
             // buttonGuardar
             // 
@@ -89,21 +99,22 @@
             this.buttonLimpiar.Text = "Limpiar";
             this.buttonLimpiar.UseVisualStyleBackColor = true;
             // 
-            // textBoxRtaSecreta
+            // rtaSecreta
             // 
-            this.textBoxRtaSecreta.Location = new System.Drawing.Point(142, 190);
-            this.textBoxRtaSecreta.Name = "textBoxRtaSecreta";
-            this.textBoxRtaSecreta.Size = new System.Drawing.Size(169, 20);
-            this.textBoxRtaSecreta.TabIndex = 9;
+            this.rtaSecreta.Location = new System.Drawing.Point(142, 190);
+            this.rtaSecreta.Name = "rtaSecreta";
+            this.rtaSecreta.Size = new System.Drawing.Size(169, 20);
+            this.rtaSecreta.TabIndex = 9;
+            this.rtaSecreta.TextChanged += new System.EventHandler(this.textBoxRtaSecreta_TextChanged);
             // 
-            // comboBox1
+            // preguntaSecSelected
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(142, 139);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(169, 21);
-            this.comboBox1.TabIndex = 8;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.preguntaSecSelected.FormattingEnabled = true;
+            this.preguntaSecSelected.Location = new System.Drawing.Point(142, 139);
+            this.preguntaSecSelected.Name = "preguntaSecSelected";
+            this.preguntaSecSelected.Size = new System.Drawing.Size(169, 21);
+            this.preguntaSecSelected.TabIndex = 8;
+            this.preguntaSecSelected.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // labelRtaSecreta
             // 
@@ -124,13 +135,14 @@
             this.labelPregSecreta.TabIndex = 6;
             this.labelPregSecreta.Text = "Pregunta Secreta";
             // 
-            // comboBoxRoles
+            // rolSelected
             // 
-            this.comboBoxRoles.FormattingEnabled = true;
-            this.comboBoxRoles.Location = new System.Drawing.Point(142, 85);
-            this.comboBoxRoles.Name = "comboBoxRoles";
-            this.comboBoxRoles.Size = new System.Drawing.Size(169, 21);
-            this.comboBoxRoles.TabIndex = 5;
+            this.rolSelected.FormattingEnabled = true;
+            this.rolSelected.Location = new System.Drawing.Point(142, 85);
+            this.rolSelected.Name = "rolSelected";
+            this.rolSelected.Size = new System.Drawing.Size(169, 21);
+            this.rolSelected.TabIndex = 5;
+            this.rolSelected.SelectedIndexChanged += new System.EventHandler(this.rolSelected_SelectedIndexChanged);
             // 
             // labelRol
             // 
@@ -142,12 +154,12 @@
             this.labelRol.Text = "Rol asignado";
             this.labelRol.Click += new System.EventHandler(this.label1_Click_1);
             // 
-            // textBoxPassw
+            // password
             // 
-            this.textBoxPassw.Location = new System.Drawing.Point(444, 38);
-            this.textBoxPassw.Name = "textBoxPassw";
-            this.textBoxPassw.Size = new System.Drawing.Size(160, 20);
-            this.textBoxPassw.TabIndex = 3;
+            this.password.Location = new System.Drawing.Point(444, 38);
+            this.password.Name = "password";
+            this.password.Size = new System.Drawing.Size(160, 20);
+            this.password.TabIndex = 3;
             // 
             // labelPassw
             // 
@@ -158,13 +170,13 @@
             this.labelPassw.TabIndex = 2;
             this.labelPassw.Text = "Password";
             // 
-            // textBoxUsername
+            // username
             // 
-            this.textBoxUsername.Location = new System.Drawing.Point(142, 38);
-            this.textBoxUsername.Name = "textBoxUsername";
-            this.textBoxUsername.Size = new System.Drawing.Size(169, 20);
-            this.textBoxUsername.TabIndex = 1;
-            this.textBoxUsername.TextChanged += new System.EventHandler(this.textBoxUsername_TextChanged);
+            this.username.Location = new System.Drawing.Point(142, 38);
+            this.username.Name = "username";
+            this.username.Size = new System.Drawing.Size(169, 20);
+            this.username.TabIndex = 1;
+            this.username.TextChanged += new System.EventHandler(this.textBoxUsername_TextChanged);
             // 
             // labelUsername
             // 
@@ -175,16 +187,6 @@
             this.labelUsername.TabIndex = 0;
             this.labelUsername.Text = "Username";
             this.labelUsername.Click += new System.EventHandler(this.label1_Click);
-            // 
-            // buttonCancelAltaUser
-            // 
-            this.buttonCancelAltaUser.Location = new System.Drawing.Point(529, 428);
-            this.buttonCancelAltaUser.Name = "buttonCancelAltaUser";
-            this.buttonCancelAltaUser.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancelAltaUser.TabIndex = 12;
-            this.buttonCancelAltaUser.Text = "Cancelar";
-            this.buttonCancelAltaUser.UseVisualStyleBackColor = true;
-            this.buttonCancelAltaUser.Click += new System.EventHandler(this.buttonCancelAltaUser_Click);
             // 
             // FormAltaUsuario
             // 
@@ -208,16 +210,16 @@
         private System.Windows.Forms.GroupBox groupBoxUsuarioAlta;
         private System.Windows.Forms.Label labelUsername;
         private System.Windows.Forms.Label labelPassw;
-        private System.Windows.Forms.TextBox textBoxUsername;
+        private System.Windows.Forms.TextBox username;
         private System.Windows.Forms.Label labelRol;
-        private System.Windows.Forms.TextBox textBoxPassw;
-        private System.Windows.Forms.ComboBox comboBoxRoles;
+        private System.Windows.Forms.TextBox password;
+        private System.Windows.Forms.ComboBox rolSelected;
         private System.Windows.Forms.Label labelRtaSecreta;
         private System.Windows.Forms.Label labelPregSecreta;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox preguntaSecSelected;
         private System.Windows.Forms.Button buttonGuardar;
         private System.Windows.Forms.Button buttonLimpiar;
-        private System.Windows.Forms.TextBox textBoxRtaSecreta;
+        private System.Windows.Forms.TextBox rtaSecreta;
         private System.Windows.Forms.Button buttonCancelAltaUser;
 
     }
