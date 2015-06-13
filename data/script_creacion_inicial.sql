@@ -282,6 +282,8 @@ IF OBJECT_ID ('SUDO.SP_LISTAR_ROLES') IS NOT NULL DROP PROCEDURE SUDO.SP_LISTAR_
 
 IF OBJECT_ID ('SUDO.GetSaldoInicial') IS NOT NULL DROP FUNCTION SUDO.GetSaldoInicial;
 
+IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO
+
 PRINT 'Procesos y funciones borrados'
 GO
 
@@ -511,6 +513,54 @@ BEGIN
 
 	RETURN @sumaDeposito - @sumaRetiro - @sumaImporteTransferenciaEgreso + @sumaImporteTransferenciaIngreso;
 END;
+GO
+
+--STORED PROCEDURE PARA ALTA DE USUARIO
+CREATE PROCEDURE SUDO.SP_ALTA_USUARIO  
+--PARAMETROS DE ENTRADA
+  @USER					VARCHAR(255),
+  @PASSWORD				VARCHAR(255),
+  @FECHACREA			DATETIME,
+  @FECHAMODIF   		DATETIME,
+  @PREGUNTASECRETA  	VARCHAR(255),
+  @RTASECRETA  			VARCHAR(255), 
+  @CANTINTENTOSFALL		TINYINT,
+  @ESTADO				BIT,
+--PARAMETRO DE SALIDA
+  @VALOR     INT OUTPUT 
+
+AS
+SET NOCOUNT ON 
+SET ANSI_WARNINGS OFF 
+
+DECLARE @IDUSER     INT
+DECLARE @EXISTE_USER INT
+
+SET @EXISTE_USER = 0
+
+BEGIN TRAN
+
+	SELECT * FROM SUDO.Usuario
+	 WHERE userName     = @USER
+
+	SET @EXISTE_USER = @@ROWCOUNT
+
+	IF @EXISTE_USER = 0
+
+		BEGIN 	
+			INSERT INTO SUDO.Usuario (userName, userPassword, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado)
+ 				 VALUES (@USER, @PASSWORD, @FECHACREA, @FECHAMODIF, @PREGUNTASECRETA, @RTASECRETA, @CANTINTENTOSFALL, @ESTADO)
+		    	
+			SET @VALOR = 0
+		    COMMIT TRAN
+        END 
+  
+	ELSE
+
+		BEGIN 
+			SET @VALOR = 1
+            ROLLBACK TRAN
+        END
 GO
 ---------------------------------------------------------------------------
 			--  	Creacion de datos
