@@ -61,8 +61,8 @@ namespace PagoElectronico.Depositos
             List<SqlParameter> parametros = new List<SqlParameter>();
             SqlParameter idUsuario = new SqlParameter("@idUsuario", idUser);
             parametros.Add(idUsuario);
-            SqlParameter idTarjeta = new SqlParameter("@idTarjeta", idTarjetas[comboBox1.Items.IndexOf]);
-            parametros.Add(idTarjeta);
+            //SqlParameter idTarjeta = new SqlParameter("@idTarjeta", idTarjetas[comboBox1.Items.IndexOf]);
+            //parametros.Add(idTarjeta);
             SqlParameter moneda = new SqlParameter("@moneda", comboBox2.Text);
             parametros.Add(moneda);
             SqlParameter importe = new SqlParameter("@importe", textBox1.Text);
