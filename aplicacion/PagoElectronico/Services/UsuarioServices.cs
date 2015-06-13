@@ -65,6 +65,27 @@ namespace PagoElectronico.Services
             SqlParameter fechaModificacion = new SqlParameter("@FECHAMODIF", SqlDbType.DateTime);
             fechaModificacion.Value = u.fechaUltimaModificacion;
             comando.Parameters.Add(fechaModificacion);
+
+            SqlParameter preguntaSecreta = new SqlParameter("@PREGUNTASECRETA", SqlDbType.VarChar, 255);
+            preguntaSecreta.Value = u.preguntaSecreta;
+            comando.Parameters.Add(preguntaSecreta);
+
+            SqlParameter rtaSecreta = new SqlParameter("@RTASECRETA", SqlDbType.VarChar, 255);
+            rtaSecreta.Value = u.respuestaSecreta;
+            comando.Parameters.Add(rtaSecreta);
+
+            SqlParameter cantidadDeIntentosFallidos = new SqlParameter("@CANTINTENTOSFALL", SqlDbType.TinyInt);
+            cantidadDeIntentosFallidos.Value = u.cantIntentosFallidos;
+            comando.Parameters.Add(cantidadDeIntentosFallidos);
+
+            SqlParameter estado = new SqlParameter("@ESTADO", SqlDbType.Bit);
+            estado.Value = u.estado;
+            comando.Parameters.Add(estado);
+
+            SqlParameter valor = new SqlParameter("@VALOR", SqlDbType.Int, 1);
+            comando.Parameters.Add(valor);
+            valor.Direction = ParameterDirection.Output;
+
             return comando;
 
         }

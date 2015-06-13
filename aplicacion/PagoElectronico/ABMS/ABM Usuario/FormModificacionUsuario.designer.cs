@@ -32,6 +32,7 @@
             this.dateTimePickerFC = new System.Windows.Forms.DateTimePicker();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.groupBoxUserList = new System.Windows.Forms.GroupBox();
+            this.buttonCancelar = new System.Windows.Forms.Button();
             this.buttonNewUsuario = new System.Windows.Forms.Button();
             this.dataGridViewCliente = new System.Windows.Forms.DataGridView();
             this.groupBoxFiltros = new System.Windows.Forms.GroupBox();
@@ -45,7 +46,6 @@
             this.labelRol = new System.Windows.Forms.Label();
             this.labelUserL = new System.Windows.Forms.Label();
             this.textBoxUserL = new System.Windows.Forms.TextBox();
-            this.buttonCancelar = new System.Windows.Forms.Button();
             this.groupBoxUserList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCliente)).BeginInit();
             this.groupBoxFiltros.SuspendLayout();
@@ -86,6 +86,16 @@
             this.groupBoxUserList.TabIndex = 1;
             this.groupBoxUserList.TabStop = false;
             this.groupBoxUserList.Text = "Listado Modificacion Usuario";
+            // 
+            // buttonCancelar
+            // 
+            this.buttonCancelar.Location = new System.Drawing.Point(152, 445);
+            this.buttonCancelar.Name = "buttonCancelar";
+            this.buttonCancelar.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancelar.TabIndex = 15;
+            this.buttonCancelar.Text = "Cancelar";
+            this.buttonCancelar.UseVisualStyleBackColor = true;
+            this.buttonCancelar.Click += new System.EventHandler(this.buttonCancelar_Click);
             // 
             // buttonNewUsuario
             // 
@@ -207,16 +217,6 @@
             this.textBoxUserL.Name = "textBoxUserL";
             this.textBoxUserL.Size = new System.Drawing.Size(121, 20);
             this.textBoxUserL.TabIndex = 9;
-            // 
-            // buttonCancelar
-            // 
-            this.buttonCancelar.Location = new System.Drawing.Point(152, 445);
-            this.buttonCancelar.Name = "buttonCancelar";
-            this.buttonCancelar.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancelar.TabIndex = 15;
-            this.buttonCancelar.Text = "Cancelar";
-            this.buttonCancelar.UseVisualStyleBackColor = true;
-            this.buttonCancelar.Click += new System.EventHandler(this.buttonCancelar_Click);
             // 
             // FormModificacionUsuario
             // 

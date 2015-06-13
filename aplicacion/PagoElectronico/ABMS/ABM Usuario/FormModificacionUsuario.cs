@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using PagoElectronico.Services;
 
 namespace PagoElectronico.ABM_Usuario
 {
@@ -14,6 +15,7 @@ namespace PagoElectronico.ABM_Usuario
         public FormModificacionUsuario()
         {
             InitializeComponent();
+            fillRoles();
         }
 
         private void FormAltaUsuario_Load(object sender, EventArgs e)
@@ -66,6 +68,13 @@ namespace PagoElectronico.ABM_Usuario
         {
             Owner.Show();
             this.Close();
+        }
+
+        private void fillRoles()
+        {
+            comboBoxRol.DataSource = RolServices.getRoles();
+            comboBoxRol.DisplayMember = "nombreRol";
+            comboBoxRol.ValueMember = "idRol";
         }
     }
 }
