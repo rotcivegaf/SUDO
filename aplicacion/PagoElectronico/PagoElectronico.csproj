@@ -93,6 +93,7 @@
     <Compile Include="DAO\ConexionDB.cs" />
     <Compile Include="Dominio\Roles.cs" />
     <Compile Include="Dominio\Usuario.cs" />
+    <Compile Include="DTO\PreguntaSecretaDTO.cs" />
     <Compile Include="Encriptador.cs" />
     <Compile Include="Listados\FormListado.cs">
       <SubType>Form</SubType>
@@ -113,6 +114,8 @@
       <DependentUpon>FormRolesFuncionalidades.cs</DependentUpon>
     </Compile>
     <Compile Include="Login\GestorLogin.cs" />
+    <Compile Include="Services\RolServices.cs" />
+    <Compile Include="Services\UsuarioServices.cs" />
     <Compile Include="Tarjetas\FormNuevaTarjeta.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -217,6 +220,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Utils\PreguntaSecretaEnum.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

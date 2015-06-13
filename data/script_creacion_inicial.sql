@@ -195,8 +195,7 @@ CREATE TABLE SUDO.Cuenta (
 	idEstadoCuenta 	integer FOREIGN KEY REFERENCES SUDO.EstadoCuenta,
 	saldo 			numeric(18,2) DEFAULT 0,
 	fechaCreacion 	datetime NOT NULL,
-	fechaCierre 	datetime,
-	estado 			BIT DEFAULT 1,
+	fechaCierre 	datetime
 );
 
 -----------Tabla Retiro-----------
@@ -653,7 +652,7 @@ GO
 -----------Creacion de los Usuarios-----------
 EXEC SUDO.NuevoUsuario @UserName= 'admin', @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
 
-EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador', @UserName= 'admin'
+EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador General', @UserName= 'admin'
 
 PRINT 'Tabla SUDO.Usuario creacion de Usuarios'
 GO
