@@ -124,7 +124,7 @@ namespace PagoElectronico.Login
                 default:
                     break;
             }
-            if (comboBox2.Text != "Seleccione Funcionalidad")
+            if (comboBox2.Text != "" || comboBox1.Text != "")
             {
                 this.Hide();
             }
