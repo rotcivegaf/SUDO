@@ -64,16 +64,15 @@ namespace PagoElectronico.ABM_Usuario
             try{
                 if (!username.Text.Equals("") && !password.Equals("") && 
                     !rolSelected.SelectedValue.ToString().Equals("-1") &&
-                    !preguntaSecSelected.SelectedValue.ToString().Equals("-1") &&
+                    !preguntaSecSelected.Text.Equals("") &&
                     !rtaSecreta.Text.Equals("")){
-                        Usuario u = new Usuario("-1", username.Text, password.Text, preguntaSecSelected.SelectedValue.ToString(),
-                                                    rtaSecreta.Text, DateTime.Today.ToString(), DateTime.Today.ToString(), "0", "" );
+                        Usuario u = new Usuario("-1", username.Text, password.Text, preguntaSecSelected.Text,
+                                                    rtaSecreta.Text, DateTime.Today.ToString(), DateTime.Today.ToString(), "0", "True" );
 
                     DialogResult resultado;
                     resultado = MessageBox.Show("Confirma dar de alta, el usuario. user: " + u.userName, "Confirmacion Alta Usuario", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                    if (resultado == DialogResult.Yes)
-                    {
+                    if (resultado == DialogResult.Yes){
                         int res;
                         res = UsuarioServices.SaveUser(u);
                         if (res == 0)
@@ -82,16 +81,11 @@ namespace PagoElectronico.ABM_Usuario
                             password.Text = "";
                             rtaSecreta.Text = "";
                         }
-                    }
-                    else
-                    {
+                    }else{
                         MessageBox.Show("Se cancelo la operacion");
                     }
 
-                }
-
-                else
-                {
+                } else{
 
                     MessageBox.Show("Complete todos los campos");
                 }
@@ -121,6 +115,7 @@ namespace PagoElectronico.ABM_Usuario
          
         }
         private void fillRoles() {
+            rolSelected.Items.Add("Seleccione un Rol");
             rolSelected.DataSource = RolServices.getRoles();
             rolSelected.DisplayMember = "nombreRol";
             rolSelected.ValueMember = "idRol";
@@ -137,6 +132,13 @@ namespace PagoElectronico.ABM_Usuario
                 preguntaSecSelected.Items.Add(dto.valor);
 
             }            
+        }
+
+        private void buttonLimpiar_Click(object sender, EventArgs e)
+        {
+            username.Text = "";
+            rtaSecreta.Text = "";
+            password.Text = "";
         }
     }
 }
