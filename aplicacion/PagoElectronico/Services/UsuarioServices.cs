@@ -14,7 +14,7 @@ namespace PagoElectronico.Services
     {
         public static int SaveUser(Usuario u) {
             SqlConnection conn = ConexionDB.conectarDB();
-            SqlCommand command = getComandoSave(u, conn);
+            SqlCommand command = GetComandoSave(u, conn);
             try{
                 command.ExecuteScalar();
 
@@ -40,7 +40,7 @@ namespace PagoElectronico.Services
             return 0;
         }
 
-        private static SqlCommand getComandoSave(Usuario u, SqlConnection conn)
+        private static SqlCommand GetComandoSave(Usuario u, SqlConnection conn)
         {
             SqlDataAdapter adapter = new SqlDataAdapter();
             SqlCommand comando = new SqlCommand();
@@ -90,6 +90,54 @@ namespace PagoElectronico.Services
 
         }
 
+        public static DataTable GetUserByFiltros(String user, int rolAsignado, DateTime fechaAlta, DateTime fechaModif) {
+            SqlConnection conn = ConexionDB.conectarDB();
+            SqlDataAdapter adapter = new SqlDataAdapter();
+            SqlCommand comando = new SqlCommand();
 
+            comando.CommandType = CommandType.StoredProcedure;
+            comando.CommandText = "GR46.SUDO_LISTADO_USERS";
+            comando.Connection = conn;
+            adapter.SelectCommand = comando;
+
+            SqlParameter userDB = new SqlParameter("@USER", SqlDbType.VarChar, 255);
+            if (user == "")
+            {
+                userDB.Value = DBNull.Value;
+            }else
+            {
+                userDB.Value = user;
+            }
+            comando.Parameters.Add(userDB);
+
+            SqlParameter rolAsignadoDB = new SqlParameter("@ROL", SqlDbType.Int);
+            rolAsignadoDB.Value = rolAsignado;
+            comando.Parameters.Add(rolAsignadoDB);
+
+            SqlParameter fechaAltaDB = new SqlParameter("@FECHAALTA", SqlDbType.DateTime);
+            fechaAltaDB.Value = fechaAlta;
+            comando.Parameters.Add(fechaAltaDB);
+
+            SqlParameter fechaModifDB = new SqlParameter("@FECHAMODIF", SqlDbType.DateTime);
+            fechaModifDB.Value = fechaModif;
+            comando.Parameters.Add(fechaModifDB);
+
+            try
+            {
+                DataTable tb = new DataTable();
+                adapter.Fill(tb);
+                return (tb);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                conn.Dispose();
+                comando.Dispose();
+
+            }
+        }
     }
 }
