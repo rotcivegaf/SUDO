@@ -20,14 +20,12 @@ namespace PagoElectronico.ABM_Usuario
         public FormAltaUsuario()
         {
             InitializeComponent();
-            fillRoles();
-            fillPreguntasSecretas();
-
         }
 
         private void FormAltaUsuario_Load(object sender, EventArgs e)
         {
-
+            fillRoles();
+            fillPreguntasSecretas();
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -115,7 +113,6 @@ namespace PagoElectronico.ABM_Usuario
          
         }
         private void fillRoles() {
-            rolSelected.Items.Add("Seleccione un Rol");
             rolSelected.DataSource = RolServices.getRoles();
             rolSelected.DisplayMember = "nombreRol";
             rolSelected.ValueMember = "idRol";

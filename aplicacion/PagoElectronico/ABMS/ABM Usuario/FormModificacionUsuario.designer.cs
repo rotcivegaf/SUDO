@@ -28,14 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dateTimePickerUM = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePickerFC = new System.Windows.Forms.DateTimePicker();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.groupBoxUserList = new System.Windows.Forms.GroupBox();
-            this.buttonCancelar = new System.Windows.Forms.Button();
-            this.buttonNewUsuario = new System.Windows.Forms.Button();
-            this.dataGridViewCliente = new System.Windows.Forms.DataGridView();
-            this.groupBoxFiltros = new System.Windows.Forms.GroupBox();
+            System.Windows.Forms.GroupBox groupBoxFiltros;
             this.dateTimePickerFechaModif = new System.Windows.Forms.DateTimePicker();
             this.dateTimePickerFechaCrea = new System.Windows.Forms.DateTimePicker();
             this.comboBoxRol = new System.Windows.Forms.ComboBox();
@@ -46,108 +39,55 @@
             this.labelRol = new System.Windows.Forms.Label();
             this.labelUserL = new System.Windows.Forms.Label();
             this.textBoxUserL = new System.Windows.Forms.TextBox();
+            this.dateTimePickerUM = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePickerFC = new System.Windows.Forms.DateTimePicker();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.groupBoxUserList = new System.Windows.Forms.GroupBox();
+            this.buttonCancelar = new System.Windows.Forms.Button();
+            this.buttonNewUsuario = new System.Windows.Forms.Button();
+            this.dataGridViewCliente = new System.Windows.Forms.DataGridView();
+            groupBoxFiltros = new System.Windows.Forms.GroupBox();
+            groupBoxFiltros.SuspendLayout();
             this.groupBoxUserList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCliente)).BeginInit();
-            this.groupBoxFiltros.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // dateTimePickerUM
-            // 
-            this.dateTimePickerUM.Location = new System.Drawing.Point(0, 0);
-            this.dateTimePickerUM.Name = "dateTimePickerUM";
-            this.dateTimePickerUM.Size = new System.Drawing.Size(200, 20);
-            this.dateTimePickerUM.TabIndex = 0;
-            // 
-            // dateTimePickerFC
-            // 
-            this.dateTimePickerFC.Location = new System.Drawing.Point(0, 0);
-            this.dateTimePickerFC.Name = "dateTimePickerFC";
-            this.dateTimePickerFC.Size = new System.Drawing.Size(200, 20);
-            this.dateTimePickerFC.TabIndex = 0;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.Location = new System.Drawing.Point(0, 0);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 0;
-            // 
-            // groupBoxUserList
-            // 
-            this.groupBoxUserList.AutoSize = true;
-            this.groupBoxUserList.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.groupBoxUserList.Controls.Add(this.buttonCancelar);
-            this.groupBoxUserList.Controls.Add(this.buttonNewUsuario);
-            this.groupBoxUserList.Controls.Add(this.dataGridViewCliente);
-            this.groupBoxUserList.Controls.Add(this.groupBoxFiltros);
-            this.groupBoxUserList.Location = new System.Drawing.Point(3, 2);
-            this.groupBoxUserList.Name = "groupBoxUserList";
-            this.groupBoxUserList.Size = new System.Drawing.Size(921, 501);
-            this.groupBoxUserList.TabIndex = 1;
-            this.groupBoxUserList.TabStop = false;
-            this.groupBoxUserList.Text = "Listado Modificacion Usuario";
-            // 
-            // buttonCancelar
-            // 
-            this.buttonCancelar.Location = new System.Drawing.Point(152, 445);
-            this.buttonCancelar.Name = "buttonCancelar";
-            this.buttonCancelar.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancelar.TabIndex = 15;
-            this.buttonCancelar.Text = "Cancelar";
-            this.buttonCancelar.UseVisualStyleBackColor = true;
-            this.buttonCancelar.Click += new System.EventHandler(this.buttonCancelar_Click);
-            // 
-            // buttonNewUsuario
-            // 
-            this.buttonNewUsuario.Location = new System.Drawing.Point(36, 445);
-            this.buttonNewUsuario.Name = "buttonNewUsuario";
-            this.buttonNewUsuario.Size = new System.Drawing.Size(75, 23);
-            this.buttonNewUsuario.TabIndex = 14;
-            this.buttonNewUsuario.Text = "Nuevo";
-            this.buttonNewUsuario.UseVisualStyleBackColor = true;
-            this.buttonNewUsuario.Click += new System.EventHandler(this.buttonNewUsuario_Click);
-            // 
-            // dataGridViewCliente
-            // 
-            this.dataGridViewCliente.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewCliente.Location = new System.Drawing.Point(36, 186);
-            this.dataGridViewCliente.Name = "dataGridViewCliente";
-            this.dataGridViewCliente.Size = new System.Drawing.Size(632, 228);
-            this.dataGridViewCliente.TabIndex = 13;
             // 
             // groupBoxFiltros
             // 
-            this.groupBoxFiltros.Controls.Add(this.dateTimePickerFechaModif);
-            this.groupBoxFiltros.Controls.Add(this.dateTimePickerFechaCrea);
-            this.groupBoxFiltros.Controls.Add(this.comboBoxRol);
-            this.groupBoxFiltros.Controls.Add(this.buttonBuscarUsuario);
-            this.groupBoxFiltros.Controls.Add(this.buttonLimpiarU);
-            this.groupBoxFiltros.Controls.Add(this.labelFechaCreac);
-            this.groupBoxFiltros.Controls.Add(this.labelFechaModif);
-            this.groupBoxFiltros.Controls.Add(this.labelRol);
-            this.groupBoxFiltros.Controls.Add(this.labelUserL);
-            this.groupBoxFiltros.Controls.Add(this.textBoxUserL);
-            this.groupBoxFiltros.Location = new System.Drawing.Point(36, 29);
-            this.groupBoxFiltros.Name = "groupBoxFiltros";
-            this.groupBoxFiltros.Size = new System.Drawing.Size(632, 141);
-            this.groupBoxFiltros.TabIndex = 12;
-            this.groupBoxFiltros.TabStop = false;
-            this.groupBoxFiltros.Text = "Filtros de Búsqueda";
-            this.groupBoxFiltros.Enter += new System.EventHandler(this.groupBoxFiltros_Enter);
+            groupBoxFiltros.Controls.Add(this.dateTimePickerFechaModif);
+            groupBoxFiltros.Controls.Add(this.dateTimePickerFechaCrea);
+            groupBoxFiltros.Controls.Add(this.comboBoxRol);
+            groupBoxFiltros.Controls.Add(this.buttonBuscarUsuario);
+            groupBoxFiltros.Controls.Add(this.buttonLimpiarU);
+            groupBoxFiltros.Controls.Add(this.labelFechaCreac);
+            groupBoxFiltros.Controls.Add(this.labelFechaModif);
+            groupBoxFiltros.Controls.Add(this.labelRol);
+            groupBoxFiltros.Controls.Add(this.labelUserL);
+            groupBoxFiltros.Controls.Add(this.textBoxUserL);
+            groupBoxFiltros.Location = new System.Drawing.Point(36, 29);
+            groupBoxFiltros.Name = "groupBoxFiltros";
+            groupBoxFiltros.Size = new System.Drawing.Size(632, 141);
+            groupBoxFiltros.TabIndex = 12;
+            groupBoxFiltros.TabStop = false;
+            groupBoxFiltros.Text = "Filtros de Búsqueda";
+            groupBoxFiltros.Enter += new System.EventHandler(this.groupBoxFiltros_Enter);
             // 
             // dateTimePickerFechaModif
             // 
+            this.dateTimePickerFechaModif.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dateTimePickerFechaModif.Location = new System.Drawing.Point(411, 56);
             this.dateTimePickerFechaModif.Name = "dateTimePickerFechaModif";
-            this.dateTimePickerFechaModif.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePickerFechaModif.Size = new System.Drawing.Size(162, 20);
             this.dateTimePickerFechaModif.TabIndex = 21;
             // 
             // dateTimePickerFechaCrea
             // 
-            this.dateTimePickerFechaCrea.Location = new System.Drawing.Point(411, 19);
+            this.dateTimePickerFechaCrea.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerFechaCrea.Location = new System.Drawing.Point(411, 24);
             this.dateTimePickerFechaCrea.Name = "dateTimePickerFechaCrea";
-            this.dateTimePickerFechaCrea.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePickerFechaCrea.Size = new System.Drawing.Size(162, 20);
             this.dateTimePickerFechaCrea.TabIndex = 20;
+            this.dateTimePickerFechaCrea.ValueChanged += new System.EventHandler(this.dateTimePickerFechaCrea_ValueChanged);
             // 
             // comboBoxRol
             // 
@@ -156,6 +96,7 @@
             this.comboBoxRol.Name = "comboBoxRol";
             this.comboBoxRol.Size = new System.Drawing.Size(121, 21);
             this.comboBoxRol.TabIndex = 19;
+            this.comboBoxRol.SelectedIndexChanged += new System.EventHandler(this.comboBoxRol_SelectedIndexChanged);
             // 
             // buttonBuscarUsuario
             // 
@@ -165,6 +106,7 @@
             this.buttonBuscarUsuario.TabIndex = 11;
             this.buttonBuscarUsuario.Text = "Buscar";
             this.buttonBuscarUsuario.UseVisualStyleBackColor = true;
+            this.buttonBuscarUsuario.Click += new System.EventHandler(this.buttonBuscarUsuario_Click);
             // 
             // buttonLimpiarU
             // 
@@ -218,16 +160,88 @@
             this.textBoxUserL.Size = new System.Drawing.Size(121, 20);
             this.textBoxUserL.TabIndex = 9;
             // 
+            // dateTimePickerUM
+            // 
+            this.dateTimePickerUM.CustomFormat = "";
+            this.dateTimePickerUM.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerUM.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.dateTimePickerUM.Location = new System.Drawing.Point(0, 0);
+            this.dateTimePickerUM.Name = "dateTimePickerUM";
+            this.dateTimePickerUM.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePickerUM.TabIndex = 0;
+            // 
+            // dateTimePickerFC
+            // 
+            this.dateTimePickerFC.CustomFormat = "";
+            this.dateTimePickerFC.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerFC.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.dateTimePickerFC.Location = new System.Drawing.Point(0, 0);
+            this.dateTimePickerFC.Name = "dateTimePickerFC";
+            this.dateTimePickerFC.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePickerFC.TabIndex = 0;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.Location = new System.Drawing.Point(0, 0);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 0;
+            // 
+            // groupBoxUserList
+            // 
+            this.groupBoxUserList.AutoSize = true;
+            this.groupBoxUserList.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.groupBoxUserList.Controls.Add(this.buttonCancelar);
+            this.groupBoxUserList.Controls.Add(this.buttonNewUsuario);
+            this.groupBoxUserList.Controls.Add(this.dataGridViewCliente);
+            this.groupBoxUserList.Controls.Add(groupBoxFiltros);
+            this.groupBoxUserList.Location = new System.Drawing.Point(3, 2);
+            this.groupBoxUserList.Name = "groupBoxUserList";
+            this.groupBoxUserList.Size = new System.Drawing.Size(921, 501);
+            this.groupBoxUserList.TabIndex = 1;
+            this.groupBoxUserList.TabStop = false;
+            this.groupBoxUserList.Text = "Listado Modificacion Usuario";
+            // 
+            // buttonCancelar
+            // 
+            this.buttonCancelar.Location = new System.Drawing.Point(152, 445);
+            this.buttonCancelar.Name = "buttonCancelar";
+            this.buttonCancelar.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancelar.TabIndex = 15;
+            this.buttonCancelar.Text = "Cancelar";
+            this.buttonCancelar.UseVisualStyleBackColor = true;
+            this.buttonCancelar.Click += new System.EventHandler(this.buttonCancelar_Click);
+            // 
+            // buttonNewUsuario
+            // 
+            this.buttonNewUsuario.Location = new System.Drawing.Point(36, 445);
+            this.buttonNewUsuario.Name = "buttonNewUsuario";
+            this.buttonNewUsuario.Size = new System.Drawing.Size(75, 23);
+            this.buttonNewUsuario.TabIndex = 14;
+            this.buttonNewUsuario.Text = "Nuevo";
+            this.buttonNewUsuario.UseVisualStyleBackColor = true;
+            this.buttonNewUsuario.Click += new System.EventHandler(this.buttonNewUsuario_Click);
+            // 
+            // dataGridViewCliente
+            // 
+            this.dataGridViewCliente.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewCliente.Location = new System.Drawing.Point(36, 186);
+            this.dataGridViewCliente.Name = "dataGridViewCliente";
+            this.dataGridViewCliente.Size = new System.Drawing.Size(632, 228);
+            this.dataGridViewCliente.TabIndex = 13;
+            this.dataGridViewCliente.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewCliente_CellContentClick);
+            // 
             // FormModificacionUsuario
             // 
             this.ClientSize = new System.Drawing.Size(927, 502);
             this.Controls.Add(this.groupBoxUserList);
             this.Name = "FormModificacionUsuario";
+            this.Text = "Listado Usuarios / Modificacion";
             this.Load += new System.EventHandler(this.FormModificacionUsuario_Load);
+            groupBoxFiltros.ResumeLayout(false);
+            groupBoxFiltros.PerformLayout();
             this.groupBoxUserList.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCliente)).EndInit();
-            this.groupBoxFiltros.ResumeLayout(false);
-            this.groupBoxFiltros.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -252,7 +266,6 @@
         private System.Windows.Forms.GroupBox groupBoxUserList;
         private System.Windows.Forms.Button buttonNewUsuario;
         private System.Windows.Forms.DataGridView dataGridViewCliente;
-        private System.Windows.Forms.GroupBox groupBoxFiltros;
         private System.Windows.Forms.Button buttonBuscarUsuario;
         private System.Windows.Forms.Button buttonLimpiarU;
         private System.Windows.Forms.Label labelFechaCreac;
