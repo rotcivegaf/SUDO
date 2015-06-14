@@ -9,7 +9,17 @@ namespace PagoElectronico.Dominio
 {
     class Roles
     {
+        public int idRol { get; set; }
+        public String nombreRol { get; set; }
+        public bool estado { get; set;} //TODO: sacar!!
+
         public SortedList roles = new SortedList();
+
+        public Roles(int rol, String nombreR) {
+            idRol = rol;
+            nombreRol = nombreR;
+                 
+        }
 
         public Roles(SqlDataReader reader)
         {
