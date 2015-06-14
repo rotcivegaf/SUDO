@@ -120,6 +120,7 @@
             this.ClientSize = new System.Drawing.Size(255, 164);
             this.Controls.Add(this.groupBox1);
             this.Name = "FormLogin";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login";
             this.Load += new System.EventHandler(this.FormLogin_Load);
             this.groupBox1.ResumeLayout(false);
