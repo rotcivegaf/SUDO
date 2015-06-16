@@ -53,6 +53,7 @@ namespace PagoElectronico.Login
 
         private void button2_Click(object sender, EventArgs e)
         {
+            this.Close();
         }
 
         private void textBoxUser_TextChanged(object sender, EventArgs e)

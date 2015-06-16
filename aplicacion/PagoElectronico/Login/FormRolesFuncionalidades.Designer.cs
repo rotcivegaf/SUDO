@@ -97,6 +97,7 @@
             this.Controls.Add(this.button1);
             this.Name = "FormRolesFuncionalidades";
             this.Text = "Seleccionar Rol";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.FormRoles_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
