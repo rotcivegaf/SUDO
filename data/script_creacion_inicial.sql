@@ -21,9 +21,9 @@ IF OBJECT_ID ('SUDO.Comprobante') IS NOT NULL DROP TABLE SUDO.Comprobante
 IF OBJECT_ID ('SUDO.Deposito') IS NOT NULL DROP TABLE SUDO.Deposito
 IF OBJECT_ID ('SUDO.Transferencia') IS NOT NULL DROP TABLE SUDO.Transferencia
 IF OBJECT_ID ('SUDO.Tarjeta') IS NOT NULL DROP TABLE SUDO.Tarjeta
+IF OBJECT_ID ('SUDO.Cheque') IS NOT NULL DROP TABLE SUDO.Cheque
 IF OBJECT_ID ('SUDO.Retiro') IS NOT NULL DROP TABLE SUDO.Retiro
 IF OBJECT_ID ('SUDO.Cuenta') IS NOT NULL DROP TABLE SUDO.Cuenta
-IF OBJECT_ID ('SUDO.Cheque') IS NOT NULL DROP TABLE SUDO.Cheque
 IF OBJECT_ID ('SUDO.Item') IS NOT NULL DROP TABLE SUDO.Item
 IF OBJECT_ID ('SUDO.Factura') IS NOT NULL DROP TABLE SUDO.Factura
 IF OBJECT_ID ('SUDO.Cliente') IS NOT NULL DROP TABLE SUDO.Cliente
@@ -40,7 +40,6 @@ IF OBJECT_ID ('SUDO.TipoCuenta') IS NOT NULL DROP TABLE SUDO.TipoCuenta
 IF OBJECT_ID ('SUDO.EstadoCuenta') IS NOT NULL DROP TABLE SUDO.EstadoCuenta
 IF OBJECT_ID ('SUDO.Banco') IS NOT NULL DROP TABLE SUDO.Banco
 IF OBJECT_ID ('SUDO.Emisor') IS NOT NULL DROP TABLE SUDO.Emisor
-IF OBJECT_ID ('SUDO.HistorialMovimiento') IS NOT NULL DROP TABLE SUDO.HistorialMovimiento
 IF OBJECT_ID ('SUDO.TipoMovimiento') IS NOT NULL DROP TABLE SUDO.TipoMovimiento
 PRINT 'Tablas borradas'
 GO
@@ -83,7 +82,7 @@ CREATE TABLE SUDO.Moneda (
 
 -----------Tabla Pais-----------
 CREATE TABLE SUDO.Pais ( 
-	idPais 		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
+	idPais 			numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
 	descripcion 	varchar(255),	
 );
 
@@ -172,17 +171,10 @@ CREATE TABLE SUDO.Factura (
 CREATE TABLE SUDO.Item ( 
 	idItem			integer IDENTITY(1,1) PRIMARY KEY,
 	numeroFactura	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Factura,
+	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
 	importe 		numeric(18,2) NOT NULL,
 	descripcion 	varchar(255),
 	
-);
-
------------Tabla Cheque-----------
-CREATE TABLE SUDO.Cheque ( 
-	idCheque 		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
-	codigoBanco 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Banco,
-	fecha 			datetime,
-	importe 		numeric(18,2) NOT NULL,
 );
 
 -----------Tabla Cuenta-----------
@@ -201,10 +193,21 @@ CREATE TABLE SUDO.Cuenta (
 -----------Tabla Retiro-----------
 CREATE TABLE SUDO.Retiro ( 
 	codigo 		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
-	idCheque 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cheque,
 	idCuenta	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
+	idMoneda 	integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
+	codigoBanco 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Banco,
 	fecha 		datetime NOT NULL,
 	importe 	numeric(18,2) NOT NULL,
+);
+
+-----------Tabla Cheque-----------
+CREATE TABLE SUDO.Cheque ( 
+	idCheque 		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
+	idRetiro	 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Retiro,
+	codigoBanco 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Banco,
+	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
+	fecha 			datetime,
+	importe 		numeric(18,2) NOT NULL,
 );
 
 -----------Tabla Tarjeta-----------
@@ -224,6 +227,7 @@ CREATE TABLE SUDO.Transferencia (
 	idTrans 		integer IDENTITY(1,1) PRIMARY KEY,
 	nroCuentaDest 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
 	nroCuentaOrigen	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
+	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
 	costo 			numeric(18,2),
 	importe 		numeric(18,2),
 	fecha 			datetime,
@@ -275,10 +279,13 @@ IF OBJECT_ID ('SUDO.GetEmisores') IS NOT NULL DROP PROCEDURE SUDO.GetEmisores
 IF OBJECT_ID ('SUDO.AsociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.AsociarTarjeta
 IF OBJECT_ID ('SUDO.DesasociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.DesasociarTarjeta
 IF OBJECT_ID ('SUDO.GetMonedas') IS NOT NULL DROP PROCEDURE SUDO.GetMonedas
+IF OBJECT_ID ('SUDO.GetBancos') IS NOT NULL DROP PROCEDURE SUDO.GetBancos
 IF OBJECT_ID ('SUDO.GetTarjetasCliente') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetasCliente
 IF OBJECT_ID ('SUDO.CrearDeposito') IS NOT NULL DROP PROCEDURE SUDO.CrearDeposito
+IF OBJECT_ID ('SUDO.CrearRetiro') IS NOT NULL DROP PROCEDURE SUDO.CrearRetiro
 IF OBJECT_ID ('SUDO.SP_LISTAR_ROLES') IS NOT NULL DROP PROCEDURE SUDO.SP_LISTAR_ROLES
 IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO
+IF OBJECT_ID ('SUDO.UdateIdMoneda') IS NOT NULL DROP PROCEDURE SUDO.UdateIdMoneda
 
 IF OBJECT_ID ('SUDO.GetSaldoInicial') IS NOT NULL DROP FUNCTION SUDO.GetSaldoInicial;
 
@@ -288,6 +295,21 @@ GO
 ---------------------------------------------------------------------------
 			--  	Creacion Stored Procedures --
 ---------------------------------------------------------------------------
+CREATE PROCEDURE SUDO.UdateIdMoneda(@descripcionMoneda varchar(255)) AS 
+	BEGIN
+		DECLARE @idMoneda integer
+		SELECT @idMoneda = idMoneda
+		FROM SUDO.Moneda
+		WHERE (descripcion = 'Dolar')
+
+		UPDATE SUDO.Deposito SET idMoneda = @idMoneda
+		UPDATE SUDO.Retiro SET idMoneda = @idMoneda
+		UPDATE SUDO.Transferencia SET idMoneda = @idMoneda
+		UPDATE SUDO.Cheque SET idMoneda = @idMoneda
+		UPDATE SUDO.Item SET idMoneda = @idMoneda
+		UPDATE SUDO.Cuenta SET idMoneda = @idMoneda
+	END;
+GO
 CREATE PROCEDURE SUDO.DesasociarTarjeta(@idTarjeta bigint) AS 
 	BEGIN
 		UPDATE SUDO.Tarjeta
@@ -295,7 +317,40 @@ CREATE PROCEDURE SUDO.DesasociarTarjeta(@idTarjeta bigint) AS
 		WHERE idTarjeta = @idTarjeta
 	END;
 GO
-CREATE PROCEDURE SUDO.CrearDeposito(@idUsuario integer, @idTarjeta bigint, @moneda varchar(255), @importe bigint, @fecha datetime, @nroCuenta bigint) AS 
+CREATE PROCEDURE SUDO.CrearRetiro(@nroCuenta bigint, @fecha datetime, @moneda varchar(255), @importe bigint, @nombreBanco varchar(255), @nroDoc numeric(18,0)) AS 
+	BEGIN
+		DECLARE @saldo numeric(18,2)
+		DECLARE @idMoneda integer
+		DECLARE @codigoBanco numeric(18,0)
+		DECLARE @nroDocCliente numeric(18,0)
+		DECLARE @idCliente integer
+
+		SELECT @saldo = saldo, @idCliente = idCliente
+		FROM SUDO.Cuenta
+		WHERE nroCuenta = @nroCuenta
+		
+		SELECT @idMoneda = idMoneda
+		FROM SUDO.Moneda
+		WHERE descripcion = @moneda
+
+		SELECT @codigoBanco = codigo
+		FROM SUDO.Banco
+		WHERE nombre = @nombreBanco
+
+		SELECT @nroDocCliente = nroDoc
+		FROM SUDO.Cliente
+		WHERE idCliente = @idCliente
+		
+		IF (@saldo > @importe AND @nroDoc = @nroDocCliente)
+			BEGIN 
+				INSERT INTO SUDO.Retiro (idCuenta, idMoneda, codigoBanco, importe, fecha)
+				VALUES(@nroCuenta, @idMoneda , @codigoBanco, @importe, Convert(dateTime, @fecha, 121));
+				UPDATE SUDO.Cuenta SET saldo = @saldo - @importe
+				WHERE (nroCuenta = @nroCuenta)
+			END;
+	END;
+GO
+CREATE PROCEDURE SUDO.CrearDeposito(@idTarjeta bigint, @moneda varchar(255), @importe bigint, @fecha datetime, @nroCuenta bigint) AS 
 	BEGIN
 		DECLARE @saldo numeric(18,2)
 		DECLARE @idMoneda integer
@@ -309,9 +364,11 @@ CREATE PROCEDURE SUDO.CrearDeposito(@idUsuario integer, @idTarjeta bigint, @mone
 		WHERE descripcion = @moneda
 		
 		IF (@saldo > @importe)
-			BEGIN     
+			BEGIN 
 				INSERT INTO SUDO.Deposito (nroCuenta, idTarjeta, idMoneda, importe, fecha)
 				VALUES(@nroCuenta, @idTarjeta, @idMoneda , @importe, Convert(dateTime, @fecha, 121));
+				UPDATE SUDO.Cuenta SET saldo = @importe + @saldo
+				WHERE (nroCuenta = @nroCuenta)    
 			END;
 	END;
 GO
@@ -372,6 +429,12 @@ CREATE PROCEDURE SUDO.GetMonedas AS
 		from SUDO.Moneda
 	END;
 GO
+CREATE PROCEDURE SUDO.GetBancos AS 
+	BEGIN
+		select nombre
+		from SUDO.Banco
+	END;
+GO
 CREATE PROCEDURE SUDO.GetCuentas(@idUsuario integer) AS 
 	BEGIN
 		SELECT nroCuenta, descripcion
@@ -393,25 +456,27 @@ CREATE PROCEDURE SUDO.GetUltimas10Transferencias(@nroCuenta bigint) AS
 GO
 CREATE PROCEDURE SUDO.GetUltimos5Retiros(@nroCuenta bigint) AS 
 	BEGIN
-		select TOP 5 codigo, fecha, importe, idCheque
-		from SUDO.Retiro
-		where idCuenta = @nroCuenta
-		order by fecha desc
+		SELECT idCheque, codigo, c.fecha ,c.importe
+	    FROM SUDO.Cheque c JOIN (SELECT TOP 5 codigo, fecha, importe
+				  		 		 FROM SUDO.Retiro 
+				 				 WHERE idCuenta = @nroCuenta
+								 ORDER BY fecha desc) n
+		ON n.codigo = c.idRetiro
 	END;
 GO
 CREATE PROCEDURE SUDO.GetUltimos5depositos(@nroCuenta bigint) AS 
 	BEGIN
-		select TOP 5 codigo, fecha, importe, SUBSTRING(CONVERT(varchar(20),T.numero), DATALENGTH(CONVERT(varchar(20),T.numero))-3, 4) ult4NumTarj
-		from SUDO.Deposito D join SUDO.Tarjeta T ON (D.idTarjeta = T.idTarjeta)
-		where nroCuenta = @nroCuenta
-		order by fecha desc
+		SELECT TOP 5 codigo, fecha, importe, SUBSTRING(CONVERT(varchar(20),T.numero), DATALENGTH(CONVERT(varchar(20),T.numero))-3, 4) ult4NumTarj
+		FROM SUDO.Deposito D join SUDO.Tarjeta T ON (D.idTarjeta = T.idTarjeta)
+		WHERE nroCuenta = @nroCuenta
+		ORDER BY fecha desc
 	END;
 GO
 CREATE PROCEDURE SUDO.GetSaldo(@nroCuenta bigint) AS 
 	BEGIN
-		select saldo
-		from SUDO.Cuenta
-		where nroCuenta = @nroCuenta
+		SELECT saldo
+		FROM SUDO.Cuenta
+		WHERE nroCuenta = @nroCuenta
 	END;
 GO
 CREATE PROCEDURE SUDO.RegistrarLoginUsuarioInexistente(@userNameIng varchar(255), @userPasswordIng varchar(255), @fechaHora datetime, @descripcion varchar(255)) AS 
@@ -687,7 +752,7 @@ GO
 EXEC SUDO.NuevoTipoCuenta @Nombre = 'Oro', @Duracion = 1456, @Costo = 300     --4 AÑOS
 EXEC SUDO.NuevoTipoCuenta @Nombre = 'Plata', @Duracion = 1092, @Costo = 200   --3 AÑOS
 EXEC SUDO.NuevoTipoCuenta @Nombre = 'Bronce', @Duracion = 728, @Costo = 100   --2 AÑOS
-EXEC SUDO.NuevoTipoCuenta @Nombre = 'Gratuita', @Duracion = 364 , @Costo = 0  --1 AÑO
+EXEC SUDO.NuevoTipoCuenta @Nombre = 'Gratuita', @Duracion = 1820 , @Costo = 0  --5 AÑOS
 
 PRINT 'Tabla SUDO.TipoCuenta creacion de los 4 TipoCuenta'
 GO
@@ -772,13 +837,12 @@ GO
 -----------Migracion Item-----------
 INSERT INTO SUDO.Item(numeroFactura, importe, descripcion)
 	SELECT DISTINCT f.numero, Item_Factura_Importe, Item_Factura_Descr
-	  FROM gd_esquema.Maestra m 
-	  JOIN SUDO.Factura f ON f.numero = m.Factura_Numero
-	 WHERE Item_Factura_Importe IS NOT NULL
---- 220873
+	FROM gd_esquema.Maestra m 
+	JOIN SUDO.Factura f ON f.numero = m.Factura_Numero
+	WHERE Item_Factura_Importe IS NOT NULL
+
 PRINT 'Tabla SUDO.Item Migrada'
 GO
-
 
 -----------Migracion Emisor Tarjeta -----------
 INSERT INTO SUDO.Emisor (descripcion)
@@ -822,9 +886,11 @@ SET IDENTITY_INSERT SUDO.Cuenta OFF
 UPDATE SUDO.Cuenta SET idTipoCuenta = (SELECT idTipoCuenta
 										FROM SUDO.TipoCuenta
 										WHERE (nombre = 'Gratuita')),
-						idMoneda = (SELECT idMoneda
-									FROM SUDO.Moneda
-									WHERE (descripcion = 'Dolar'))
+						fechaCierre = DATEADD (day ,
+											  (SELECT duracionEnDias
+											   FROM SUDO.TipoCuenta
+											   WHERE (nombre = 'Gratuita')) ,
+											   Convert(dateTime, '2016-01-01 00:00:00.000', 121))
 
 -- SELECT * FROM SUDO.Cuenta 
 PRINT 'Tabla SUDO.Cuenta Migrada'
@@ -844,26 +910,11 @@ SET IDENTITY_INSERT SUDO.Banco OFF
 PRINT 'Tabla SUDO.Banco Migrada'
 GO
 
------------Migracion Cheque-----------
-SET IDENTITY_INSERT SUDO.Cheque ON
-
-	INSERT INTO SUDO.Cheque(idCheque, fecha, importe, codigoBanco)
-		SELECT DISTINCT Cheque_Numero, Cheque_Fecha, Cheque_Importe, Banco_Cogido 
-		  FROM gd_esquema.Maestra 
-		 WHERE Cheque_Numero IS NOT NULL
-
-SET IDENTITY_INSERT SUDO.Cheque OFF
-
--- SELECT * FROM SUDO.Cheque 
-PRINT 'Tabla SUDO.Cheque Migrada'
-GO
-
-
 -----------Migracion Retiro-----------
 SET IDENTITY_INSERT SUDO.Retiro ON
 
-	INSERT INTO SUDO.Retiro(codigo, idCheque, fecha, importe, idCuenta)
-		SELECT DISTINCT Retiro_Codigo, Cheque_Numero, Retiro_Fecha, Retiro_Importe, nroCuenta
+	INSERT INTO SUDO.Retiro(codigo, fecha, importe, idCuenta, codigoBanco)
+		SELECT DISTINCT Retiro_Codigo, Retiro_Fecha, Retiro_Importe, nroCuenta, Banco_Cogido
 		  FROM gd_esquema.Maestra m 
 		  JOIN SUDO.Cuenta c ON m.Cuenta_Numero = c.nroCuenta
 		 WHERE Retiro_Codigo IS NOT NULL
@@ -874,11 +925,22 @@ SET IDENTITY_INSERT SUDO.Retiro OFF
 PRINT 'Tabla SUDO.Retiro Migrada'
 GO
 
+-----------Migracion Cheque-----------
+SET IDENTITY_INSERT SUDO.Cheque ON
+
+	INSERT INTO SUDO.Cheque(idCheque, idRetiro ,fecha, importe, codigoBanco)
+		SELECT DISTINCT Cheque_Numero, Retiro_Codigo, Cheque_Fecha, Cheque_Importe, Banco_Cogido 
+		  FROM gd_esquema.Maestra 
+		 WHERE Cheque_Numero IS NOT NULL
+
+SET IDENTITY_INSERT SUDO.Cheque OFF
+
+-- SELECT * FROM SUDO.Cheque 
+PRINT 'Tabla SUDO.Cheque Migrada'
+GO
 
 -----------Migracion Deposito-----------
 SET IDENTITY_INSERT SUDO.Deposito ON
-
--- SELECT INTO @MONEDA SELECT idMoneda FROM SUDO.Moneda WHERE descripcion = 'Dolar';
 
 	INSERT INTO SUDO.Deposito(codigo, fecha, importe, nroCuenta, idTarjeta)
 		SELECT Deposito_Codigo, Deposito_Fecha, Deposito_Importe, nroCuenta, idTarjeta
@@ -889,10 +951,6 @@ SET IDENTITY_INSERT SUDO.Deposito ON
 		  JOIN SUDO.Tarjeta t on m_c.Tarjeta_Numero = t.numero
 
 SET IDENTITY_INSERT SUDO.Deposito OFF
-
-UPDATE SUDO.Deposito SET idMoneda = (SELECT idMoneda
-									FROM SUDO.Moneda
-									WHERE (descripcion = 'Dolar'))
 
 -- SELECT * FROM SUDO.Deposito -- 25.285
 PRINT 'Tabla SUDO.Deposito Migrada'
@@ -954,6 +1012,9 @@ DEALLOCATE CursorCuenta
 
 PRINT 'Saldo de cuentas calculado'
 GO
+
+EXEC SUDO.UdateIdMoneda @descripcionMoneda = 'Dolar'
+GO
 -------------Creacion de AK cliente x mail
 
 USE [GD1C2015]
@@ -979,3 +1040,27 @@ BEGIN
 SELECT idRol, nombreRol FROM SUDO.Rol
 END
 GO 
+
+
+--se declara a lo ultimo por que si se declara antes de migrar los datos a la tabla retiro y antes de migrar la tabla cheque
+--se duplicarian los cheques
+IF OBJECT_ID ('SUDO.OnInsertRetiro', 'TR') IS NOT NULL DROP TRIGGER SUDO.OnInsertRetiro;			
+GO
+CREATE TRIGGER SUDO.OnInsertRetiro
+ON SUDO.Retiro
+AFTER INSERT
+AS 
+	BEGIN
+		DECLARE @idRetiro numeric(18,0)
+		DECLARE @codigoBanco numeric(18,0)
+		DECLARE @idMoneda integer
+		DECLARE @fechaIngreso datetime
+		DECLARE @importe numeric(18,2)
+	
+		SELECT @idRetiro = codigo, @codigoBanco = codigoBanco, @idMoneda=idMoneda, @fechaIngreso = fecha, @importe=importe
+		FROM inserted;
+		
+		INSERT INTO SUDO.Cheque(idRetiro, codigoBanco, idMoneda, fecha, importe)
+		VALUES(@idRetiro, @codigoBanco, @idMoneda, @fechaIngreso, @importe);
+	END;
+GO

@@ -102,7 +102,7 @@ namespace PagoElectronico.Login
                     formDeposito.Show(this);
                     break;
                 case "retiro":
-                    FormRetiro formRetiro = new FormRetiro();
+                    FormRetiro formRetiro = new FormRetiro(idUser);
                     formRetiro.Show(this);
                     break;
                 case "transferencias":

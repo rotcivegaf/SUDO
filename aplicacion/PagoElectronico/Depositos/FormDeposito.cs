@@ -79,7 +79,7 @@ namespace PagoElectronico.Depositos
             }
             else
             {
-                MessageBox.Show("El importe tiene que ser mayor a 1");
+                MessageBox.Show("El importe tiene que ser mayor a 1 y los datos tienen que estar completos");
             }
         }
         
@@ -87,6 +87,7 @@ namespace PagoElectronico.Depositos
         {
             SqlDataReader reader = gestorLogin.ConsultarConIdUsuario(idUser, "SUDO.GetCuentas");
 
+            comboBoxCuenta.Items.Add("");
             for (; reader.Read(); )
             {
                 if (reader["descripcion"].ToString() == "Habilitada")
@@ -98,6 +99,7 @@ namespace PagoElectronico.Depositos
 
         private void llenarMoneda()//llena el comboBox con todas las monedas disponibles
         {
+            comboBoxMoneda.Items.Add("");
             List<SqlParameter> parametrosMoneda = new List<SqlParameter>();
             SqlDataReader readerMoneda = DAO.ConexionDB.ejecReaderProc("SUDO.GetMonedas", parametrosMoneda);
             for (; readerMoneda.Read(); comboBoxMoneda.Items.Add(readerMoneda["descripcion"].ToString())) ;
@@ -106,6 +108,7 @@ namespace PagoElectronico.Depositos
         private void llenarTarjeta()//llena el comboBox con todas las tarjetas asociadas al usuario
         {
             SqlDataReader readerTarjetas = gestorLogin.ConsultarConIdUsuario(idUser, "SUDO.GetTarjetasCliente");
+            comboBoxTarjCred.Items.Add("");
             for (; readerTarjetas.Read(); )
             {
                 int RelsultadoComparacionFechas = DateTime.Compare(Convert.ToDateTime(readerTarjetas["fechaVencimiento"]), configInicial.GetFecha());
@@ -120,9 +123,8 @@ namespace PagoElectronico.Depositos
         private bool hacerDeposito()
         {
             List<SqlParameter> parametros = new List<SqlParameter>();
-            SqlParameter idUsuario = new SqlParameter("@idUsuario", idUser);
-            parametros.Add(idUsuario);
-            SqlParameter idTarjeta = new SqlParameter("@idTarjeta", idTarjetas[comboBoxTarjCred.Items.IndexOf(comboBoxTarjCred.Text)]);
+           
+            SqlParameter idTarjeta = new SqlParameter("@idTarjeta", idTarjetas[comboBoxTarjCred.Items.IndexOf(comboBoxTarjCred.Text)-1]);
             parametros.Add(idTarjeta);
             SqlParameter moneda = new SqlParameter("@moneda", comboBoxMoneda.Text);
             parametros.Add(moneda);
@@ -134,11 +136,13 @@ namespace PagoElectronico.Depositos
             parametros.Add(cuenta);
             int res = DAO.ConexionDB.ejecNonQueryProc("SUDO.CrearDeposito", parametros);
 
-            return res != 0; 
+            return res != 0 && res != -1; 
         }
 
         private bool validarDatos()
         {
+            if (comboBoxCuenta.Text == "" || comboBoxMoneda.Text == "" || comboBoxTarjCred.Text == "")
+                return false;
             bool importeMayor1 = Convert.ToDecimal(textBoxImporte.Text) > 1;
 
             return importeMayor1;
@@ -146,9 +150,9 @@ namespace PagoElectronico.Depositos
 
         private void limpiarFrom()
         {
-            comboBoxCuenta.ResetText();
-            comboBoxMoneda.ResetText();
-            comboBoxTarjCred.ResetText();
+            comboBoxCuenta.SelectedItem = "";
+            comboBoxMoneda.SelectedItem = "";
+            comboBoxTarjCred.SelectedItem = "";
             textBoxImporte.ResetText();
         }
     }
