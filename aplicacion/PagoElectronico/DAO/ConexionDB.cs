@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Configuration;
+using System.Collections.Specialized;
+
+using PagoElectronico.Utils;
 
 namespace PagoElectronico.DAO
 {
@@ -14,9 +18,9 @@ namespace PagoElectronico.DAO
 
         public static SqlConnection conectarDB()
         {
-            string datosConexionDB = @"Server=localhost\SQLSERVER2008;Database=GD1C2015;User Id=gd;Password=gd2015;";
+            ConfigInicial configInicial = new ConfigInicial();
 
-            conexionDB = new SqlConnection(datosConexionDB);
+            conexionDB = new SqlConnection(configInicial.GetDatosConexion());
             if (conexionDB.State != System.Data.ConnectionState.Open)
             {
                 conexionDB.Open();

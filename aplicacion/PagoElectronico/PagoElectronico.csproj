@@ -130,6 +130,7 @@
       <DependentUpon>FormRolesFuncionalidades.cs</DependentUpon>
     </Compile>
     <Compile Include="Login\GestorLogin.cs" />
+    <Compile Include="Utils\ConfigInicial.cs" />
     <Compile Include="Services\RolServices.cs" />
     <Compile Include="Services\UsuarioServices.cs" />
     <Compile Include="Tarjetas\FormNuevaTarjeta.cs">
@@ -227,7 +228,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="configuracionInicial.config" />
+    <None Include="App.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

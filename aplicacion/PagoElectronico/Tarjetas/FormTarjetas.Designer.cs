@@ -36,11 +36,11 @@
             this.FechaVencimiento = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Emisor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Estado = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.botonVolver = new System.Windows.Forms.Button();
+            this.botonDesasociar = new System.Windows.Forms.Button();
             this.leyendaCliId = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.botonActualizar = new System.Windows.Forms.Button();
+            this.botonAsociar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DGTarjetas)).BeginInit();
@@ -113,25 +113,25 @@
             this.Estado.Name = "Estado";
             this.Estado.ReadOnly = true;
             // 
-            // button1
+            // botonVolver
             // 
-            this.button1.Location = new System.Drawing.Point(21, 323);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 14;
-            this.button1.Text = "Volver";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.botonVolver.Location = new System.Drawing.Point(21, 323);
+            this.botonVolver.Name = "botonVolver";
+            this.botonVolver.Size = new System.Drawing.Size(75, 23);
+            this.botonVolver.TabIndex = 14;
+            this.botonVolver.Text = "Volver";
+            this.botonVolver.UseVisualStyleBackColor = true;
+            this.botonVolver.Click += new System.EventHandler(this.botonVolver_Click);
             // 
-            // button3
+            // botonDesasociar
             // 
-            this.button3.Location = new System.Drawing.Point(197, 12);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(185, 23);
-            this.button3.TabIndex = 15;
-            this.button3.Text = "Desasociar Tarjeta Seleccionada";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.botonDesasociar.Location = new System.Drawing.Point(197, 12);
+            this.botonDesasociar.Name = "botonDesasociar";
+            this.botonDesasociar.Size = new System.Drawing.Size(185, 23);
+            this.botonDesasociar.TabIndex = 15;
+            this.botonDesasociar.Text = "Desasociar Tarjeta Seleccionada";
+            this.botonDesasociar.UseVisualStyleBackColor = true;
+            this.botonDesasociar.Click += new System.EventHandler(this.botonDesasociar_Click);
             // 
             // leyendaCliId
             // 
@@ -143,25 +143,25 @@
             this.leyendaCliId.TabIndex = 16;
             this.leyendaCliId.Text = "Tarjetas";
             // 
-            // button4
+            // botonActualizar
             // 
-            this.button4.Location = new System.Drawing.Point(91, 45);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(69, 23);
-            this.button4.TabIndex = 17;
-            this.button4.Text = "Actualizar";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.botonActualizar.Location = new System.Drawing.Point(91, 45);
+            this.botonActualizar.Name = "botonActualizar";
+            this.botonActualizar.Size = new System.Drawing.Size(69, 23);
+            this.botonActualizar.TabIndex = 17;
+            this.botonActualizar.Text = "Actualizar";
+            this.botonActualizar.UseVisualStyleBackColor = true;
+            this.botonActualizar.Click += new System.EventHandler(this.botonActualizar_Click);
             // 
-            // button2
+            // botonAsociar
             // 
-            this.button2.Location = new System.Drawing.Point(21, 12);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(159, 23);
-            this.button2.TabIndex = 18;
-            this.button2.Text = "Asociar Nueva Tarjeta";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.botonAsociar.Location = new System.Drawing.Point(21, 12);
+            this.botonAsociar.Name = "botonAsociar";
+            this.botonAsociar.Size = new System.Drawing.Size(159, 23);
+            this.botonAsociar.TabIndex = 18;
+            this.botonAsociar.Text = "Asociar Nueva Tarjeta";
+            this.botonAsociar.UseVisualStyleBackColor = true;
+            this.botonAsociar.Click += new System.EventHandler(this.botonAsociar_Click);
             // 
             // label1
             // 
@@ -188,11 +188,11 @@
             this.ClientSize = new System.Drawing.Size(685, 358);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button4);
+            this.Controls.Add(this.botonAsociar);
+            this.Controls.Add(this.botonActualizar);
             this.Controls.Add(this.leyendaCliId);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.botonDesasociar);
+            this.Controls.Add(this.botonVolver);
             this.Controls.Add(this.DGTarjetas);
             this.Name = "FormTarjetas";
             this.Text = "FormTarjetas";
@@ -206,11 +206,11 @@
         #endregion
 
         private System.Windows.Forms.DataGridView DGTarjetas;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button botonVolver;
+        private System.Windows.Forms.Button botonDesasociar;
         private System.Windows.Forms.Label leyendaCliId;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button botonActualizar;
+        private System.Windows.Forms.Button botonAsociar;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;

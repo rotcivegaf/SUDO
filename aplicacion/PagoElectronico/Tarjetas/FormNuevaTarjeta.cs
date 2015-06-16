@@ -9,72 +9,21 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 
 using PagoElectronico.DAO;
+using PagoElectronico.Utils;
 
 namespace PagoElectronico.Tarjetas
 {
     public partial class FormNuevaTarjeta : Form
     {
         int idUser;
+        ConfigInicial configInicial = new ConfigInicial();
 
         public FormNuevaTarjeta(int userId)
         {
             idUser = userId;
             InitializeComponent();
-            List<SqlParameter> parametros = new List<SqlParameter>();
-            SqlDataReader readerEmisores = DAO.ConexionDB.ejecReaderProc("SUDO.GetEmisores", parametros);
-
-            for (; readerEmisores.Read(); EmisorTarjetaCombobox.Items.Add(readerEmisores["descripcion"].ToString())) ;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Owner.Show();
-            this.Hide();
-        }
-
-        private void EmisorTarjetaCombobox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            List<SqlParameter> parametros = new List<SqlParameter>();
-            SqlParameter paramentroNumero = new SqlParameter("@numero", textBox1.Text);
-            parametros.Add(paramentroNumero);
-            bool ExisteNumeroTarjeta = DAO.ConexionDB.ejecNonQueryProc("SUDO.ExisteNumeroTarjeta", parametros) != 1;
-
-            if ((ExisteNumeroTarjeta) && (textBox2.Text != "") && (textBox1.Text != "") && (EmisorTarjetaCombobox.Text != ""))
-            {
-                List<SqlParameter> parametrosAsociar = new List<SqlParameter>();
-                SqlParameter numero = new SqlParameter("@numero", textBox1.Text);
-                parametrosAsociar.Add(numero);
-                SqlParameter emisor = new SqlParameter("@emisorDesc", EmisorTarjetaCombobox.Text);
-                parametrosAsociar.Add(emisor);
-                SqlParameter fechaEmision = new SqlParameter("@fechaEmision", dateTimePickerUM.Value);
-                parametrosAsociar.Add(fechaEmision);
-                SqlParameter fechaVencimiento = new SqlParameter("@fechaVencimiento", dateTimePicker1.Value);
-                parametrosAsociar.Add(fechaVencimiento);
-                SqlParameter codigoSeguridad = new SqlParameter("@codigoSeguridad", textBox2.Text);
-                parametrosAsociar.Add(codigoSeguridad);
-                SqlParameter codigoIdUser = new SqlParameter("@idUser", idUser);
-                parametrosAsociar.Add(codigoIdUser);
-                DAO.ConexionDB.ejecScalarProc("SUDO.AsociarTarjeta", parametrosAsociar);
-            }
-            else
-            {
-                MessageBox.Show("Numero de tarjeta existente o datos incompletos");
-            }
-            textBox1.ResetText();
-            textBox2.ResetText();
-            EmisorTarjetaCombobox.ResetText();
-            dateTimePicker1.ResetText();
-            dateTimePickerUM.ResetText();            
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
+            limpiarFrom();
+            llenarComboEmisores();
         }
 
         private void FormNuevaTarjeta_Load(object sender, EventArgs e)
@@ -82,23 +31,7 @@ namespace PagoElectronico.Tarjetas
 
         }
 
-        private void dateTimePickerUM_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        private void textBoxNumero_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.Enter || e.KeyData == Keys.Tab)
             {
@@ -106,7 +39,8 @@ namespace PagoElectronico.Tarjetas
                 SelectNextControl(ActiveControl, true, true, true, true);
             }
         }
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+
+        private void textBoxNumero_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!(char.IsNumber(e.KeyChar)) && (e.KeyChar != (char)Keys.Back))
             {
@@ -114,6 +48,74 @@ namespace PagoElectronico.Tarjetas
                 e.Handled = true;
                 return;
             }
+        }
+
+        private void botonCancelar_Click(object sender, EventArgs e)
+        {
+            Owner.Show();
+            this.Hide();
+        }
+
+        private void botonAsociar_Click(object sender, EventArgs e)
+        {
+            if ((textBoxCod.Text != "") && (textBoxNumero.Text != "") && (comboBoxEmisor.Text != ""))
+            {
+                if (asociarTarjeta())
+                {
+                    limpiarFrom();
+                }
+                else
+                {
+                    MessageBox.Show("Numero de tarjeta existente");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Datos incompletos");
+            }
+        }
+
+        private void botonLimpiar_Click(object sender, EventArgs e)
+        {
+            limpiarFrom();
+        }
+
+        private void llenarComboEmisores()
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>();
+            SqlDataReader readerEmisores = DAO.ConexionDB.ejecReaderProc("SUDO.GetEmisores", parametros);
+
+            for (; readerEmisores.Read(); comboBoxEmisor.Items.Add(readerEmisores["descripcion"].ToString())) ;
+        }
+
+        private void limpiarFrom()
+        {
+            textBoxNumero.ResetText();
+            textBoxCod.ResetText();
+            comboBoxEmisor.Text = "";
+            dateTimePickerVencimiento.Value = configInicial.GetFecha();
+            dateTimePickerEmision.Value = configInicial.GetFecha();
+        }
+
+        private bool asociarTarjeta()
+        {
+            List<SqlParameter> parametrosAsociar = new List<SqlParameter>();
+            SqlParameter numero = new SqlParameter("@numero", textBoxNumero.Text);
+            parametrosAsociar.Add(numero);
+            SqlParameter emisor = new SqlParameter("@emisorDesc", comboBoxEmisor.Text);
+            parametrosAsociar.Add(emisor);
+            SqlParameter fechaEmision = new SqlParameter("@fechaEmision", dateTimePickerEmision.Value);
+            parametrosAsociar.Add(fechaEmision);
+            SqlParameter fechaVencimiento = new SqlParameter("@fechaVencimiento", dateTimePickerVencimiento.Value);
+            parametrosAsociar.Add(fechaVencimiento);
+            SqlParameter codigoSeguridad = new SqlParameter("@codigoSeguridad", textBoxCod.Text);
+            parametrosAsociar.Add(codigoSeguridad);
+            SqlParameter codigoIdUser = new SqlParameter("@idUser", idUser);
+            parametrosAsociar.Add(codigoIdUser);
+
+            int res = DAO.ConexionDB.ejecNonQueryProc("SUDO.AsociarTarjeta", parametrosAsociar);
+
+            return res != 0;
         }
     }
 }

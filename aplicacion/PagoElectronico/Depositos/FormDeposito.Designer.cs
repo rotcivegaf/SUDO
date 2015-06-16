@@ -28,56 +28,54 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.comboBoxCuenta = new System.Windows.Forms.ComboBox();
+            this.comboBoxMoneda = new System.Windows.Forms.ComboBox();
+            this.comboBoxTarjCred = new System.Windows.Forms.ComboBox();
+            this.textBoxImporte = new System.Windows.Forms.TextBox();
             this.emisorTarjetaLabel = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.botonCancelar = new System.Windows.Forms.Button();
+            this.botonDepositar = new System.Windows.Forms.Button();
+            this.botonLimpiar = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // comboBox1
+            // comboBoxCuenta
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(76, 4);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(212, 21);
-            this.comboBox1.TabIndex = 5;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.comboBoxCuenta.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxCuenta.FormattingEnabled = true;
+            this.comboBoxCuenta.Location = new System.Drawing.Point(76, 4);
+            this.comboBoxCuenta.Name = "comboBoxCuenta";
+            this.comboBoxCuenta.Size = new System.Drawing.Size(212, 21);
+            this.comboBoxCuenta.TabIndex = 5;
             // 
-            // comboBox2
+            // comboBoxMoneda
             // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(76, 55);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(212, 21);
-            this.comboBox2.TabIndex = 8;
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
+            this.comboBoxMoneda.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxMoneda.FormattingEnabled = true;
+            this.comboBoxMoneda.Location = new System.Drawing.Point(76, 55);
+            this.comboBoxMoneda.Name = "comboBoxMoneda";
+            this.comboBoxMoneda.Size = new System.Drawing.Size(212, 21);
+            this.comboBoxMoneda.TabIndex = 8;
             // 
-            // comboBox3
+            // comboBoxTarjCred
             // 
-            this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(76, 82);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(212, 21);
-            this.comboBox3.TabIndex = 10;
+            this.comboBoxTarjCred.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxTarjCred.FormattingEnabled = true;
+            this.comboBoxTarjCred.Location = new System.Drawing.Point(76, 82);
+            this.comboBoxTarjCred.Name = "comboBoxTarjCred";
+            this.comboBoxTarjCred.Size = new System.Drawing.Size(212, 21);
+            this.comboBoxTarjCred.TabIndex = 10;
             // 
-            // textBox1
+            // textBoxImporte
             // 
-            this.textBox1.Location = new System.Drawing.Point(76, 31);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(208, 20);
-            this.textBox1.TabIndex = 12;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
-            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            this.textBoxImporte.Location = new System.Drawing.Point(76, 31);
+            this.textBoxImporte.Name = "textBoxImporte";
+            this.textBoxImporte.Size = new System.Drawing.Size(208, 20);
+            this.textBoxImporte.TabIndex = 12;
+            this.textBoxImporte.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxImporte_KeyDown);
+            this.textBoxImporte.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxImporte_KeyPress);
             // 
             // emisorTarjetaLabel
             // 
@@ -115,41 +113,52 @@
             this.label7.TabIndex = 17;
             this.label7.Text = "Tarj Cred:";
             // 
-            // button1
+            // botonCancelar
             // 
-            this.button1.Location = new System.Drawing.Point(15, 124);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 19;
-            this.button1.Text = "Cancelar";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.botonCancelar.Location = new System.Drawing.Point(15, 124);
+            this.botonCancelar.Name = "botonCancelar";
+            this.botonCancelar.Size = new System.Drawing.Size(75, 23);
+            this.botonCancelar.TabIndex = 19;
+            this.botonCancelar.Text = "Cancelar";
+            this.botonCancelar.UseVisualStyleBackColor = true;
+            this.botonCancelar.Click += new System.EventHandler(this.botonCancelar_Click);
             // 
-            // button2
+            // botonDepositar
             // 
-            this.button2.Location = new System.Drawing.Point(209, 124);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 20;
-            this.button2.Text = "Depositar";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.botonDepositar.Location = new System.Drawing.Point(209, 124);
+            this.botonDepositar.Name = "botonDepositar";
+            this.botonDepositar.Size = new System.Drawing.Size(75, 23);
+            this.botonDepositar.TabIndex = 20;
+            this.botonDepositar.Text = "Depositar";
+            this.botonDepositar.UseVisualStyleBackColor = true;
+            this.botonDepositar.Click += new System.EventHandler(this.botonDepositar_Click);
+            // 
+            // botonLimpiar
+            // 
+            this.botonLimpiar.Location = new System.Drawing.Point(113, 124);
+            this.botonLimpiar.Name = "botonLimpiar";
+            this.botonLimpiar.Size = new System.Drawing.Size(75, 23);
+            this.botonLimpiar.TabIndex = 21;
+            this.botonLimpiar.Text = "Limpiar";
+            this.botonLimpiar.UseVisualStyleBackColor = true;
+            this.botonLimpiar.Click += new System.EventHandler(this.botonLimpiar_Click);
             // 
             // FormDeposito
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(302, 162);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.botonLimpiar);
+            this.Controls.Add(this.botonDepositar);
+            this.Controls.Add(this.botonCancelar);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.emisorTarjetaLabel);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.comboBox3);
-            this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.textBoxImporte);
+            this.Controls.Add(this.comboBoxTarjCred);
+            this.Controls.Add(this.comboBoxMoneda);
+            this.Controls.Add(this.comboBoxCuenta);
             this.Name = "FormDeposito";
             this.Text = "Depositos";
             this.Load += new System.EventHandler(this.FormDeposito_Load);
@@ -160,15 +169,16 @@
 
         #endregion
 
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.ComboBox comboBox3;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.ComboBox comboBoxCuenta;
+        private System.Windows.Forms.ComboBox comboBoxMoneda;
+        private System.Windows.Forms.ComboBox comboBoxTarjCred;
+        private System.Windows.Forms.TextBox textBoxImporte;
         private System.Windows.Forms.Label emisorTarjetaLabel;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button botonCancelar;
+        private System.Windows.Forms.Button botonDepositar;
+        private System.Windows.Forms.Button botonLimpiar;
     }
 }

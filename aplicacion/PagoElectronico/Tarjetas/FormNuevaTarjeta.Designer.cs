@@ -29,17 +29,18 @@
         private void InitializeComponent()
         {
             this.emisorTarjetaLabel = new System.Windows.Forms.Label();
-            this.EmisorTarjetaCombobox = new System.Windows.Forms.ComboBox();
+            this.comboBoxEmisor = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.dateTimePickerUM = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.textBoxNumero = new System.Windows.Forms.TextBox();
+            this.textBoxCod = new System.Windows.Forms.TextBox();
+            this.dateTimePickerEmision = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePickerVencimiento = new System.Windows.Forms.DateTimePicker();
+            this.botonCancelar = new System.Windows.Forms.Button();
+            this.botonAsociar = new System.Windows.Forms.Button();
+            this.botonLimpiar = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // emisorTarjetaLabel
@@ -51,15 +52,14 @@
             this.emisorTarjetaLabel.TabIndex = 4;
             this.emisorTarjetaLabel.Text = "Emisor:";
             // 
-            // EmisorTarjetaCombobox
+            // comboBoxEmisor
             // 
-            this.EmisorTarjetaCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.EmisorTarjetaCombobox.FormattingEnabled = true;
-            this.EmisorTarjetaCombobox.Location = new System.Drawing.Point(108, 38);
-            this.EmisorTarjetaCombobox.Name = "EmisorTarjetaCombobox";
-            this.EmisorTarjetaCombobox.Size = new System.Drawing.Size(208, 21);
-            this.EmisorTarjetaCombobox.TabIndex = 5;
-            this.EmisorTarjetaCombobox.SelectedIndexChanged += new System.EventHandler(this.EmisorTarjetaCombobox_SelectedIndexChanged);
+            this.comboBoxEmisor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxEmisor.FormattingEnabled = true;
+            this.comboBoxEmisor.Location = new System.Drawing.Point(108, 38);
+            this.comboBoxEmisor.Name = "comboBoxEmisor";
+            this.comboBoxEmisor.Size = new System.Drawing.Size(208, 21);
+            this.comboBoxEmisor.TabIndex = 5;
             // 
             // label1
             // 
@@ -97,76 +97,83 @@
             this.label4.TabIndex = 9;
             this.label4.Text = "Cod Seguridad:";
             // 
-            // textBox1
+            // textBoxNumero
             // 
-            this.textBox1.Location = new System.Drawing.Point(108, 12);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(208, 20);
-            this.textBox1.TabIndex = 10;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
-            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            this.textBoxNumero.Location = new System.Drawing.Point(108, 12);
+            this.textBoxNumero.Name = "textBoxNumero";
+            this.textBoxNumero.Size = new System.Drawing.Size(208, 20);
+            this.textBoxNumero.TabIndex = 10;
+            this.textBoxNumero.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxNumero_KeyDown);
+            this.textBoxNumero.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxNumero_KeyPress);
             // 
-            // textBox2
+            // textBoxCod
             // 
-            this.textBox2.Location = new System.Drawing.Point(108, 117);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(208, 20);
-            this.textBox2.TabIndex = 11;
-            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.textBoxCod.Location = new System.Drawing.Point(108, 117);
+            this.textBoxCod.Name = "textBoxCod";
+            this.textBoxCod.Size = new System.Drawing.Size(208, 20);
+            this.textBoxCod.TabIndex = 11;
             // 
-            // dateTimePickerUM
+            // dateTimePickerEmision
             // 
-            this.dateTimePickerUM.Location = new System.Drawing.Point(108, 65);
-            this.dateTimePickerUM.Name = "dateTimePickerUM";
-            this.dateTimePickerUM.Size = new System.Drawing.Size(208, 20);
-            this.dateTimePickerUM.TabIndex = 16;
-            this.dateTimePickerUM.ValueChanged += new System.EventHandler(this.dateTimePickerUM_ValueChanged);
+            this.dateTimePickerEmision.Location = new System.Drawing.Point(108, 65);
+            this.dateTimePickerEmision.Name = "dateTimePickerEmision";
+            this.dateTimePickerEmision.Size = new System.Drawing.Size(208, 20);
+            this.dateTimePickerEmision.TabIndex = 16;
             // 
-            // dateTimePicker1
+            // dateTimePickerVencimiento
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(108, 91);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(208, 20);
-            this.dateTimePicker1.TabIndex = 17;
-            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
+            this.dateTimePickerVencimiento.Location = new System.Drawing.Point(108, 91);
+            this.dateTimePickerVencimiento.Name = "dateTimePickerVencimiento";
+            this.dateTimePickerVencimiento.Size = new System.Drawing.Size(208, 20);
+            this.dateTimePickerVencimiento.TabIndex = 17;
             // 
-            // button1
+            // botonCancelar
             // 
-            this.button1.Location = new System.Drawing.Point(64, 154);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 18;
-            this.button1.Text = "Cancelar";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.botonCancelar.Location = new System.Drawing.Point(12, 154);
+            this.botonCancelar.Name = "botonCancelar";
+            this.botonCancelar.Size = new System.Drawing.Size(75, 23);
+            this.botonCancelar.TabIndex = 18;
+            this.botonCancelar.Text = "Cancelar";
+            this.botonCancelar.UseVisualStyleBackColor = true;
+            this.botonCancelar.Click += new System.EventHandler(this.botonCancelar_Click);
             // 
-            // button2
+            // botonAsociar
             // 
-            this.button2.Location = new System.Drawing.Point(211, 154);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 19;
-            this.button2.Text = "Asociar";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.botonAsociar.Location = new System.Drawing.Point(238, 154);
+            this.botonAsociar.Name = "botonAsociar";
+            this.botonAsociar.Size = new System.Drawing.Size(75, 23);
+            this.botonAsociar.TabIndex = 19;
+            this.botonAsociar.Text = "Asociar";
+            this.botonAsociar.UseVisualStyleBackColor = true;
+            this.botonAsociar.Click += new System.EventHandler(this.botonAsociar_Click);
+            // 
+            // botonLimpiar
+            // 
+            this.botonLimpiar.Location = new System.Drawing.Point(119, 154);
+            this.botonLimpiar.Name = "botonLimpiar";
+            this.botonLimpiar.Size = new System.Drawing.Size(75, 23);
+            this.botonLimpiar.TabIndex = 20;
+            this.botonLimpiar.Text = "Limpiar";
+            this.botonLimpiar.UseVisualStyleBackColor = true;
+            this.botonLimpiar.Click += new System.EventHandler(this.botonLimpiar_Click);
             // 
             // FormNuevaTarjeta
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(325, 186);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.dateTimePickerUM);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.botonLimpiar);
+            this.Controls.Add(this.botonAsociar);
+            this.Controls.Add(this.botonCancelar);
+            this.Controls.Add(this.dateTimePickerVencimiento);
+            this.Controls.Add(this.dateTimePickerEmision);
+            this.Controls.Add(this.textBoxCod);
+            this.Controls.Add(this.textBoxNumero);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.EmisorTarjetaCombobox);
+            this.Controls.Add(this.comboBoxEmisor);
             this.Controls.Add(this.emisorTarjetaLabel);
             this.Name = "FormNuevaTarjeta";
             this.Text = "Asociar Nueva Tarjeta";
@@ -179,16 +186,17 @@
         #endregion
 
         private System.Windows.Forms.Label emisorTarjetaLabel;
-        private System.Windows.Forms.ComboBox EmisorTarjetaCombobox;
+        private System.Windows.Forms.ComboBox comboBoxEmisor;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.DateTimePicker dateTimePickerUM;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox textBoxNumero;
+        private System.Windows.Forms.TextBox textBoxCod;
+        private System.Windows.Forms.DateTimePicker dateTimePickerEmision;
+        private System.Windows.Forms.DateTimePicker dateTimePickerVencimiento;
+        private System.Windows.Forms.Button botonCancelar;
+        private System.Windows.Forms.Button botonAsociar;
+        private System.Windows.Forms.Button botonLimpiar;
     }
 }

@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 using PagoElectronico.DAO;
 using PagoElectronico.Dominio;
-//using PagoElectronico;
+using PagoElectronico.Utils;
 
 namespace PagoElectronico.Login
 {
@@ -15,10 +15,11 @@ namespace PagoElectronico.Login
     {
         public bool VerificarUsuario(Usuario usuario, string userName, string password)
         {
+            ConfigInicial configInicial = new ConfigInicial();
             List<SqlParameter> parametros = new List<SqlParameter>();
             parametros.Add(new SqlParameter("@userNameIng", userName));
             parametros.Add(new SqlParameter("@userPasswordIng", password));
-            parametros.Add(new SqlParameter("@fechaHora", DateTime.Now));
+            parametros.Add(new SqlParameter("@fechaHora", configInicial.GetFecha()));
 
             if (usuario.userName == null)
             {
