@@ -72,7 +72,7 @@
             // 
             this.textBoxImporte.Location = new System.Drawing.Point(76, 31);
             this.textBoxImporte.Name = "textBoxImporte";
-            this.textBoxImporte.Size = new System.Drawing.Size(208, 20);
+            this.textBoxImporte.Size = new System.Drawing.Size(212, 20);
             this.textBoxImporte.TabIndex = 12;
             this.textBoxImporte.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxImporte_KeyDown);
             this.textBoxImporte.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxImporte_KeyPress);

@@ -106,7 +106,7 @@ namespace PagoElectronico.Login
                     formRetiro.Show(this);
                     break;
                 case "transferencias":
-                    FormTransferencia formTransferencia = new FormTransferencia();
+                    FormTransferencia formTransferencia = new FormTransferencia(idUser);
                     formTransferencia.Show(this);
                     break;
                 case "facturacion":

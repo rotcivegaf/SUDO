@@ -54,7 +54,7 @@ CREATE TABLE SUDO.Banco (
 	direccion 	varchar(255)
 );
 
------------Tabla EstadoCuenta-----------
+-----------Tabla Emisor-----------
 CREATE TABLE SUDO.Emisor ( 
 	idEmisor 		integer IDENTITY(1,1) PRIMARY KEY,
 	descripcion 	varchar(255),
@@ -283,6 +283,7 @@ IF OBJECT_ID ('SUDO.GetBancos') IS NOT NULL DROP PROCEDURE SUDO.GetBancos
 IF OBJECT_ID ('SUDO.GetTarjetasCliente') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetasCliente
 IF OBJECT_ID ('SUDO.CrearDeposito') IS NOT NULL DROP PROCEDURE SUDO.CrearDeposito
 IF OBJECT_ID ('SUDO.CrearRetiro') IS NOT NULL DROP PROCEDURE SUDO.CrearRetiro
+IF OBJECT_ID ('SUDO.CrearTransferencia') IS NOT NULL DROP PROCEDURE SUDO.CrearTransferencia
 IF OBJECT_ID ('SUDO.SP_LISTAR_ROLES') IS NOT NULL DROP PROCEDURE SUDO.SP_LISTAR_ROLES
 IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO
 IF OBJECT_ID ('SUDO.UdateIdMoneda') IS NOT NULL DROP PROCEDURE SUDO.UdateIdMoneda
@@ -315,6 +316,42 @@ CREATE PROCEDURE SUDO.DesasociarTarjeta(@idTarjeta bigint) AS
 		UPDATE SUDO.Tarjeta
 		SET estado = 0
 		WHERE idTarjeta = @idTarjeta
+	END;
+GO
+CREATE PROCEDURE SUDO.CrearTransferencia(@nroCuentaOrigen bigint, @importe bigint, @moneda varchar(255), @nroCuentaDest bigint, @fecha datetime) AS 
+	BEGIN
+		DECLARE @saldoOrigen numeric(18,2)
+		DECLARE @saldoDest numeric(18,2)
+		DECLARE @costo numeric(18,2)
+		DECLARE @idMoneda integer
+		DECLARE @codigoBanco numeric(18,0)
+		DECLARE @nroDocCliente numeric(18,0)
+		DECLARE @idCliente integer
+
+		SELECT @saldoOrigen = saldo, @costo = t.costo 
+		FROM SUDO.Cuenta c JOIN SUDO.TipoCuenta t ON c.idTipoCuenta = t.idTipoCuenta
+		WHERE (nroCuenta = @nroCuentaOrigen)
+
+		SELECT @saldoDest = saldo
+		FROM SUDO.Cuenta c JOIN SUDO.EstadoCuenta e ON c.idEstadoCuenta = e.idEstadoCuenta
+		WHERE (c.nroCuenta = @nroCuentaDest)AND(e.descripcion != 'Cerrada')AND (e.descripcion != 'Pendiente de activacion')
+
+		SELECT @idMoneda = idMoneda
+		FROM SUDO.Moneda
+		WHERE descripcion = @moneda
+
+		IF EXISTS(SELECT t.nombre
+		     	  FROM SUDO.Cuenta c JOIN SUDO.TipoCuenta t ON c.idTipoCuenta = t.idTipoCuenta
+				  WHERE nroCuenta = @nroCuentaOrigen)
+			IF(@saldoOrigen > @importe)				 
+				BEGIN 
+					INSERT INTO SUDO.Transferencia (nroCuentaDest, nroCuentaOrigen, idMoneda, costo, importe, fecha)
+					VALUES(@nroCuentaDest, @nroCuentaOrigen , @idMoneda, @costo, @importe ,Convert(dateTime, @fecha, 121));
+					UPDATE SUDO.Cuenta SET saldo = @saldoOrigen - @importe - @costo
+					WHERE (nroCuenta = @nroCuentaOrigen)
+					UPDATE SUDO.Cuenta SET saldo = @saldoDest + @importe
+					WHERE (nroCuenta = @nroCuentaDest)
+				END;
 	END;
 GO
 CREATE PROCEDURE SUDO.CrearRetiro(@nroCuenta bigint, @fecha datetime, @moneda varchar(255), @importe bigint, @nombreBanco varchar(255), @nroDoc numeric(18,0)) AS 
