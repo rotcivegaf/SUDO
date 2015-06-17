@@ -140,6 +140,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox1);
             this.Name = "FormListado";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Listados";
             this.Load += new System.EventHandler(this.FormListado_Load);
             this.ResumeLayout(false);

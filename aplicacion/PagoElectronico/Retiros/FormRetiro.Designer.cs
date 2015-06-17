@@ -182,6 +182,7 @@
             this.Controls.Add(this.textBoxImporte);
             this.Controls.Add(this.label5);
             this.Name = "FormRetiro";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Retiros";
             this.Load += new System.EventHandler(this.FormRetiro_Load);
             this.ResumeLayout(false);

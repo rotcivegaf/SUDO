@@ -176,6 +176,7 @@
             this.Controls.Add(this.comboBoxEmisor);
             this.Controls.Add(this.emisorTarjetaLabel);
             this.Name = "FormNuevaTarjeta";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Asociar Nueva Tarjeta";
             this.Load += new System.EventHandler(this.FormNuevaTarjeta_Load);
             this.ResumeLayout(false);

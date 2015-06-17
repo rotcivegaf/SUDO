@@ -325,6 +325,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "FormConsultaSaldo";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Consulta de saldos";
             this.Load += new System.EventHandler(this.FormConsultaSaldo_Load);
             ((System.ComponentModel.ISupportInitialize)(this.DGRetiros)).EndInit();
