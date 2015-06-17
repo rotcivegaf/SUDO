@@ -24,10 +24,10 @@ namespace PagoElectronico.ABM_Rol
             dataGridRoles.DataSource = findAll();         
         }
         
-        private List<Roles> findAll()
+        private List<Rol> findAll()
         {
-            var roles = new List<Roles>();
-            Roles rol = null;
+            var roles = new List<Rol>();
+            Rol rol = null;
 
             try
             {
@@ -38,7 +38,7 @@ namespace PagoElectronico.ABM_Rol
 
                 while (myReader.Read())
                 {
-                    rol = new Roles(myReader);
+                    rol = new Rol(myReader);
                     roles.Add(rol);
                 }
 
@@ -82,7 +82,7 @@ namespace PagoElectronico.ABM_Rol
 
         private void buscar_Click(object sender, EventArgs e)
         {
-            dataGridRoles.DataSource = findAll();  
+            dataGridRoles.DataSource = findAll();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -107,6 +107,12 @@ namespace PagoElectronico.ABM_Rol
                     MessageBox.Show("Eliminar");
                 }
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Owner.Show();
+            this.Hide();
         }
 
 

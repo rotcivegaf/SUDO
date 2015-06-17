@@ -1,4 +1,4 @@
-USE [GD1C2015]
+﻿USE [GD1C2015]
 
 GO
 
@@ -280,6 +280,7 @@ IF OBJECT_ID ('SUDO.AsociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.AsociarTarj
 IF OBJECT_ID ('SUDO.DesasociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.DesasociarTarjeta
 IF OBJECT_ID ('SUDO.GetMonedas') IS NOT NULL DROP PROCEDURE SUDO.GetMonedas
 IF OBJECT_ID ('SUDO.GetBancos') IS NOT NULL DROP PROCEDURE SUDO.GetBancos
+IF OBJECT_ID ('SUDO.GetTiposCuenta') IS NOT NULL DROP PROCEDURE SUDO.GetTiposCuenta
 IF OBJECT_ID ('SUDO.GetTarjetasCliente') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetasCliente
 IF OBJECT_ID ('SUDO.CrearDeposito') IS NOT NULL DROP PROCEDURE SUDO.CrearDeposito
 IF OBJECT_ID ('SUDO.CrearRetiro') IS NOT NULL DROP PROCEDURE SUDO.CrearRetiro
@@ -440,6 +441,12 @@ CREATE PROCEDURE SUDO.GetTarjetas(@idUsuario integer) AS
 	  		  JOIN SUDO.Tarjeta c  ON idCliente.idCliente = c.idCliente) H
 	    JOIN SUDO.Emisor E ON E.idEmisor = H.idEmisor
 	    WHERE estado = 1
+	END;
+GO
+CREATE PROCEDURE SUDO.GetTiposCuenta AS 
+	BEGIN
+		SELECT idTipoCuenta, nombre
+	  	FROM SUDO.TipoCuenta
 	END;
 GO
 CREATE PROCEDURE SUDO.GetTarjetasCliente(@idUsuario integer) AS 

@@ -42,6 +42,7 @@
             this.Editar = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Eliminar = new System.Windows.Forms.DataGridViewButtonColumn();
             this.rolBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridRoles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rolBindingSource)).BeginInit();
@@ -171,14 +172,25 @@
             // 
             // rolBindingSource
             // 
-            this.rolBindingSource.DataSource = typeof(PagoElectronico.Dominio.Roles);
+            this.rolBindingSource.DataSource = typeof(PagoElectronico.Dominio.Rol);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(30, 323);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 12;
+            this.button2.Text = "Volver";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // FormABMRol
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(515, 329);
+            this.ClientSize = new System.Drawing.Size(515, 354);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.dataGridRoles);
             this.Controls.Add(this.buscar);
             this.Controls.Add(this.button1);
@@ -209,5 +221,6 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn estadoDataGridViewCheckBoxColumn;
         private System.Windows.Forms.DataGridViewButtonColumn Editar;
         private System.Windows.Forms.DataGridViewButtonColumn Eliminar;
+        private System.Windows.Forms.Button button2;
     }
 }

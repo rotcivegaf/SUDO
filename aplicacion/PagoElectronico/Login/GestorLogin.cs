@@ -95,5 +95,11 @@ namespace PagoElectronico.Login
             
             return DAO.ConexionDB.ejecReaderProc(consulta, parametros);
         }
+        public SqlDataReader Consultar(string consulta)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>();
+
+            return DAO.ConexionDB.ejecReaderProc(consulta, parametros);
+        }
     }
 }

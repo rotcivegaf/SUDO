@@ -76,17 +76,23 @@
     <Compile Include="ABMS\ABM Cliente\FormModificacionCliente.designer.cs">
       <DependentUpon>FormModificacionCliente.cs</DependentUpon>
     </Compile>
+    <Compile Include="ABMS\ABM Cuenta\FormABMCuenta.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABMS\ABM Cuenta\FormABMCuenta.Designer.cs">
+      <DependentUpon>FormABMCuenta.cs</DependentUpon>
+    </Compile>
     <Compile Include="ABMS\ABM Rol\FormABMRol.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ABMS\ABM Rol\FormABMRol.Designer.cs">
       <DependentUpon>FormABMRol.cs</DependentUpon>
     </Compile>
-    <Compile Include="ABMS\ABM Cuenta\FormABMCuenta.cs">
+    <Compile Include="ABMS\ABM Rol\FormAltaRol.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ABMS\ABM Cuenta\FormABMCuenta.Designer.cs">
-      <DependentUpon>FormABMCuenta.cs</DependentUpon>
+    <Compile Include="ABMS\ABM Rol\FormAltaRol.Designer.cs">
+      <DependentUpon>FormAltaRol.cs</DependentUpon>
     </Compile>
     <Compile Include="ABMS\ABM Usuario\FormAltaUsuario.cs">
       <SubType>Form</SubType>
@@ -107,6 +113,7 @@
       <DependentUpon>FormConsultaSaldo.cs</DependentUpon>
     </Compile>
     <Compile Include="DAO\ConexionDB.cs" />
+    <Compile Include="Dominio\Rol.cs" />
     <Compile Include="Dominio\Roles.cs" />
     <Compile Include="Dominio\Usuario.cs" />
     <Compile Include="DTO\PreguntaSecretaDTO.cs" />
