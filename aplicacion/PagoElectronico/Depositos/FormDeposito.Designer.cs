@@ -160,6 +160,7 @@
             this.Controls.Add(this.comboBoxMoneda);
             this.Controls.Add(this.comboBoxCuenta);
             this.Name = "FormDeposito";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Depositos";
             this.Load += new System.EventHandler(this.FormDeposito_Load);
             this.ResumeLayout(false);

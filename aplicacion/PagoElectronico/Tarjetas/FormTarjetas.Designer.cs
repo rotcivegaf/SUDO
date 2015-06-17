@@ -195,6 +195,7 @@
             this.Controls.Add(this.botonVolver);
             this.Controls.Add(this.DGTarjetas);
             this.Name = "FormTarjetas";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormTarjetas";
             this.Load += new System.EventHandler(this.FormTarjetas_Load);
             ((System.ComponentModel.ISupportInitialize)(this.DGTarjetas)).EndInit();

@@ -160,6 +160,7 @@
             this.Controls.Add(this.botonLimpiar);
             this.Controls.Add(this.botonCancelar);
             this.Name = "FormTransferencia";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Transferencias";
             this.Load += new System.EventHandler(this.FormTransferencia_Load);
             this.ResumeLayout(false);
