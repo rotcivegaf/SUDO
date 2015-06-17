@@ -10,8 +10,8 @@ Integrantes:
 
 	Nombre: Juan Ignacio
 	Apellido: Fernández Larriera
-	Legajo:
+	Legajo: 143375-1
 
 	Nombre: Maria Isabel
 	Apellido: Cruz 
-	Legajo:
+	Legajo: 110767-7
