@@ -1108,3 +1108,84 @@ AS
 		VALUES(@idRetiro, @codigoBanco, @idMoneda, @fechaIngreso, @importe);
 	END;
 GO
+
+--Stores Procedures para agregar al script inicial
+-------------------------------------------------------------------------------------------------------------
+--LISTA LOS USUARIOS .
+-------------------------------------------------------------------------------------------------------------
+--Referencias False = 0 | True = 1
+-------------------------------------------------------------------------------------------------------------
+CREATE PROCEDURE SUDO.SP_LISTADO_USUARIOS(
+	@USUARIO     	VARCHAR(255) = NULL,
+    @ROL   			INTEGER = NULL, 
+	@FECHAALTA		DATETIME = NULL,
+	@FECHAMODIF		DATETIME = NULL
+			 
+) AS
+BEGIN
+
+	SELECT U.idUsuario as id, U.userName AS Usuario, U.fechaCreacion AS fechaCreacion, U.fechaDeUltimaModificacion AS fechaUltimaModificacion
+     FROM SUDO.Usuario as U
+	 LEFT JOIN SUDO.UsuarioXRol as UR on UR.idUsuario = U.idUsuario
+	 WHERE ( @USUARIO     IS NULL OR (RTRIM(U.userName)     LIKE RTRIM(@USUARIO) + '%')) 
+		AND ( @ROL     	  IS NULL OR ( UR.idRol = @ROL )) 
+		AND ( @FECHAALTA  IS NULL OR U.fechaCreacion = @FECHAALTA ) 
+		AND ( @FECHAMODIF  IS NULL OR U.fechaDeUltimaModificacion = @FECHAMODIF ) 
+     ORDER BY U.fechaDeUltimaModificacion
+END
+GO
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+--STORED PROCEDURE PARA ALTA DE USUARIO
+CREATE PROCEDURE SUDO.SP_ALTA_USUARIO  
+--PARAMETROS DE ENTRADA
+  @USUARIO				VARCHAR(255),
+  @ROL					INTEGER,
+  @PASSWORD				VARCHAR(255),
+  @FECHACREA			DATETIME,
+  @FECHAMODIF   		DATETIME,
+  @PREGUNTASECRETA  	VARCHAR(255),
+  @RTASECRETA  			VARCHAR(255), 
+  @CANTINTENTOSFALL		TINYINT,
+  @ESTADO				BIT,
+--PARAMETRO DE SALIDA
+  @VALOR     INT OUTPUT 
+
+AS
+SET NOCOUNT ON 
+SET ANSI_WARNINGS OFF 
+
+DECLARE @IDUSER     INT
+DECLARE @EXISTE_USER INT
+
+SET @EXISTE_USER = 0
+
+BEGIN TRAN
+
+	SELECT * FROM SUDO.Usuario
+	 WHERE userName     = @USUARIO
+
+	SET @EXISTE_USER = @@ROWCOUNT
+
+	IF @EXISTE_USER = 0
+
+		BEGIN 	
+			INSERT INTO SUDO.Usuario (userName, userPassword, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado)
+ 				 VALUES (@USUARIO, @PASSWORD, @FECHACREA, @FECHAMODIF, @PREGUNTASECRETA, @RTASECRETA, @CANTINTENTOSFALL, @ESTADO)
+			
+			INSERT INTO SUDO.UsuarioXRol(idRol, idUsuario)
+				VALUES((SELECT MAX(idUsuario) FROM SUDO.Usuario), @ROL)
+			SET @VALOR = 0
+		    COMMIT TRAN
+        END 
+		
+		
+  
+	ELSE
+
+		BEGIN 
+			SET @VALOR = 1
+            ROLLBACK TRAN
+        END
+GO
