@@ -58,32 +58,40 @@ namespace PagoElectronico.ABM_Usuario
 
         }
 
-        private void buttonGuardar_Click(object sender, EventArgs e){
-            try{
-                if (!username.Text.Equals("") && !password.Equals("") && 
+        private void buttonGuardar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!username.Text.Equals("") && !password.Equals("") &&
                     !rolSelected.SelectedValue.ToString().Equals("-1") &&
                     !preguntaSecSelected.Text.Equals("") &&
-                    !rtaSecreta.Text.Equals("")){
-                        Usuario u = new Usuario("-1", username.Text, password.Text, preguntaSecSelected.Text,
-                                                    rtaSecreta.Text, DateTime.Today.ToString(), DateTime.Today.ToString(), "0", "True" );
+                    !rtaSecreta.Text.Equals(""))
+                {
+                    Usuario u = new Usuario("-1", username.Text, password.Text, preguntaSecSelected.Text,
+                                                rtaSecreta.Text, DateTime.Today.ToString(), DateTime.Today.ToString(), "0", "True");
 
                     DialogResult resultado;
                     resultado = MessageBox.Show("Confirma dar de alta, el usuario. user: " + u.userName, "Confirmacion Alta Usuario", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                    if (resultado == DialogResult.Yes){
+                    if (resultado == DialogResult.Yes)
+                    {
                         int res;
-                        res = UsuarioServices.SaveUser(u);
+                        res = UsuarioServices.SaveUser(u, int.Parse(rolSelected.SelectedValue.ToString()));
                         if (res == 0)
                         {
                             username.Text = "";
                             password.Text = "";
                             rtaSecreta.Text = "";
                         }
-                    }else{
+                    }
+                    else
+                    {
                         MessageBox.Show("Se cancelo la operacion");
                     }
 
-                } else{
+                }
+                else
+                {
 
                     MessageBox.Show("Complete todos los campos");
                 }
@@ -110,15 +118,17 @@ namespace PagoElectronico.ABM_Usuario
 
         private void rolSelected_SelectedIndexChanged(object sender, EventArgs e)
         {
-         
+
         }
-        private void fillRoles() {
+        private void fillRoles()
+        {
             rolSelected.DataSource = RolServices.getRoles();
             rolSelected.DisplayMember = "nombreRol";
             rolSelected.ValueMember = "idRol";
         }
 
-        private void fillPreguntasSecretas() {
+        private void fillPreguntasSecretas()
+        {
             List<PreguntaSecretaDTO> listPreguntas = new List<PreguntaSecretaDTO>();
             listPreguntas.Add(PreguntaSecretaDTO.build(PreguntaSecretaEnum.CANCION_FAVORITA.GetValue(), PreguntaSecretaEnum.CANCION_FAVORITA.GetName()));
             listPreguntas.Add(PreguntaSecretaDTO.build(PreguntaSecretaEnum.NOMBRE_ABUELA.GetValue(), PreguntaSecretaEnum.NOMBRE_ABUELA.GetName()));
@@ -128,7 +138,7 @@ namespace PagoElectronico.ABM_Usuario
             {
                 preguntaSecSelected.Items.Add(dto.valor);
 
-            }            
+            }
         }
 
         private void buttonLimpiar_Click(object sender, EventArgs e)

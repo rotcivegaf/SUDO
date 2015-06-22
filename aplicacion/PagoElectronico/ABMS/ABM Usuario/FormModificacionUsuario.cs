@@ -77,32 +77,55 @@ namespace PagoElectronico.ABM_Usuario
         private void buttonBuscarUsuario_Click(object sender, EventArgs e)
         {
             tablaUsers = new DataTable();
-            if (textBoxUserL.Text.Equals("") && comboBoxRol.Text.Equals("")
-                && dateTimePickerFechaCrea.Text.Equals("") && dateTimePickerFechaModif.Text.Equals(""))
+            DateTime? fechaA;
+            DateTime? fechaM;
+            try
             {
-                MessageBox.Show("Complete alguno de los campos para realizar la búsqueda: Uer, Rol, Fecha Alta o Fecha Modificación");
-            }
-            else {
-                try{
-                    tablaUsers = UsuarioServices.GetUserByFiltros(textBoxUserL.Text, int.Parse(comboBoxRol.SelectedValue.ToString()),
-                                dateTimePickerFechaCrea.Value, dateTimePickerFechaModif.Value); 
-                    if (tablaUsers.Rows.Count == 0)
-                    {
-                        MessageBox.Show("El Cliente que busca no existe");
+                if (checkFechaC.Checked)
+                {
+                    fechaA = (DateTime?)null;
+                }
+                else
+                {
+                    fechaA = dateTimePickerFechaCrea.Value;
+                }
+                if (checkFechaModf.Checked)
+                {
+                    fechaM = (DateTime?)null;
+                }
+                else
+                {
+                    fechaM = dateTimePickerFechaModif.Value;
+                }
 
-                        tablaUsers.Reset();
-                        dataGridViewCliente.DataSource = tablaUsers;
+                tablaUsers = UsuarioServices.GetUserByFiltros(textBoxUserL.Text, int.Parse(comboBoxRol.SelectedValue.ToString()),
+                            fechaA, fechaM);
+                if (tablaUsers.Rows.Count == 0)
+                {
+                    MessageBox.Show("El Cliente que busca no existe");
 
-                    }
-                    else
-                    {
-                        dataGridViewCliente.DataSource = tablaUsers;
-                    }
-                } catch (FormatException){
-
-                    MessageBox.Show("Se ingreso un dato con formato incorrecto");
+                    tablaUsers.Reset();
+                    dataGridViewUsuario.DataSource = tablaUsers;
 
                 }
+                else
+                {
+                    dataGridViewUsuario.DataSource = tablaUsers;
+                    dataGridViewUsuario.Columns["id"].Visible = false;
+                    dataGridViewUsuario.Columns["fechaCreacion"].HeaderText = "Fecha de Creación";
+                    dataGridViewUsuario.Columns["fechaUltimaModificacion"].HeaderText = "Fecha de Modificación";
+                    dataGridViewUsuario.Columns["Usuario"].DisplayIndex = 0;
+                    dataGridViewUsuario.Columns["fechaCreacion"].DisplayIndex = 1;
+                    dataGridViewUsuario.Columns["fechaUltimaModificacion"].DisplayIndex = 2;
+                    dataGridViewUsuario.Columns["delete"].DisplayIndex = 3;
+                    dataGridViewUsuario.Columns["select"].DisplayIndex = 4;
+                }
+            }
+            catch (FormatException)
+            {
+
+                MessageBox.Show("Se ingreso un dato con formato incorrecto");
+
             }
         }
 
@@ -111,8 +134,26 @@ namespace PagoElectronico.ABM_Usuario
 
         }
 
-        private void dataGridViewCliente_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridViewUsuario_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            var senderGrid = (DataGridView)sender;
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = this.dataGridViewUsuario.Rows[e.RowIndex];
+                String id = row.Cells["id"].Value.ToString();
+                //Button edition
+                if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn)
+                {
+                    FormAltaUsuario formAltaUsuario = new FormAltaUsuario();
+                    formAltaUsuario.Show(this);
+                }
+                else if (senderGrid.Columns[e.ColumnIndex] is DataGridViewLinkColumn)
+                {
+                    DialogResult resultado;
+                    resultado = MessageBox.Show("Confirma eliminar, el usuario. user: ", "Confirmacion Eliminación Usuario", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                }
+
+            }
 
         }
 
@@ -123,6 +164,41 @@ namespace PagoElectronico.ABM_Usuario
 
         private void dateTimePickerFechaCrea_ValueChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void groupBoxUserList_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkFechaC_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkFechaC.Checked)
+            {
+                dateTimePickerFechaCrea.Enabled = false;
+            }
+            else
+            {
+                dateTimePickerFechaCrea.Enabled = true;
+            }
+        }
+
+        private void checkFechaModf_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkFechaModf.Checked)
+            {
+                dateTimePickerFechaModif.Enabled = false;
+            }
+            else
+            {
+                dateTimePickerFechaModif.Enabled = true;
+            }
 
         }
     }
