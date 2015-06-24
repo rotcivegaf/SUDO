@@ -259,6 +259,7 @@ GO
 --Login
 --dado un userName obtiene el usuario de la tabla Usuario
 IF OBJECT_ID ('SUDO.GetUser') IS NOT NULL DROP PROCEDURE SUDO.GetUser
+GO
 CREATE PROCEDURE SUDO.GetUser(@userName varchar(255)) AS 
 	BEGIN
     	SELECT *
@@ -268,6 +269,7 @@ CREATE PROCEDURE SUDO.GetUser(@userName varchar(255)) AS
 GO
 --Registra el login de un usuario inxistente en la tabla HistorialLogin
 IF OBJECT_ID ('SUDO.RegistrarLoginUsuarioInexistente') IS NOT NULL DROP PROCEDURE SUDO.RegistrarLoginUsuarioInexistente
+GO
 CREATE PROCEDURE SUDO.RegistrarLoginUsuarioInexistente(@userNameIng varchar(255), @userPasswordIng varchar(255), @fechaHora datetime, @descripcion varchar(255)) AS 
 	BEGIN
 		INSERT INTO SUDO.HistorialLogin (userNameIngreasdo, userPasswordIngresado, fechaHora, descripcion)
@@ -276,6 +278,7 @@ CREATE PROCEDURE SUDO.RegistrarLoginUsuarioInexistente(@userNameIng varchar(255)
 GO
 --blockea a un usuario cambiando el bit estado a 0
 IF OBJECT_ID ('SUDO.BlockearUsuario') IS NOT NULL DROP PROCEDURE SUDO.BlockearUsuario
+GO
 CREATE PROCEDURE SUDO.BlockearUsuario(@idUsuario integer) AS 
 	BEGIN
 		UPDATE SUDO.Usuario SET estado = 0
@@ -284,6 +287,7 @@ CREATE PROCEDURE SUDO.BlockearUsuario(@idUsuario integer) AS
 GO
 --Registra el login de un usuario existente
 IF OBJECT_ID ('SUDO.RegistrarLogin') IS NOT NULL DROP PROCEDURE SUDO.RegistrarLogin
+GO
 CREATE PROCEDURE SUDO.RegistrarLogin(@userNameIng varchar(255), @userPasswordIng varchar(255), @fechaHora datetime, @estado BIT, @numeroIntentoFallido TINYINT, @descripcion varchar(255), @idUsuario integer) AS 
 	BEGIN
 		INSERT INTO SUDO.HistorialLogin (userNameIngreasdo, userPasswordIngresado, fechaHora, numeroIntentoFallido, estado, descripcion)
@@ -297,6 +301,7 @@ GO
 --Form seleccion de Roles y Funcionalidades
 --dado un idUsuario obtiene todos sus roles y sus funcionalidades, cabe aclarar que obtiene los roles "habilitados", con estado = 1
 IF OBJECT_ID ('SUDO.GetRolesXFuncionalidades') IS NOT NULL DROP PROCEDURE SUDO.GetRolesXFuncionalidades
+GO
 CREATE PROCEDURE SUDO.GetRolesXFuncionalidades(@idUsuario integer) AS 
 	BEGIN
 		SELECT idRol, nombreRol, RyF.idFuncionalidad, nombre nombreFuncionalidad
@@ -313,6 +318,7 @@ GO
 --Tarjetas
 -- dado un idUsuario de la tabla usuario obtiene las tarjetas(que no se han dado de baja) que pertenecen al mismo
 IF OBJECT_ID ('SUDO.GetTarjetas') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetas
+GO
 CREATE PROCEDURE SUDO.GetTarjetas(@idUsuario integer) AS 
 	BEGIN
 		SELECT idTarjeta, estado, E.descripcion, fechaVencimiento, fechaEmision, SUBSTRING(CONVERT(varchar(20), numero), DATALENGTH(CONVERT(varchar(20),numero))-3, 4) ult4NumTarj
@@ -327,6 +333,7 @@ CREATE PROCEDURE SUDO.GetTarjetas(@idUsuario integer) AS
 GO
 -- dado una tarjeta realiza una baja logica
 IF OBJECT_ID ('SUDO.DesasociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.DesasociarTarjeta
+GO
 CREATE PROCEDURE SUDO.DesasociarTarjeta(@idTarjeta bigint) AS 
 	BEGIN
 		UPDATE SUDO.Tarjeta
@@ -337,6 +344,7 @@ GO
 --Nueva Tarjeta
 --obtiene los emisores de tarjetas
 IF OBJECT_ID ('SUDO.GetEmisores') IS NOT NULL DROP PROCEDURE SUDO.GetEmisores
+GO
 CREATE PROCEDURE SUDO.GetEmisores AS 
 	BEGIN
 		select descripcion
@@ -345,6 +353,7 @@ CREATE PROCEDURE SUDO.GetEmisores AS
 GO
 --asocia una nueva tarjeta al cliente
 IF OBJECT_ID ('SUDO.AsociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.AsociarTarjeta
+GO
 CREATE PROCEDURE SUDO.AsociarTarjeta(@numero bigint, @emisorDesc varchar(255), @fechaEmision datetime, @fechaVencimiento datetime, @codigoSeguridad varchar(255), @idUser integer) AS 
 	BEGIN
 		IF NOT EXISTS(SELECT @numero 
@@ -370,6 +379,7 @@ GO
 --Depositos
 --registra un deposito, verificando el saldo de la cuenta
 IF OBJECT_ID ('SUDO.CrearDeposito') IS NOT NULL DROP PROCEDURE SUDO.CrearDeposito
+GO
 CREATE PROCEDURE SUDO.CrearDeposito(@idTarjeta bigint, @moneda varchar(255), @importe bigint, @fecha datetime, @nroCuenta bigint) AS 
 	BEGIN
 		DECLARE @saldo numeric(18,2)
@@ -396,6 +406,7 @@ GO
 --Retiros
 --Registra un retiro, verificando el saldo de la cuenta y el dni
 IF OBJECT_ID ('SUDO.CrearRetiro') IS NOT NULL DROP PROCEDURE SUDO.CrearRetiro
+GO
 CREATE PROCEDURE SUDO.CrearRetiro(@nroCuenta bigint, @fecha datetime, @moneda varchar(255), @importe bigint, @nombreBanco varchar(255), @nroDoc numeric(18,0)) AS 
 	BEGIN
 		DECLARE @saldo numeric(18,2)
@@ -433,6 +444,7 @@ GO
 --Transferencias
 -- registra una transferencia, verificando el saldo de la cuenta y si la cuenta no esta "Pendiente de activacion" o "Cerrada"
 IF OBJECT_ID ('SUDO.CrearTransferencia') IS NOT NULL DROP PROCEDURE SUDO.CrearTransferencia
+GO
 CREATE PROCEDURE SUDO.CrearTransferencia(@nroCuentaOrigen bigint, @importe bigint, @moneda varchar(255), @nroCuentaDest bigint, @fecha datetime) AS 
 	BEGIN
 		DECLARE @saldoOrigen numeric(18,2)
@@ -473,6 +485,7 @@ GO
 --Consulta Saldo
 --dado un numero de cuenta obtiene las ultimas 10 transferencias
 IF OBJECT_ID ('SUDO.GetUltimas10Transferencias') IS NOT NULL DROP PROCEDURE SUDO.GetUltimas10Transferencias
+GO
 CREATE PROCEDURE SUDO.GetUltimas10Transferencias(@nroCuenta bigint) AS 
 	BEGIN
 		select TOP 10 idTrans, fecha, importe, costo, nroCuentaDest
@@ -483,6 +496,7 @@ CREATE PROCEDURE SUDO.GetUltimas10Transferencias(@nroCuenta bigint) AS
 GO
 --dado un numero de cuenta obtiene los ultimos 5 retiros
 IF OBJECT_ID ('SUDO.GetUltimos5Retiros') IS NOT NULL DROP PROCEDURE SUDO.GetUltimos5Retiros
+GO
 CREATE PROCEDURE SUDO.GetUltimos5Retiros(@nroCuenta bigint) AS 
 	BEGIN
 		SELECT idCheque, codigo, c.fecha ,c.importe
@@ -495,6 +509,7 @@ CREATE PROCEDURE SUDO.GetUltimos5Retiros(@nroCuenta bigint) AS
 GO
 ----dado un numero de cuenta obtiene los ultimos 5 depositos
 IF OBJECT_ID ('SUDO.GetUltimos5depositos') IS NOT NULL DROP PROCEDURE SUDO.GetUltimos5depositos
+GO
 CREATE PROCEDURE SUDO.GetUltimos5depositos(@nroCuenta bigint) AS 
 	BEGIN
 		SELECT TOP 5 codigo, fecha, importe, SUBSTRING(CONVERT(varchar(20),T.numero), DATALENGTH(CONVERT(varchar(20),T.numero))-3, 4) ult4NumTarj
@@ -507,6 +522,7 @@ GO
 --Procedures utilizados en varias funcionalidades
 --obtiene las monedas existentes
 IF OBJECT_ID ('SUDO.GetMonedas') IS NOT NULL DROP PROCEDURE SUDO.GetMonedas
+GO
 CREATE PROCEDURE SUDO.GetMonedas AS 
 	BEGIN
 		select descripcion
@@ -515,6 +531,7 @@ CREATE PROCEDURE SUDO.GetMonedas AS
 GO
 --Obtiene las tarjetas que no se han dado de baja de un cliente
 IF OBJECT_ID ('SUDO.GetTarjetasCliente') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetasCliente
+GO
 CREATE PROCEDURE SUDO.GetTarjetasCliente(@idUsuario integer) AS 
 	BEGIN
 		SELECT idTarjeta, E.descripcion, fechaVencimiento, SUBSTRING(CONVERT(varchar(20), numero), DATALENGTH(CONVERT(varchar(20),numero))-3, 4) ult4NumTarj
@@ -529,6 +546,7 @@ CREATE PROCEDURE SUDO.GetTarjetasCliente(@idUsuario integer) AS
 GO
 --obtiene las cuentas de un cliente
 IF OBJECT_ID ('SUDO.GetCuentas') IS NOT NULL DROP PROCEDURE SUDO.GetCuentas
+GO
 CREATE PROCEDURE SUDO.GetCuentas(@idUsuario integer) AS 
 	BEGIN
 		SELECT nroCuenta, descripcion
@@ -542,6 +560,7 @@ CREATE PROCEDURE SUDO.GetCuentas(@idUsuario integer) AS
 GO
 --obtiene los bancos existentes
 IF OBJECT_ID ('SUDO.GetBancos') IS NOT NULL DROP PROCEDURE SUDO.GetBancos
+GO
 CREATE PROCEDURE SUDO.GetBancos AS 
 	BEGIN
 		select nombre
@@ -550,6 +569,7 @@ CREATE PROCEDURE SUDO.GetBancos AS
 GO
 -- obtiene el saldo de una cuenta
 IF OBJECT_ID ('SUDO.GetSaldo') IS NOT NULL DROP PROCEDURE SUDO.GetSaldo
+GO
 CREATE PROCEDURE SUDO.GetSaldo(@nroCuenta bigint) AS 
 	BEGIN
 		SELECT saldo
@@ -559,6 +579,7 @@ CREATE PROCEDURE SUDO.GetSaldo(@nroCuenta bigint) AS
 GO
 --asigna el tipo de moneda a las tablas Deposito, Retiro, Transferencia, Cheque, Item, Cuenta
 IF OBJECT_ID ('SUDO.UpdateIdMoneda') IS NOT NULL DROP PROCEDURE SUDO.UpdateIdMoneda
+GO
 CREATE PROCEDURE SUDO.UpdateIdMoneda(@descripcionMoneda varchar(255)) AS 
 	BEGIN
 		DECLARE @idMoneda integer
@@ -576,6 +597,7 @@ CREATE PROCEDURE SUDO.UpdateIdMoneda(@descripcionMoneda varchar(255)) AS
 GO
 --obtiene los tipos de cuenta existentes
 IF OBJECT_ID ('SUDO.GetTiposCuenta') IS NOT NULL DROP PROCEDURE SUDO.GetTiposCuenta
+GO
 CREATE PROCEDURE SUDO.GetTiposCuenta AS 
 	BEGIN
 		SELECT idTipoCuenta, nombre
@@ -584,6 +606,7 @@ CREATE PROCEDURE SUDO.GetTiposCuenta AS
 GO
 --STORED PROCEDURE PARA MOSTRAR LISTADO DE LOS ROLES DEL SISTEMA
 IF OBJECT_ID ('SUDO.SP_LISTAR_ROLES') IS NOT NULL DROP PROCEDURE SUDO.SP_LISTAR_ROLES
+GO
 CREATE PROCEDURE SUDO.SP_LISTAR_ROLES AS
 	BEGIN
 		SELECT idRol, nombreRol FROM SUDO.Rol
@@ -593,6 +616,7 @@ GO
 --procesos utilizados para la creaciion y migracion de la base de datos
 --retorna obtiene el saldo inicial de la cuenta, aplicando la ecuacion esplicada en el archivo Estrategia.pdf
 IF OBJECT_ID ('SUDO.GetSaldoInicial') IS NOT NULL DROP FUNCTION SUDO.GetSaldoInicial;
+GO
 CREATE FUNCTION SUDO.GetSaldoInicial(@nroCuenta bigint)RETURNS bigint AS 
 BEGIN
 	DECLARE @sumaDeposito bigint
@@ -621,6 +645,7 @@ END;
 GO
 --asocia la tabla Funcionalidad con la tabla Rol
 IF OBJECT_ID ('SUDO.AsociarFuncionalidadXRol') IS NOT NULL DROP PROCEDURE SUDO.AsociarFuncionalidadXRol
+GO
 CREATE PROCEDURE SUDO.AsociarFuncionalidadXRol(@NombreRol VARCHAR(255), @NombreFuncionalidad VARCHAR(255)) AS
 	BEGIN
 		INSERT INTO SUDO.FuncionalidadXRol(idRol, idFuncionalidad)
@@ -630,6 +655,7 @@ CREATE PROCEDURE SUDO.AsociarFuncionalidadXRol(@NombreRol VARCHAR(255), @NombreF
 GO
 --asocia la tabla Usuario con la tabla Rol
 IF OBJECT_ID ('SUDO.AsociarUsuarioXRol') IS NOT NULL DROP PROCEDURE SUDO.AsociarUsuarioXRol
+GO
 CREATE PROCEDURE SUDO.AsociarUsuarioXRol(@UserName VARCHAR(255), @NombreRol VARCHAR(255)) AS
 	BEGIN
 		INSERT INTO SUDO.UsuarioXRol(idRol, idUsuario)
@@ -639,6 +665,7 @@ CREATE PROCEDURE SUDO.AsociarUsuarioXRol(@UserName VARCHAR(255), @NombreRol VARC
 GO
 --crea un nuevo estado de cuenta
 IF OBJECT_ID ('SUDO.NuevoEstadoCuentaDesc') IS NOT NULL DROP PROCEDURE SUDO.NuevoEstadoCuentaDesc
+GO
 CREATE PROC SUDO.NuevoEstadoCuentaDesc @Desc VARCHAR(25) AS
 	BEGIN
 		INSERT INTO SUDO.EstadoCuenta(descripcion)
@@ -647,6 +674,7 @@ CREATE PROC SUDO.NuevoEstadoCuentaDesc @Desc VARCHAR(25) AS
 GO
 --crea una nueva funcionalidad
 IF OBJECT_ID ('SUDO.AgregarFuncionalidadNombre') IS NOT NULL DROP PROCEDURE SUDO.AgregarFuncionalidadNombre
+GO
 CREATE PROC SUDO.AgregarFuncionalidadNombre(@Nombre VARCHAR(40)) AS
 	BEGIN
 		INSERT INTO SUDO.Funcionalidad(nombre)
@@ -655,6 +683,7 @@ CREATE PROC SUDO.AgregarFuncionalidadNombre(@Nombre VARCHAR(40)) AS
 GO
 --crea un nuevo tipo de cuenta
 IF OBJECT_ID ('SUDO.NuevoTipoCuenta') IS NOT NULL DROP PROCEDURE SUDO.NuevoTipoCuenta
+GO
 CREATE PROC SUDO.NuevoTipoCuenta(@Nombre VARCHAR(50), @Duracion SMALLINT, @Costo NUMERIC(10,2)) AS
 	BEGIN
 		INSERT INTO SUDO.TipoCuenta(nombre, duracionEnDias, costo)
@@ -663,6 +692,7 @@ CREATE PROC SUDO.NuevoTipoCuenta(@Nombre VARCHAR(50), @Duracion SMALLINT, @Costo
 GO
 --crea un nuevo rol
 IF OBJECT_ID ('SUDO.NuevoRol') IS NOT NULL DROP PROCEDURE SUDO.NuevoRol
+GO
 CREATE PROCEDURE SUDO.NuevoRol(@Nombre VARCHAR(255), @Estado BIT) AS
 	BEGIN
 		INSERT INTO SUDO.Rol(nombreRol, estado)
@@ -671,6 +701,7 @@ CREATE PROCEDURE SUDO.NuevoRol(@Nombre VARCHAR(255), @Estado BIT) AS
 GO
 --crea un nuevo usuario
 IF OBJECT_ID ('SUDO.NuevoUsuario') IS NOT NULL DROP PROCEDURE SUDO.NuevoUsuario
+GO
 CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime, @PreguntaSecreta VARCHAR(255), @RespuestaSecreta VARCHAR(255), @CantIntentosFallidos TINYINT, @Estado BIT) AS
 	BEGIN
 		INSERT INTO SUDO.Usuario(userName, userPassword, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado)
@@ -682,6 +713,7 @@ GO
 
 --STORED PROCEDURE PARA ALTA DE USUARIO
 IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO
+GO
 CREATE PROCEDURE SUDO.SP_ALTA_USUARIO  
 --PARAMETROS DE ENTRADA
   @USER					VARCHAR(255),
@@ -732,7 +764,7 @@ GO
 ---------------------------------------------------------------------------
 			--  	Creacion de triggers
 ---------------------------------------------------------------------------
-IF OBJECT_ID ('SUDO.OnInsertDeposito', 'TR') IS NOT NULL DROP TRIGGER SUDO.OnInsertDeposito;			
+IF OBJECT_ID ('SUDO.OnInsertDeposito', 'TR') IS NOT NULL DROP TRIGGER SUDO.OnInsertDeposito;		
 GO
 CREATE TRIGGER SUDO.OnInsertDeposito
 ON SUDO.Deposito
@@ -1145,6 +1177,7 @@ GO
 --Referencias False = 0 | True = 1
 -------------------------------------------------------------------------------------------------------------
 IF OBJECT_ID ('SUDO.SP_LISTADO_USUARIOS') IS NOT NULL DROP PROCEDURE SUDO.SP_LISTADO_USUARIOS
+GO
 CREATE PROCEDURE SUDO.SP_LISTADO_USUARIOS(
 	@USUARIO     	VARCHAR(255) = NULL,
     @ROL   			INTEGER = NULL, 
@@ -1169,6 +1202,7 @@ GO
 
 --STORED PROCEDURE PARA ALTA DE USUARIO
 IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO 
+GO
 CREATE PROCEDURE SUDO.SP_ALTA_USUARIO  
 --PARAMETROS DE ENTRADA
   @USUARIO				VARCHAR(255),
