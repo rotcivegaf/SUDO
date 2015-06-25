@@ -215,13 +215,15 @@ CREATE TABLE SUDO.Tarjeta (
 
 -----------Tabla Transferencia-----------
 CREATE TABLE SUDO.Transferencia ( 
-	idTrans 		integer IDENTITY(1,1) PRIMARY KEY,
-	nroCuentaDest 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
-	nroCuentaOrigen	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
-	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
-	costo 			numeric(18,2),
-	importe 		numeric(18,2),
-	fecha 			datetime,
+	idTrans 			integer IDENTITY(1,1) PRIMARY KEY,
+	nroCuentaDest 		numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
+	nroCuentaOrigen		numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
+	idMoneda 			integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
+	costo 				numeric(18,2),
+	importe 			numeric(18,2),
+	fecha 				datetime,
+	facturado			BIT DEFAULT 0,
+	auxFacturaNumero	numeric(18,0)
 );
 
 -----------Tabla Item (Factura)-----------
@@ -313,6 +315,23 @@ CREATE PROCEDURE SUDO.GetRolesXFuncionalidades(@idUsuario integer) AS
 	  		 JOIN SUDO.FuncionalidadXRol FxR ON RolesUsuario.idRol = FxR.idRol) RyF
 	  	JOIN SUDO.Funcionalidad f ON RyF.idFuncionalidad = f.idFuncionalidad
 	  	ORDER BY idRol
+	END;
+GO
+
+--Facturacion
+-- dado un idUsuario de la tabla usuario obtiene los items a facturar
+IF OBJECT_ID ('SUDO.GetItemsAFacturar') IS NOT NULL DROP PROCEDURE SUDO.GetItemsAFacturar
+GO
+CREATE PROCEDURE SUDO.GetItemsAFacturar(@idUsuario integer) AS 
+	BEGIN
+		SELECT 'Comisión por transferencia.' descripcion, costo, importe, B.descripcion moneda, nroCuentaDest, nroCuentaOrigen
+		FROM(
+			SELECT costo, importe, T.idMoneda, nroCuentaDest, nroCuentaOrigen
+	  		FROM (SUDO.Transferencia T JOIN (SELECT nroCuenta 
+	  										 FROM SUDO.Cuenta 
+	  										 WHERE idCliente = @idUsuario) C ON (nroCuentaOrigen = C.nroCuenta))
+			WHERE facturado = 0
+			) A JOIN SUDO.Moneda B ON B.idMoneda = A.idMoneda
 	END;
 GO
 
@@ -1096,9 +1115,9 @@ PRINT 'Tabla SUDO.Deposito Migrada'
 GO
 
 -----------Migracion Transferencia-----------
-INSERT INTO SUDO.Transferencia(fecha, importe, costo, nroCuentaOrigen, nroCuentaDest)
-	SELECT Transf_Fecha, Trans_Importe, Trans_Costo_Trans, m_c.nroCuenta, c2.nroCuenta
-	FROM(SELECT Cuenta_Dest_Numero, Transf_Fecha, Trans_Importe, Trans_Costo_Trans, Cuenta_Dest_Estado, Cuenta_Dest_Fecha_Cierre, Cuenta_Dest_Fecha_Creacion, Cuenta_Dest_Pais_Codigo, nroCuenta
+INSERT INTO SUDO.Transferencia(fecha, importe, costo, nroCuentaOrigen, nroCuentaDest, auxFacturaNumero)
+	SELECT Transf_Fecha, Trans_Importe, Trans_Costo_Trans, m_c.nroCuenta, c2.nroCuenta, Factura_Numero
+	FROM(SELECT Cuenta_Dest_Numero, Transf_Fecha, Trans_Importe, Trans_Costo_Trans, Cuenta_Dest_Estado, Cuenta_Dest_Fecha_Cierre, Cuenta_Dest_Fecha_Creacion, Cuenta_Dest_Pais_Codigo, nroCuenta, Factura_Numero
 		 FROM gd_esquema.Maestra m join SUDO.Cuenta c on (m.Cuenta_Numero = c.nroCuenta)
 		 WHERE Cuenta_Dest_Numero IS NOT NULL
 	)m_c join SUDO.Cuenta c2 on ((m_c.Cuenta_Dest_Numero = c2.nroCuenta)AND(m_c.Cuenta_Dest_Fecha_Creacion = c2.fechaCreacion)AND(m_c.Cuenta_Dest_Pais_Codigo = c2.idPais))
@@ -1109,13 +1128,44 @@ GO
 
 -----------Migracion Item-----------
 INSERT INTO SUDO.Item(numeroFactura, importe, descripcion, idTrans)
-	SELECT Factura_Numero, Item_Factura_Importe, Item_Factura_Descr, idTrans
-	FROM gd_esquema.Maestra m 
-	JOIN SUDO.Transferencia T ON (T.nroCuentaOrigen = m.Cuenta_Numero AND T.nroCuentaDest = m.Cuenta_Dest_Numero)
-	WHERE Factura_Numero IS NOT NULL
+SELECT Factura_Numero, Item_Factura_Importe, Item_Factura_Descr, idTrans 
+FROM (select Factura_Numero, Item_Factura_Descr, Item_Factura_Importe, Cuenta_Numero, Cuenta_Dest_Numero, Transf_Fecha, Trans_Importe
+	  from gd_esquema.Maestra
+	  where Item_Factura_Descr IS NOT NULL AND Item_Factura_Importe IS NOT NULL)I
+JOIN SUDO.Transferencia T ON  (T.nroCuentaOrigen = I.Cuenta_Numero AND T.nroCuentaDest = I.Cuenta_Dest_Numero AND T.fecha = I.Transf_Fecha AND T.importe = I.Trans_Importe AND I.Factura_Numero = T.auxFacturaNumero)
 
 PRINT 'Tabla SUDO.Item Migrada'
 GO
+
+-----------Actialiso la Facturacion de transferencia-----------
+DECLARE @idTrans integer
+DECLARE @auxFacturaNumero numeric(18,0)
+DECLARE @facturado BIT
+
+DECLARE CursorTransferencia CURSOR FOR (SELECT idTrans, auxFacturaNumero, facturado
+							  			FROM SUDO.Transferencia)
+OPEN CursorTransferencia FETCH NEXT FROM CursorTransferencia INTO @idTrans, @auxFacturaNumero, @facturado
+
+WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		SELECT @facturado = 0
+		IF EXISTS (SELECT *
+				   FROM SUDO.Transferencia
+				   WHERE auxFacturaNumero IS NOT NULL AND idTrans = @idTrans)
+				   SELECT @facturado = 1
+	
+		UPDATE SUDO.Transferencia SET facturado = @facturado
+		
+		WHERE CURRENT OF CursorTransferencia;									 
+		FETCH NEXT FROM CursorTransferencia INTO @idTrans, @auxFacturaNumero, @facturado
+	END
+CLOSE CursorTransferencia
+DEALLOCATE CursorTransferencia
+
+--elimino la columna auxiliar de SUDO.Transferencia
+ALTER TABLE SUDO.Transferencia DROP COLUMN auxFacturaNumero;
+GO
+
 
 -----------Creacion de Usuarios y creacion de la relacion con los clientes-----------
 DECLARE @idUsuario numeric(18,0)
@@ -1123,7 +1173,7 @@ DECLARE @mail varchar(255)
 
 DECLARE CursorCli CURSOR FOR (SELECT mail, idUsuario
 							  FROM SUDO.Cliente)
-OPEN CursorCli FETCH NEXT FROM CursorCli INTO @mail, @idUsuario
+OPEN CursorCli FETCH NEXT FROM CursorCli INTO @Mail, @idUsuario
 WHILE (@@FETCH_STATUS = 0)
 	BEGIN
 		EXEC SUDO.NuevoUsuario @UserName= @Mail, @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,
