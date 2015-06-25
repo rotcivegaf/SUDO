@@ -110,7 +110,7 @@ namespace PagoElectronico.Login
                     formTransferencia.Show(this);
                     break;
                 case "facturacion":
-                    FormFacturacion formFacturacion = new FormFacturacion();
+                    FormFacturacion formFacturacion = new FormFacturacion(idUser);
                     formFacturacion.Show(this);
                     break;
                 case "consulta saldos":
