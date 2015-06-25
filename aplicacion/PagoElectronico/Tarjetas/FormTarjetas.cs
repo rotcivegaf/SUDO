@@ -72,7 +72,7 @@ namespace PagoElectronico.Tarjetas
             SqlDataReader readerTarjetas = DAO.ConexionDB.ejecReaderProc("SUDO.GetTarjetas", parametros);
             for (; readerTarjetas.Read(); )
             {
-                DGTarjetas.Rows.Add(readerTarjetas["idTarjeta"], readerTarjetas["ult4NumTarj"], readerTarjetas["fechaEmision"], readerTarjetas["fechaVencimiento"], readerTarjetas["descripcion"], readerTarjetas["estado"]);
+                DGTarjetas.Rows.Add(readerTarjetas["idTarjeta"], readerTarjetas["ult4num"], readerTarjetas["fechaEmision"], readerTarjetas["fechaVencimiento"], readerTarjetas["descripcion"], readerTarjetas["estado"]);
             }
         }
         private void desasociarTarjeta()

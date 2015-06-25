@@ -1,4 +1,4 @@
-USE [GD1C2015]
+﻿USE [GD1C2015]
 
 GO
 
@@ -19,12 +19,12 @@ GO
 ---------------------------------------------------------------------------
 IF OBJECT_ID ('SUDO.Comprobante') IS NOT NULL DROP TABLE SUDO.Comprobante
 IF OBJECT_ID ('SUDO.Deposito') IS NOT NULL DROP TABLE SUDO.Deposito
+IF OBJECT_ID ('SUDO.Item') IS NOT NULL DROP TABLE SUDO.Item
 IF OBJECT_ID ('SUDO.Transferencia') IS NOT NULL DROP TABLE SUDO.Transferencia
 IF OBJECT_ID ('SUDO.Tarjeta') IS NOT NULL DROP TABLE SUDO.Tarjeta
 IF OBJECT_ID ('SUDO.Cheque') IS NOT NULL DROP TABLE SUDO.Cheque
 IF OBJECT_ID ('SUDO.Retiro') IS NOT NULL DROP TABLE SUDO.Retiro
 IF OBJECT_ID ('SUDO.Cuenta') IS NOT NULL DROP TABLE SUDO.Cuenta
-IF OBJECT_ID ('SUDO.Item') IS NOT NULL DROP TABLE SUDO.Item
 IF OBJECT_ID ('SUDO.Factura') IS NOT NULL DROP TABLE SUDO.Factura
 IF OBJECT_ID ('SUDO.Cliente') IS NOT NULL DROP TABLE SUDO.Cliente
 IF OBJECT_ID ('SUDO.HistorialLogin') IS NOT NULL DROP TABLE SUDO.HistorialLogin
@@ -167,16 +167,6 @@ CREATE TABLE SUDO.Factura (
 	fecha 		datetime,
 );
 
------------Tabla Item (Factura)-----------
-CREATE TABLE SUDO.Item ( 
-	idItem			integer IDENTITY(1,1) PRIMARY KEY,
-	numeroFactura	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Factura,
-	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
-	importe 		numeric(18,2) NOT NULL,
-	descripcion 	varchar(255),
-	
-);
-
 -----------Tabla Cuenta-----------
 CREATE TABLE SUDO.Cuenta ( 
 	nroCuenta		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
@@ -195,7 +185,7 @@ CREATE TABLE SUDO.Retiro (
 	codigo 		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
 	idCuenta	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
 	idMoneda 	integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
-	codigoBanco 	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Banco,
+	codigoBanco numeric(18,0) FOREIGN KEY REFERENCES SUDO.Banco,
 	fecha 		datetime NOT NULL,
 	importe 	numeric(18,2) NOT NULL,
 );
@@ -214,7 +204,8 @@ CREATE TABLE SUDO.Cheque (
 CREATE TABLE SUDO.Tarjeta ( 
 	idTarjeta 			integer IDENTITY(1,1) PRIMARY KEY,
 	idCliente 			integer FOREIGN KEY REFERENCES SUDO.Cliente,
-	numero 				numeric(16) NOT NULL UNIQUE,
+	prim12num 			varchar(20) NOT NULL,
+	ult4num             varchar(4) NOT NULL,
 	idEmisor 			integer FOREIGN KEY REFERENCES SUDO.Emisor,
 	fechaEmision 		datetime NOT NULL,
 	fechaVencimiento 	datetime NOT NULL,
@@ -231,6 +222,16 @@ CREATE TABLE SUDO.Transferencia (
 	costo 			numeric(18,2),
 	importe 		numeric(18,2),
 	fecha 			datetime,
+);
+
+-----------Tabla Item (Factura)-----------
+CREATE TABLE SUDO.Item ( 
+	idItem			integer IDENTITY(1,1) PRIMARY KEY,
+	numeroFactura	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Factura,
+	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
+	idTrans 		integer FOREIGN KEY REFERENCES SUDO.Transferencia DEFAULT NULL,
+	importe 		numeric(18,2) NOT NULL,
+	descripcion 	varchar(255),
 );
 
 -----------Tabla Deposito-----------
@@ -321,8 +322,8 @@ IF OBJECT_ID ('SUDO.GetTarjetas') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetas
 GO
 CREATE PROCEDURE SUDO.GetTarjetas(@idUsuario integer) AS 
 	BEGIN
-		SELECT idTarjeta, estado, E.descripcion, fechaVencimiento, fechaEmision, SUBSTRING(CONVERT(varchar(20), numero), DATALENGTH(CONVERT(varchar(20),numero))-3, 4) ult4NumTarj
-	  	FROM (SELECT idTarjeta ,numero, fechaEmision, fechaVencimiento, estado, idEmisor
+		SELECT idTarjeta, estado, E.descripcion, fechaVencimiento, fechaEmision, ult4num
+	  	FROM (SELECT idTarjeta ,ult4num, fechaEmision, fechaVencimiento, estado, idEmisor
 	  		  FROM(SELECT idCliente
 			 	   FROM SUDO.Cliente
 			 	   WHERE idUsuario = @idUsuario)idCliente
@@ -354,10 +355,10 @@ GO
 --asocia una nueva tarjeta al cliente
 IF OBJECT_ID ('SUDO.AsociarTarjeta') IS NOT NULL DROP PROCEDURE SUDO.AsociarTarjeta
 GO
-CREATE PROCEDURE SUDO.AsociarTarjeta(@numero bigint, @emisorDesc varchar(255), @fechaEmision datetime, @fechaVencimiento datetime, @codigoSeguridad varchar(255), @idUser integer) AS 
+CREATE PROCEDURE SUDO.AsociarTarjeta(@numero VARCHAR(16), @emisorDesc varchar(255), @fechaEmision datetime, @fechaVencimiento datetime, @codigoSeguridad varchar(255), @idUser integer) AS 
 	BEGIN
 		IF NOT EXISTS(SELECT @numero 
-			  		  FROM SUDO.Tarjeta WHERE numero = @numero)
+			  		  FROM SUDO.Tarjeta WHERE (prim12num + ult4num) = @numero)
 			BEGIN     
 				DECLARE @idCliente int
 				DECLARE @idEmisor int
@@ -369,9 +370,9 @@ CREATE PROCEDURE SUDO.AsociarTarjeta(@numero bigint, @emisorDesc varchar(255), @
 				SELECT @idCliente = idCliente
 				FROM SUDO.Cliente
 				WHERE idUsuario = @idUser
-
-				INSERT INTO SUDO.Tarjeta (idCliente, numero, idEmisor, fechaEmision, fechaVencimiento, codigoSeguridad)
-				VALUES(@idCliente, @numero, @idEmisor,Convert(dateTime, @fechaEmision, 121),Convert(dateTime, @fechaVencimiento, 121), @codigoSeguridad);
+				
+				INSERT INTO SUDO.Tarjeta (idCliente, prim12num, ult4num, idEmisor, fechaEmision, fechaVencimiento, codigoSeguridad)
+				VALUES(@idCliente, SUDO.EncriptarSHA1(SUDO.GetPrim12Num(@numero)), SUDO.GetUlt4Num(@numero), @idEmisor,Convert(dateTime, @fechaEmision, 121),Convert(dateTime, @fechaVencimiento, 121), @codigoSeguridad);
 			END;
 	END;
 GO
@@ -512,7 +513,7 @@ IF OBJECT_ID ('SUDO.GetUltimos5depositos') IS NOT NULL DROP PROCEDURE SUDO.GetUl
 GO
 CREATE PROCEDURE SUDO.GetUltimos5depositos(@nroCuenta bigint) AS 
 	BEGIN
-		SELECT TOP 5 codigo, fecha, importe, SUBSTRING(CONVERT(varchar(20),T.numero), DATALENGTH(CONVERT(varchar(20),T.numero))-3, 4) ult4NumTarj
+		SELECT TOP 5 codigo, fecha, importe, ult4num
 		FROM SUDO.Deposito D join SUDO.Tarjeta T ON (D.idTarjeta = T.idTarjeta)
 		WHERE nroCuenta = @nroCuenta
 		ORDER BY fecha desc
@@ -534,8 +535,8 @@ IF OBJECT_ID ('SUDO.GetTarjetasCliente') IS NOT NULL DROP PROCEDURE SUDO.GetTarj
 GO
 CREATE PROCEDURE SUDO.GetTarjetasCliente(@idUsuario integer) AS 
 	BEGIN
-		SELECT idTarjeta, E.descripcion, fechaVencimiento, SUBSTRING(CONVERT(varchar(20), numero), DATALENGTH(CONVERT(varchar(20),numero))-3, 4) ult4NumTarj
-	  	FROM (SELECT idTarjeta ,numero, fechaVencimiento, idEmisor, estado
+		SELECT idTarjeta, E.descripcion, fechaVencimiento, ult4num
+	  	FROM (SELECT idTarjeta ,ult4num, fechaVencimiento, idEmisor, estado
 	  		  FROM(SELECT idCliente
 			 	   FROM SUDO.Cliente
 			 	   WHERE idUsuario = @idUsuario)idCliente
@@ -615,6 +616,14 @@ GO
 
 --procesos utilizados para la creaciion y migracion de la base de datos
 --retorna obtiene el saldo inicial de la cuenta, aplicando la ecuacion esplicada en el archivo Estrategia.pdf
+IF OBJECT_ID ('SUDO.EncriptarSHA1') IS NOT NULL DROP FUNCTION SUDO.EncriptarSHA1;
+GO
+CREATE FUNCTION SUDO.EncriptarSHA1(@str12 varchar(12))RETURNS varchar(20) AS 
+BEGIN
+	RETURN HASHBYTES('SHA1', @str12)
+END;
+GO
+
 IF OBJECT_ID ('SUDO.GetSaldoInicial') IS NOT NULL DROP FUNCTION SUDO.GetSaldoInicial;
 GO
 CREATE FUNCTION SUDO.GetSaldoInicial(@nroCuenta bigint)RETURNS bigint AS 
@@ -916,6 +925,7 @@ SET IDENTITY_INSERT SUDO.TipoDoc ON
 	INSERT INTO SUDO.TipoDoc(idTipoDoc, descripcion)
 		SELECT DISTINCT Cli_Tipo_Doc_Cod, Cli_Tipo_Doc_Desc 
 		  FROM gd_esquema.Maestra
+		  WHERE Cli_Tipo_Doc_Cod IS NOT NULL
 
 SET IDENTITY_INSERT SUDO.TipoDoc OFF
 
@@ -928,11 +938,11 @@ INSERT INTO SUDO.Cliente( nombre, apellido, mail, fechaDeNac, idTipoDoc, nroDoc,
 	SELECT Cli_Nombre, Cli_apellido, Cli_Mail, Cli_Fecha_Nac, idTipoDoc, Cli_Nro_Doc, Cli_Dom_Calle, Cli_Dom_Nro, Cli_Dom_Piso, Cli_Dom_Depto, Cli_Pais_Codigo
 		FROM (
 			SELECT DISTINCT Cli_Nro_Doc, Cli_Nombre, Cli_apellido, Cli_Mail, Cli_Fecha_Nac, idTipoDoc, Cli_Dom_Calle, Cli_Dom_Nro, Cli_Dom_Piso, Cli_Dom_Depto, Cli_Pais_Codigo
-			  FROM gd_esquema.Maestra m 
-			  JOIN SUDO.TipoDoc d ON m.Cli_Tipo_Doc_Cod = d.idTipoDoc
-			 WHERE Cli_Tipo_Doc_Cod IS NOT NULL
-			) m_td 
-		JOIN SUDO.Pais P ON (m_td.Cli_Pais_Codigo = P.idPais)
+			FROM gd_esquema.Maestra m 
+			JOIN SUDO.TipoDoc d ON m.Cli_Tipo_Doc_Cod = d.idTipoDoc
+			WHERE Cli_Tipo_Doc_Cod IS NOT NULL
+		) m_td 
+	JOIN SUDO.Pais P ON (m_td.Cli_Pais_Codigo = P.idPais)
 
 PRINT 'Tabla SUDO.Cliente Migrada'
 GO
@@ -940,41 +950,46 @@ GO
 -----------Migracion Factura-----------
 INSERT INTO SUDO.Factura(numero, fecha, idCliente)
 	SELECT DISTINCT Factura_Numero, Factura_Fecha, c.idCliente
-	  FROM gd_esquema.Maestra m 
-	  JOIN SUDO.Cliente c ON m.Cli_Nro_Doc = c.nroDoc AND m.Cli_Tipo_Doc_Cod = c.idTipoDoc
-	 WHERE Factura_Numero IS NOT NULL
+	FROM gd_esquema.Maestra m 
+	JOIN SUDO.Cliente c ON m.Cli_Nro_Doc = c.nroDoc AND m.Cli_Tipo_Doc_Cod = c.idTipoDoc
+	WHERE Factura_Numero IS NOT NULL
 
 PRINT 'Tabla SUDO.Factura Migrada'
-GO
-
------------Migracion Item-----------
-INSERT INTO SUDO.Item(numeroFactura, importe, descripcion)
-	SELECT DISTINCT f.numero, Item_Factura_Importe, Item_Factura_Descr
-	FROM gd_esquema.Maestra m 
-	JOIN SUDO.Factura f ON f.numero = m.Factura_Numero
-	WHERE Item_Factura_Importe IS NOT NULL
-
-PRINT 'Tabla SUDO.Item Migrada'
 GO
 
 -----------Migracion Emisor Tarjeta -----------
 INSERT INTO SUDO.Emisor (descripcion)
 	SELECT DISTINCT Tarjeta_Emisor_Descripcion
-	  FROM gd_esquema.Maestra m 
-	 WHERE Tarjeta_Emisor_Descripcion IS NOT NULL
+	FROM gd_esquema.Maestra m 
+	WHERE Tarjeta_Emisor_Descripcion IS NOT NULL
 
 PRINT 'Tabla SUDO.Emisor Migrada'
 GO
 
 -----------Migracion Tarjeta-----------
-INSERT INTO SUDO.Tarjeta(numero, fechaEmision, fechaVencimiento, codigoSeguridad, idEmisor, idCliente)
-	SELECT DISTINCT Tarjeta_Numero, Tarjeta_Fecha_Emision, Tarjeta_Fecha_Vencimiento, Tarjeta_Codigo_Seg, idEmisor, idCliente
-	  FROM (SELECT DISTINCT Tarjeta_Numero, Tarjeta_Fecha_Emision, Tarjeta_Fecha_Vencimiento, Tarjeta_Codigo_Seg, Tarjeta_Emisor_Descripcion, c.idCliente
-			  FROM gd_esquema.Maestra m 
-			  JOIN SUDO.Cliente c ON m.Cli_Nro_Doc = c.nroDoc AND m.Cli_Tipo_Doc_Cod = c.idTipoDoc
-			 WHERE Tarjeta_Numero IS NOT NULL
-			) m
-	  JOIN SUDO.Emisor e ON e.descripcion = Tarjeta_Emisor_Descripcion
+IF OBJECT_ID ('SUDO.GetUlt4Num') IS NOT NULL DROP FUNCTION SUDO.GetUlt4Num;
+GO
+CREATE FUNCTION SUDO.GetUlt4Num(@numero varchar(16))RETURNS varchar(4) AS 
+BEGIN
+	RETURN SUBSTRING(@numero, DATALENGTH(@numero)-3, 4)
+END;
+GO
+IF OBJECT_ID ('SUDO.GetPrim12Num') IS NOT NULL DROP FUNCTION SUDO.GetPrim12Num;
+GO
+CREATE FUNCTION SUDO.GetPrim12Num(@numero varchar(16))RETURNS varchar(12) AS 
+BEGIN
+	RETURN SUBSTRING(@numero, 1, 12)
+END;
+GO
+
+INSERT INTO SUDO.Tarjeta(ult4num, prim12num, fechaEmision, fechaVencimiento, codigoSeguridad, idEmisor, idCliente)
+	SELECT SUDO.GetUlt4Num(Tarjeta_Numero), SUDO.GetPrim12Num(Tarjeta_Numero), Tarjeta_Fecha_Emision, Tarjeta_Fecha_Vencimiento, Tarjeta_Codigo_Seg, idEmisor, idCliente
+	FROM (SELECT DISTINCT Tarjeta_Numero, Tarjeta_Fecha_Emision, Tarjeta_Fecha_Vencimiento, Tarjeta_Codigo_Seg, Tarjeta_Emisor_Descripcion, c.idCliente
+		  FROM gd_esquema.Maestra m 
+		  JOIN SUDO.Cliente c ON m.Cli_Nro_Doc = c.nroDoc AND m.Cli_Tipo_Doc_Cod = c.idTipoDoc
+		  WHERE Tarjeta_Numero IS NOT NULL
+		  ) m
+	JOIN SUDO.Emisor e ON e.descripcion = Tarjeta_Emisor_Descripcion
 
 PRINT 'Tabla SUDO.Tarjeta Migrada'
 GO
@@ -983,16 +998,16 @@ GO
 SET IDENTITY_INSERT SUDO.Cuenta ON
 
 INSERT INTO SUDO.Cuenta(nroCuenta, fechaCreacion, fechaCierre, idPais, idEstadoCuenta, idCliente)
-	SELECT DISTINCT Cuenta_Numero, Cuenta_Fecha_Creacion, Cuenta_Fecha_Cierre, idPais, idEstadoCuenta, idCliente
-	  FROM ( SELECT Cuenta_Numero, Cuenta_Fecha_Creacion, Cuenta_Fecha_Cierre, descEstadoCuenta, idPais, idCliente
-			   FROM ( SELECT DISTINCT Cuenta_Numero, Cuenta_Fecha_Creacion, Cuenta_Fecha_Cierre, Cuenta_Pais_Codigo, 
-							 (ISNULL ( m.Cuenta_Estado , 'Habilitada')) descEstadoCuenta, idCliente
-		  				FROM gd_esquema.Maestra m 
-						JOIN SUDO.Cliente c ON ((m.Cli_Nro_Doc = c.nroDoc) AND (m.Cli_Tipo_Doc_Cod = c.idTipoDoc))
-		  			) m_c 
-			   JOIN SUDO.Pais p ON (m_c.Cuenta_Pais_Codigo = p.idPais)
-			) m_c_p 
-	  JOIN SUDO.EstadoCuenta ec ON (m_c_p.descEstadoCuenta = ec.descripcion)
+	SELECT Cuenta_Numero, Cuenta_Fecha_Creacion, Cuenta_Fecha_Cierre, idPais, idEstadoCuenta, idCliente
+	FROM ( SELECT Cuenta_Numero, Cuenta_Fecha_Creacion, Cuenta_Fecha_Cierre, descEstadoCuenta, idPais, idCliente
+		   FROM ( SELECT DISTINCT Cuenta_Numero, Cuenta_Fecha_Creacion, Cuenta_Fecha_Cierre, Cuenta_Pais_Codigo, (ISNULL ( m.Cuenta_Estado , 'Habilitada')) descEstadoCuenta, idCliente
+	  			  FROM gd_esquema.Maestra m 
+				  JOIN SUDO.Cliente c ON ((m.Cli_Nro_Doc = c.nroDoc) AND (m.Cli_Tipo_Doc_Cod = c.idTipoDoc))
+				  WHERE Cuenta_Numero is not null
+	  			) m_c 
+		   JOIN SUDO.Pais p ON (m_c.Cuenta_Pais_Codigo = p.idPais)
+		) m_c_p 
+	JOIN SUDO.EstadoCuenta ec ON (m_c_p.descEstadoCuenta = ec.descripcion)
 
 SET IDENTITY_INSERT SUDO.Cuenta OFF
 
@@ -1014,8 +1029,8 @@ SET IDENTITY_INSERT SUDO.Banco ON
 
 	INSERT INTO SUDO.Banco(codigo, nombre, direccion)
 		SELECT DISTINCT Banco_Cogido, Banco_Nombre, Banco_Direccion 
-		  FROM gd_esquema.Maestra 
-		 WHERE Banco_Cogido IS NOT NULL
+		FROM gd_esquema.Maestra 
+		WHERE Banco_Cogido IS NOT NULL
 
 SET IDENTITY_INSERT SUDO.Banco OFF
 
@@ -1028,9 +1043,9 @@ SET IDENTITY_INSERT SUDO.Retiro ON
 
 	INSERT INTO SUDO.Retiro(codigo, fecha, importe, idCuenta, codigoBanco)
 		SELECT DISTINCT Retiro_Codigo, Retiro_Fecha, Retiro_Importe, nroCuenta, Banco_Cogido
-		  FROM gd_esquema.Maestra m 
-		  JOIN SUDO.Cuenta c ON m.Cuenta_Numero = c.nroCuenta
-		 WHERE Retiro_Codigo IS NOT NULL
+	    FROM gd_esquema.Maestra m 
+		JOIN SUDO.Cuenta c ON m.Cuenta_Numero = c.nroCuenta
+		WHERE Retiro_Codigo IS NOT NULL
 
 SET IDENTITY_INSERT SUDO.Retiro OFF
 
@@ -1043,8 +1058,8 @@ SET IDENTITY_INSERT SUDO.Cheque ON
 
 	INSERT INTO SUDO.Cheque(idCheque, idRetiro ,fecha, importe, codigoBanco)
 		SELECT DISTINCT Cheque_Numero, Retiro_Codigo, Cheque_Fecha, Cheque_Importe, Banco_Cogido 
-		  FROM gd_esquema.Maestra 
-		 WHERE Cheque_Numero IS NOT NULL
+		FROM gd_esquema.Maestra 
+		WHERE Cheque_Numero IS NOT NULL
 
 SET IDENTITY_INSERT SUDO.Cheque OFF
 
@@ -1056,12 +1071,13 @@ GO
 SET IDENTITY_INSERT SUDO.Deposito ON
 
 	INSERT INTO SUDO.Deposito(codigo, fecha, importe, nroCuenta, idTarjeta)
-		SELECT Deposito_Codigo, Deposito_Fecha, Deposito_Importe, nroCuenta, idTarjeta
-		  FROM (SELECT DISTINCT Deposito_Codigo, Deposito_Fecha, Deposito_Importe, nroCuenta ,Tarjeta_Numero
-				  FROM gd_esquema.Maestra m 
-				  JOIN SUDO.Cuenta c on m.Cuenta_Numero = c.nroCuenta
-				) m_c 
-		  JOIN SUDO.Tarjeta t on m_c.Tarjeta_Numero = t.numero
+	SELECT Deposito_Codigo, Deposito_Fecha, Deposito_Importe, nroCuenta, idTarjeta
+	FROM (SELECT DISTINCT Deposito_Codigo, Deposito_Fecha, Deposito_Importe, nroCuenta ,Tarjeta_Numero
+		  FROM gd_esquema.Maestra m 
+		  JOIN SUDO.Cuenta c on m.Cuenta_Numero = c.nroCuenta
+		  WHERE Deposito_Codigo IS NOT NULL
+		 ) m_c 
+	JOIN SUDO.Tarjeta t on m_c.Tarjeta_Numero = (t.prim12num + t.ult4num)
 
 SET IDENTITY_INSERT SUDO.Deposito OFF
 
@@ -1072,12 +1088,23 @@ GO
 -----------Migracion Transferencia-----------
 INSERT INTO SUDO.Transferencia(fecha, importe, costo, nroCuentaOrigen, nroCuentaDest)
 	SELECT Transf_Fecha, Trans_Importe, Trans_Costo_Trans, m_c.nroCuenta, c2.nroCuenta
-	FROM(SELECT DISTINCT Cuenta_Dest_Numero, Transf_Fecha, Trans_Importe, Trans_Costo_Trans, Cuenta_Dest_Estado, Cuenta_Dest_Fecha_Cierre, Cuenta_Dest_Fecha_Creacion, Cuenta_Dest_Pais_Codigo, nroCuenta
+	FROM(SELECT Cuenta_Dest_Numero, Transf_Fecha, Trans_Importe, Trans_Costo_Trans, Cuenta_Dest_Estado, Cuenta_Dest_Fecha_Cierre, Cuenta_Dest_Fecha_Creacion, Cuenta_Dest_Pais_Codigo, nroCuenta
 		 FROM gd_esquema.Maestra m join SUDO.Cuenta c on (m.Cuenta_Numero = c.nroCuenta)
+		 WHERE Cuenta_Dest_Numero IS NOT NULL
 	)m_c join SUDO.Cuenta c2 on ((m_c.Cuenta_Dest_Numero = c2.nroCuenta)AND(m_c.Cuenta_Dest_Fecha_Creacion = c2.fechaCreacion)AND(m_c.Cuenta_Dest_Pais_Codigo = c2.idPais))
 
 
 PRINT 'Tabla SUDO.Transferencia Migrada'
+GO
+
+-----------Migracion Item-----------
+INSERT INTO SUDO.Item(numeroFactura, importe, descripcion, idTrans)
+	SELECT Factura_Numero, Item_Factura_Importe, Item_Factura_Descr, idTrans
+	FROM gd_esquema.Maestra m 
+	JOIN SUDO.Transferencia T ON (T.nroCuentaOrigen = m.Cuenta_Numero AND T.nroCuentaDest = m.Cuenta_Dest_Numero)
+	WHERE Factura_Numero IS NOT NULL
+
+PRINT 'Tabla SUDO.Item Migrada'
 GO
 
 -----------Creacion de Usuarios y creacion de la relacion con los clientes-----------
@@ -1128,6 +1155,10 @@ GO
 
 EXEC SUDO.UpdateIdMoneda @descripcionMoneda = 'Dolar'
 GO
+
+-- Encripto los primeros 12 numeros de la tarjeta --
+
+UPDATE SUDO.Tarjeta SET prim12num = SUDO.EncriptarSHA1(prim12num)
 
 -------------Creacion de AK cliente x mail
 

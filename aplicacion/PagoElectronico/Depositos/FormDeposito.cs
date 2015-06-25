@@ -114,7 +114,7 @@ namespace PagoElectronico.Depositos
                 int RelsultadoComparacionFechas = DateTime.Compare(Convert.ToDateTime(readerTarjetas["fechaVencimiento"]), configInicial.GetFecha());
                 if (RelsultadoComparacionFechas >= 0)
                 {
-                    comboBoxTarjCred.Items.Add(readerTarjetas["ult4NumTarj"].ToString() + " " + readerTarjetas["descripcion"].ToString());
+                    comboBoxTarjCred.Items.Add(readerTarjetas["ult4num"].ToString() + " " + readerTarjetas["descripcion"].ToString());
                     idTarjetas.Add(Convert.ToInt64(readerTarjetas["idTarjeta"]));
                 }
             }
