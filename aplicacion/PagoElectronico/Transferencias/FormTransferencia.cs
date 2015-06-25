@@ -121,7 +121,7 @@ namespace PagoElectronico.Transferencias
                 }
                 else
                 {
-                    MessageBox.Show("Saldo insuficiente");
+                    MessageBox.Show("Saldo insuficiente o cuenta destino invalida");
                 }
             }
             else

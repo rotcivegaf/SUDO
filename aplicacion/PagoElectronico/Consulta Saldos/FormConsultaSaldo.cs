@@ -69,7 +69,7 @@ namespace PagoElectronico.Consulta_Saldos
 
                 for (; readerDeposito.Read(); )
                 {
-                    DGDepositos.Rows.Add(readerDeposito["codigo"], readerDeposito["fecha"], readerDeposito["importe"], readerDeposito["ult4NumTarj"]);
+                    DGDepositos.Rows.Add(readerDeposito["codigo"], readerDeposito["fecha"], readerDeposito["importe"], readerDeposito["ult4Num"]);
                 }
 
                 //muestra los 5 ultimos retiros

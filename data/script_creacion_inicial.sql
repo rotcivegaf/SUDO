@@ -456,6 +456,13 @@ CREATE PROCEDURE SUDO.CrearTransferencia(@nroCuentaOrigen bigint, @importe bigin
 		DECLARE @nroDocCliente numeric(18,0)
 		DECLARE @idCliente integer
 
+		DECLARE @existeCuentaDest BIT
+		SELECT @existeCuentaDest = 0
+		IF EXISTS(SELECT *
+		     	  FROM SUDO.Cuenta
+				  WHERE nroCuenta = @nroCuentaDest)
+		SELECT @existeCuentaDest = 1;
+				
 		SELECT @saldoOrigen = saldo, @costo = t.costo 
 		FROM SUDO.Cuenta c JOIN SUDO.TipoCuenta t ON c.idTipoCuenta = t.idTipoCuenta
 		WHERE (nroCuenta = @nroCuentaOrigen)
@@ -468,18 +475,21 @@ CREATE PROCEDURE SUDO.CrearTransferencia(@nroCuentaOrigen bigint, @importe bigin
 		FROM SUDO.Moneda
 		WHERE descripcion = @moneda
 
-		IF EXISTS(SELECT t.nombre
-		     	  FROM SUDO.Cuenta c JOIN SUDO.TipoCuenta t ON c.idTipoCuenta = t.idTipoCuenta
-				  WHERE nroCuenta = @nroCuentaOrigen)
-			IF(@saldoOrigen > @importe)				 
-				BEGIN 
-					INSERT INTO SUDO.Transferencia (nroCuentaDest, nroCuentaOrigen, idMoneda, costo, importe, fecha)
-					VALUES(@nroCuentaDest, @nroCuentaOrigen , @idMoneda, @costo, @importe ,Convert(dateTime, @fecha, 121));
-					UPDATE SUDO.Cuenta SET saldo = @saldoOrigen - @importe - @costo
-					WHERE (nroCuenta = @nroCuentaOrigen)
-					UPDATE SUDO.Cuenta SET saldo = @saldoDest + @importe
-					WHERE (nroCuenta = @nroCuentaDest)
-				END;
+		IF(@nroCuentaOrigen = @nroCuentaDest)
+			SELECT @costo = 0
+
+		IF(@saldoOrigen > @importe AND @existeCuentaDest = 1)				 
+		BEGIN 
+			SET IDENTITY_INSERT SUDO.Transferencia ON
+				INSERT INTO SUDO.Transferencia (nroCuentaDest, nroCuentaOrigen, idMoneda, costo, importe, fecha)
+				VALUES(@nroCuentaDest, @nroCuentaOrigen , @idMoneda, @costo, @importe ,Convert(dateTime, @fecha, 121));
+			SET IDENTITY_INSERT SUDO.Transferencia OFF
+
+			UPDATE SUDO.Cuenta SET saldo = @saldoOrigen - @importe - @costo
+			WHERE (nroCuenta = @nroCuentaOrigen)
+			UPDATE SUDO.Cuenta SET saldo = @saldoDest + @importe
+			WHERE (nroCuenta = @nroCuentaDest)
+		END;
 	END;
 GO
 

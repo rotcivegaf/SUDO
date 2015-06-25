@@ -44,7 +44,7 @@ namespace PagoElectronico.Tarjetas
         {
             if (!(char.IsNumber(e.KeyChar)) && (e.KeyChar != (char)Keys.Back))
             {
-                MessageBox.Show("Solo se permiten numeros en el campo Importe", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Solo se permiten numeros en el campo Numero", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 e.Handled = true;
                 return;
             }
@@ -58,20 +58,27 @@ namespace PagoElectronico.Tarjetas
 
         private void botonAsociar_Click(object sender, EventArgs e)
         {
-            if ((textBoxCod.Text != "") && (textBoxNumero.Text != "") && (comboBoxEmisor.Text != ""))
+            if (textBoxNumero.Text.Length != 16)
             {
-                if (asociarTarjeta())
-                {
-                    limpiarFrom();
-                }
-                else
-                {
-                    MessageBox.Show("Numero de tarjeta existente");
-                }
+                MessageBox.Show("El numero de tarjeta debe ser de tener 16 digitos", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             else
             {
-                MessageBox.Show("Datos incompletos");
+                if ((textBoxCod.Text != "") && (comboBoxEmisor.Text != ""))
+                {
+                    if (asociarTarjeta())
+                    {
+                        limpiarFrom();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Numero de tarjeta existente");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Datos incompletos");
+                }
             }
         }
 
