@@ -124,7 +124,6 @@
             // dateTimePickerFechaModif
             // 
             this.dateTimePickerFechaModif.CustomFormat = "";
-            this.dateTimePickerFechaModif.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dateTimePickerFechaModif.Location = new System.Drawing.Point(554, 56);
             this.dateTimePickerFechaModif.Name = "dateTimePickerFechaModif";
             this.dateTimePickerFechaModif.Size = new System.Drawing.Size(162, 20);
@@ -132,7 +131,6 @@
             // 
             // dateTimePickerFechaCrea
             // 
-            this.dateTimePickerFechaCrea.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dateTimePickerFechaCrea.Location = new System.Drawing.Point(554, 24);
             this.dateTimePickerFechaCrea.Name = "dateTimePickerFechaCrea";
             this.dateTimePickerFechaCrea.Size = new System.Drawing.Size(162, 20);

@@ -87,7 +87,7 @@ namespace PagoElectronico.ABM_Usuario
                 }
                 else
                 {
-                    fechaA = dateTimePickerFechaCrea.Value;
+                    fechaA = dateTimePickerFechaModif.Value;
                 }
                 if (checkFechaModf.Checked)
                 {
@@ -95,7 +95,7 @@ namespace PagoElectronico.ABM_Usuario
                 }
                 else
                 {
-                    fechaM = dateTimePickerFechaModif.Value;
+                    fechaM = dateTimePickerFechaCrea.Value;
                 }
 
                 tablaUsers = UsuarioServices.GetUserByFiltros(textBoxUserL.Text, int.Parse(comboBoxRol.SelectedValue.ToString()),
