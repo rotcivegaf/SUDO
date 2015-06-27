@@ -17,7 +17,7 @@ namespace PagoElectronico
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetCompatibleTextRenderingDefault(false);            
             ConexionDB.conectarDB();
             Application.Run(new FormLogin());
             ConexionDB.DesconectarDB();

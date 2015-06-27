@@ -209,7 +209,7 @@ CREATE TABLE SUDO.Tarjeta (
 	idEmisor 			integer FOREIGN KEY REFERENCES SUDO.Emisor,
 	fechaEmision 		datetime NOT NULL,
 	fechaVencimiento 	datetime NOT NULL,
-	codigoSeguridad 	varchar(3) NOT NULL,
+	codigoSeguridad 	varchar(255) NOT NULL,
 	estado 				BIT DEFAULT 1,	
 );
 
@@ -391,7 +391,7 @@ CREATE PROCEDURE SUDO.AsociarTarjeta(@numero VARCHAR(16), @emisorDesc varchar(25
 				WHERE idUsuario = @idUser
 				
 				INSERT INTO SUDO.Tarjeta (idCliente, prim12num, ult4num, idEmisor, fechaEmision, fechaVencimiento, codigoSeguridad)
-				VALUES(@idCliente, SUDO.EncriptarSHA1(SUDO.GetPrim12Num(@numero)), SUDO.GetUlt4Num(@numero), @idEmisor,Convert(dateTime, @fechaEmision, 121),Convert(dateTime, @fechaVencimiento, 121), @codigoSeguridad);
+				VALUES(@idCliente, SUDO.EncriptarSHA1(SUDO.GetPrim12Num(@numero)), SUDO.GetUlt4Num(@numero), @idEmisor,Convert(dateTime, @fechaEmision, 121),Convert(dateTime, @fechaVencimiento, 121), SUDO.EncriptarSHA1(@codigoSeguridad));
 			END;
 	END;
 GO
@@ -461,7 +461,7 @@ CREATE PROCEDURE SUDO.CrearRetiro(@nroCuenta bigint, @fecha datetime, @moneda va
 	END;
 GO
 
---Transferencias
+--Form Transferencias
 -- registra una transferencia, verificando el saldo de la cuenta y si la cuenta no esta "Pendiente de activacion" o "Cerrada"
 IF OBJECT_ID ('SUDO.CrearTransferencia') IS NOT NULL DROP PROCEDURE SUDO.CrearTransferencia
 GO
@@ -504,7 +504,7 @@ CREATE PROCEDURE SUDO.CrearTransferencia(@nroCuentaOrigen bigint, @importe bigin
 				VALUES(@nroCuentaDest, @nroCuentaOrigen , @idMoneda, @costo, @importe ,Convert(dateTime, @fecha, 121));
 			SET IDENTITY_INSERT SUDO.Transferencia OFF
 
-			UPDATE SUDO.Cuenta SET saldo = @saldoOrigen - @importe - @costo
+			UPDATE SUDO.Cuenta SET saldo = @saldoOrigen - @importe
 			WHERE (nroCuenta = @nroCuentaOrigen)
 			UPDATE SUDO.Cuenta SET saldo = @saldoDest + @importe
 			WHERE (nroCuenta = @nroCuentaDest)
@@ -647,7 +647,7 @@ GO
 --retorna obtiene el saldo inicial de la cuenta, aplicando la ecuacion esplicada en el archivo Estrategia.pdf
 IF OBJECT_ID ('SUDO.EncriptarSHA1') IS NOT NULL DROP FUNCTION SUDO.EncriptarSHA1;
 GO
-CREATE FUNCTION SUDO.EncriptarSHA1(@str12 varchar(12))RETURNS varchar(20) AS 
+CREATE FUNCTION SUDO.EncriptarSHA1(@str12 varchar(12))RETURNS varchar(255) AS 
 BEGIN
 	RETURN HASHBYTES('SHA1', @str12)
 END;
@@ -740,11 +740,12 @@ GO
 --crea un nuevo usuario
 IF OBJECT_ID ('SUDO.NuevoUsuario') IS NOT NULL DROP PROCEDURE SUDO.NuevoUsuario
 GO
-CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime, @PreguntaSecreta VARCHAR(255), @RespuestaSecreta VARCHAR(255), @CantIntentosFallidos TINYINT, @Estado BIT) AS
+CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime, @PreguntaSecreta VARCHAR(255), @CantIntentosFallidos TINYINT, @Estado BIT) AS
 	BEGIN
 		INSERT INTO SUDO.Usuario(userName, userPassword, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado)
 		VALUES(@UserName, ISNULL (@Password , '5rhwUL/LgUP8uNsBcKTcntANkE3dPipK0bHo3A/cm+c='),
-			   ISNULL (@FechaCreacion , GETDATE()), ISNULL (@FechaDeUltimaModificacion , GETDATE()),@PreguntaSecreta, @RespuestaSecreta, @CantIntentosFallidos, @Estado)
+			   ISNULL (@FechaCreacion , GETDATE()), ISNULL (@FechaDeUltimaModificacion , GETDATE()),
+			   @PreguntaSecreta, '6QWKsZj2kI9wIRGwwPtbNvmdAFVFIYhsQOKJGzSdx6E=', @CantIntentosFallidos, @Estado)
 	END;
 GO
 
@@ -908,14 +909,6 @@ EXEC SUDO.NuevoTipoCuenta @Nombre = 'Gratuita', @Duracion = 1820 , @Costo = 0  -
 PRINT 'Tabla SUDO.TipoCuenta creacion de los 4 TipoCuenta'
 GO
 
------------Creacion de los Usuarios-----------
-EXEC SUDO.NuevoUsuario @UserName= 'admin', @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
-
-EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador General', @UserName= 'admin'
-
-PRINT 'Tabla SUDO.Usuario creacion de Usuarios'
-GO
-
 ---------------------------------------------------------------------------
 			--  	Migracion de datos
 ---------------------------------------------------------------------------
@@ -961,7 +954,6 @@ SET IDENTITY_INSERT SUDO.TipoDoc OFF
 PRINT 'Tabla SUDO.TipoDoc Migrada'
 GO
 
--- select DISTINCT COUNT(*)  FROM gd_esquema.Maestra -- 502494
 -----------Migracion Cliente-----------
 INSERT INTO SUDO.Cliente( nombre, apellido, mail, fechaDeNac, idTipoDoc, nroDoc, dirCalle, dirNumero, dirPiso, dirDepto, idPais)
 	SELECT Cli_Nombre, Cli_apellido, Cli_Mail, Cli_Fecha_Nac, idTipoDoc, Cli_Nro_Doc, Cli_Dom_Calle, Cli_Dom_Nro, Cli_Dom_Piso, Cli_Dom_Depto, Cli_Pais_Codigo
@@ -1012,7 +1004,7 @@ END;
 GO
 
 INSERT INTO SUDO.Tarjeta(ult4num, prim12num, fechaEmision, fechaVencimiento, codigoSeguridad, idEmisor, idCliente)
-	SELECT SUDO.GetUlt4Num(Tarjeta_Numero), SUDO.GetPrim12Num(Tarjeta_Numero), Tarjeta_Fecha_Emision, Tarjeta_Fecha_Vencimiento, Tarjeta_Codigo_Seg, idEmisor, idCliente
+	SELECT SUDO.GetUlt4Num(Tarjeta_Numero), SUDO.GetPrim12Num(Tarjeta_Numero), Tarjeta_Fecha_Emision, Tarjeta_Fecha_Vencimiento, SUDO.EncriptarSHA1(Tarjeta_Codigo_Seg), idEmisor, idCliente
 	FROM (SELECT DISTINCT Tarjeta_Numero, Tarjeta_Fecha_Emision, Tarjeta_Fecha_Vencimiento, Tarjeta_Codigo_Seg, Tarjeta_Emisor_Descripcion, c.idCliente
 		  FROM gd_esquema.Maestra m 
 		  JOIN SUDO.Cliente c ON m.Cli_Nro_Doc = c.nroDoc AND m.Cli_Tipo_Doc_Cod = c.idTipoDoc
@@ -1177,7 +1169,7 @@ OPEN CursorCli FETCH NEXT FROM CursorCli INTO @Mail, @idUsuario
 WHILE (@@FETCH_STATUS = 0)
 	BEGIN
 		EXEC SUDO.NuevoUsuario @UserName= @Mail, @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,
-							   @PreguntaSecreta='quien?', @RespuestaSecreta='yo', @CantIntentosFallidos= 0, @Estado= 1
+							   @PreguntaSecreta='quien?', @CantIntentosFallidos= 0, @Estado= 1
 		EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Cliente', @UserName= @Mail
 		UPDATE SUDO.Cliente SET idUsuario =	(SELECT TOP(1) idUsuario
 											 FROM SUDO.Usuario
@@ -1259,6 +1251,14 @@ AS
 		INSERT INTO SUDO.Cheque(idRetiro, codigoBanco, idMoneda, fecha, importe)
 		VALUES(@idRetiro, @codigoBanco, @idMoneda, @fechaIngreso, @importe);
 	END;
+GO
+
+-----------Creacion de los Usuarios-----------
+EXEC SUDO.NuevoUsuario @UserName= 'admin', @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @CantIntentosFallidos= 0, @Estado= 1
+
+EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador General', @UserName= 'admin'
+
+PRINT 'Tabla SUDO.Usuario creacion de Usuarios'
 GO
 
 --Stores Procedures para agregar al script inicial

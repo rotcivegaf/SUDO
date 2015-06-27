@@ -111,8 +111,8 @@ namespace PagoElectronico.Depositos
             comboBoxTarjCred.Items.Add("");
             for (; readerTarjetas.Read(); )
             {
-                int RelsultadoComparacionFechas = DateTime.Compare(Convert.ToDateTime(readerTarjetas["fechaVencimiento"]), configInicial.GetFecha());
-                if (RelsultadoComparacionFechas >= 0)
+                int relsultadoComparacionFechas = DateTime.Compare(Convert.ToDateTime(readerTarjetas["fechaVencimiento"]), configInicial.GetFecha());
+                if (relsultadoComparacionFechas >= 0)
                 {
                     comboBoxTarjCred.Items.Add(readerTarjetas["ult4num"].ToString() + " " + readerTarjetas["descripcion"].ToString());
                     idTarjetas.Add(Convert.ToInt64(readerTarjetas["idTarjeta"]));

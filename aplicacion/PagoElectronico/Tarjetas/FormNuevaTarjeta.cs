@@ -58,27 +58,36 @@ namespace PagoElectronico.Tarjetas
 
         private void botonAsociar_Click(object sender, EventArgs e)
         {
-            if (textBoxNumero.Text.Length != 16)
+            int relsultadoComparacionFechas = DateTime.Compare(dateTimePickerEmision.Value, dateTimePickerVencimiento.Value);
+
+            if (relsultadoComparacionFechas <= 0)
             {
-                MessageBox.Show("El numero de tarjeta debe ser de tener 16 digitos", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            else
-            {
-                if ((textBoxCod.Text != "") && (comboBoxEmisor.Text != ""))
+                if (textBoxNumero.Text.Length != 16 || textBoxCod.Text.Length != 3)
                 {
-                    if (asociarTarjeta())
-                    {
-                        limpiarFrom();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Numero de tarjeta existente");
-                    }
+                    MessageBox.Show("El numero de tarjeta debe ser de tener 16 digitos y el codigo secreto debe ser de 3 alfanumericos", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
                 else
                 {
-                    MessageBox.Show("Datos incompletos");
+                    if ((textBoxCod.Text != "") && (comboBoxEmisor.Text != ""))
+                    {
+                        if (asociarTarjeta())
+                        {
+                            limpiarFrom();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Numero de tarjeta existente");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Datos incompletos");
+                    }
                 }
+            }
+            else
+            {
+                MessageBox.Show("La fecha de vencimiento tiene que ser mayor a la de emision", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 

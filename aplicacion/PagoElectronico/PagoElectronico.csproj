@@ -82,17 +82,11 @@
     <Compile Include="ABMS\ABM Cuenta\FormABMCuenta.Designer.cs">
       <DependentUpon>FormABMCuenta.cs</DependentUpon>
     </Compile>
-    <Compile Include="ABMS\ABM Rol\FormABMRol.cs">
+    <Compile Include="ABMS\ABM Rol_\FormRol.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ABMS\ABM Rol\FormABMRol.Designer.cs">
-      <DependentUpon>FormABMRol.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ABMS\ABM Rol\FormAltaRol.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ABMS\ABM Rol\FormAltaRol.Designer.cs">
-      <DependentUpon>FormAltaRol.cs</DependentUpon>
+    <Compile Include="ABMS\ABM Rol_\FormRol.Designer.cs">
+      <DependentUpon>FormRol.cs</DependentUpon>
     </Compile>
     <Compile Include="ABMS\ABM Usuario\FormAltaUsuario.cs">
       <SubType>Form</SubType>
@@ -187,8 +181,8 @@
     <EmbeddedResource Include="ABMS\ABM Cuenta\FormABMCuenta.resx">
       <DependentUpon>FormABMCuenta.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ABMS\ABM Rol\FormABMRol.resx">
-      <DependentUpon>FormABMRol.cs</DependentUpon>
+    <EmbeddedResource Include="ABMS\ABM Rol_\FormRol.resx">
+      <DependentUpon>FormRol.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ABMS\ABM Usuario\FormAltaUsuario.resx">
       <DependentUpon>FormAltaUsuario.cs</DependentUpon>
