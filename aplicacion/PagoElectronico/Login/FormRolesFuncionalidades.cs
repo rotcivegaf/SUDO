@@ -9,7 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 
-using PagoElectronico.ABM_Rol;
+using PagoElectronico.ABMS.ABM_Rol;
 using PagoElectronico.ABM_Cliente;
 using PagoElectronico.ABM_Cuenta;
 using PagoElectronico.ABM_Usuario;
@@ -78,8 +78,8 @@ namespace PagoElectronico.Login
             switch (comboBox2.Text)
             {
                 case "ABM de rol":
-                    FormABMRol formABMRol = new FormABMRol();
-                    formABMRol.Show(this);
+                    FormRol formRol = new FormRol();
+                    formRol.Show(this);
                     break;
                 case "ABM de usuario":
                     FormModificacionUsuario formModificacionUsuario = new FormModificacionUsuario();

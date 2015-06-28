@@ -28,6 +28,9 @@ namespace PagoElectronico.Dominio
 
             for (; reader.Read(); auxList.Add(reader["nombreRol"].ToString()), auxList2.Add(reader["nombreFuncionalidad"].ToString())) ;
 
+            if (auxList.Count == 0)
+                return;
+
             string auxAnt;
             int i;
             List<string> funcionalidades;

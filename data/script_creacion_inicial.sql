@@ -318,7 +318,100 @@ CREATE PROCEDURE SUDO.GetRolesXFuncionalidades(@idUsuario integer) AS
 	END;
 GO
 
---Facturacion
+--From Rol
+-- obtiene todos los roles existentes
+IF OBJECT_ID ('SUDO.GetRoles') IS NOT NULL DROP PROCEDURE SUDO.GetRoles
+GO
+CREATE PROCEDURE SUDO.GetRoles AS 
+	BEGIN
+		SELECT idRol, nombreRol, estado
+		FROM SUDO.Rol
+	END;
+GO
+
+-- dado un idRol se cambia su estado
+IF OBJECT_ID ('SUDO.ModificarEstadoRol') IS NOT NULL DROP PROCEDURE SUDO.ModificarEstadoRol
+GO
+CREATE PROCEDURE SUDO.ModificarEstadoRol(@idRol integer) AS 
+	BEGIN
+		DECLARE @Estado bit
+
+		IF((SELECT estado FROM SUDO.Rol WHERE idRol = @idRol)=0)
+			SELECT @Estado = 1
+		ELSE
+			SELECT @Estado = 0
+
+		UPDATE SUDO.Rol
+		SET estado = @Estado
+		WHERE idRol = @idRol
+	END;
+GO
+
+-- dado un idRol se cambia su nombre
+IF OBJECT_ID ('SUDO.ModificarNombreRol') IS NOT NULL DROP PROCEDURE SUDO.ModificarNombreRol
+GO
+CREATE PROCEDURE SUDO.ModificarNombreRol(@idRol integer, @nombre varchar(255)) AS 
+	BEGIN
+		UPDATE SUDO.Rol
+		SET nombreRol = @nombre
+		WHERE idRol = @idRol
+	END;
+GO
+
+-- dado un idRol obtiene sus funcionalidades
+IF OBJECT_ID ('SUDO.GetFuncionalidadesDelRol') IS NOT NULL DROP PROCEDURE SUDO.GetFuncionalidadesDelRol
+GO
+CREATE PROCEDURE SUDO.GetFuncionalidadesDelRol(@idRol integer) AS 
+	BEGIN
+		SELECT F.idFuncionalidad, nombre
+		FROM SUDO.Funcionalidad F JOIN (SELECT *
+				   						FROM SUDO.FuncionalidadXRol
+							  			WHERE idRol = @idRol) FR ON (F.idFuncionalidad =FR.idFuncionalidad )
+	END;
+GO
+
+-- obtiene las funcionalidades del sitema
+IF OBJECT_ID ('SUDO.GetFuncionalidadesDisponibles') IS NOT NULL DROP PROCEDURE SUDO.GetFuncionalidadesDisponibles
+GO
+CREATE PROCEDURE SUDO.GetFuncionalidadesDisponibles AS 
+	BEGIN
+		SELECT *
+		FROM SUDO.Funcionalidad
+	END;
+GO
+
+-- agregar o quitar una funcioonalidad del Rol
+-- su la funcionalidad no existe la agrega y si existe la saca
+IF OBJECT_ID ('SUDO.AgregarQuitarFuncionalidad') IS NOT NULL DROP PROCEDURE SUDO.AgregarQuitarFuncionalidad
+GO
+CREATE PROCEDURE SUDO.AgregarQuitarFuncionalidad (@idRol integer, @funcionalidad varchar(255)) AS
+	BEGIN
+		IF EXISTS(SELECT F.idFuncionalidad 
+				  FROM SUDO.Funcionalidad F JOIN (SELECT *
+  			  									  FROM SUDO.FuncionalidadXRol
+							  					  WHERE idRol = @idRol) FR ON (F.idFuncionalidad =FR.idFuncionalidad )
+		  		  WHERE F.nombre = @funcionalidad
+		)
+			BEGIN
+				DELETE FROM SUDO.FuncionalidadXRol
+				WHERE (idFuncionalidad = (SELECT F.idFuncionalidad 
+										  FROM SUDO.Funcionalidad F JOIN (SELECT *
+		  			  													  FROM SUDO.FuncionalidadXRol
+							  											  WHERE idRol = @idRol) FR ON (F.idFuncionalidad =FR.idFuncionalidad )
+										  WHERE F.nombre = @funcionalidad)
+				  AND idRol = @idRol)
+			END;
+		ELSE
+			BEGIN
+				INSERT INTO SUDO.FuncionalidadXRol(idRol, idFuncionalidad)
+				VALUES (@idRol,  (SELECT idFuncionalidad
+							FROM SUDO.Funcionalidad
+						    WHERE nombre = @funcionalidad))
+			END;
+	END;
+GO
+
+--From Facturacion
 -- dado un idUsuario de la tabla usuario obtiene los items a facturar
 IF OBJECT_ID ('SUDO.GetItemsAFacturar') IS NOT NULL DROP PROCEDURE SUDO.GetItemsAFacturar
 GO
@@ -1210,7 +1303,6 @@ EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador General', @UserName= 'a
 PRINT 'Tabla SUDO.Usuario creacion de Usuarios'
 GO
 
-
 --Stores Procedures para agregar al script inicial
 -------------------------------------------------------------------------------------------------------------
 --LISTA LOS USUARIOS .
@@ -1219,6 +1311,7 @@ GO
 -------------------------------------------------------------------------------------------------------------
 
 IF OBJECT_ID ('SUDO.SP_LISTADO_USUARIOS') IS NOT NULL DROP PROCEDURE SUDO.SP_LISTADO_USUARIOS
+GO
 CREATE PROCEDURE SUDO.SP_LISTADO_USUARIOS(
 	@USUARIO     	VARCHAR(255) = NULL,
     @ROL   			INTEGER = NULL, 
@@ -1240,8 +1333,10 @@ END
 GO
 
 ------------------------------------------------------------------------------------------------------------------------------------
-IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO
+
 --STORED PROCEDURE PARA ALTA DE USUARIO
+IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO 
+GO
 CREATE PROCEDURE SUDO.SP_ALTA_USUARIO  
 --PARAMETROS DE ENTRADA
   @USUARIO				VARCHAR(255),

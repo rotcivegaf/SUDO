@@ -82,10 +82,16 @@
     <Compile Include="ABMS\ABM Cuenta\FormABMCuenta.Designer.cs">
       <DependentUpon>FormABMCuenta.cs</DependentUpon>
     </Compile>
-    <Compile Include="ABMS\ABM Rol_\FormRol.cs">
+    <Compile Include="ABMS\ABM Rol\FormModificarFuncionalidades.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ABMS\ABM Rol_\FormRol.Designer.cs">
+    <Compile Include="ABMS\ABM Rol\FormModificarFuncionalidades.Designer.cs">
+      <DependentUpon>FormModificarFuncionalidades.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ABMS\ABM Rol\FormRol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABMS\ABM Rol\FormRol.Designer.cs">
       <DependentUpon>FormRol.cs</DependentUpon>
     </Compile>
     <Compile Include="ABMS\ABM Usuario\FormAltaUsuario.cs">
@@ -100,10 +106,10 @@
     <Compile Include="ABMS\ABM Usuario\FormModificacionUsuario.designer.cs">
       <DependentUpon>FormModificacionUsuario.cs</DependentUpon>
     </Compile>
-    <Compile Include="Consulta Saldos\FormConsultaSaldo.cs">
+    <Compile Include="Consultas\Consulta Saldos\FormConsultaSaldo.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Consulta Saldos\FormConsultaSaldo.Designer.cs">
+    <Compile Include="Consultas\Consulta Saldos\FormConsultaSaldo.Designer.cs">
       <DependentUpon>FormConsultaSaldo.cs</DependentUpon>
     </Compile>
     <Compile Include="DAO\ConexionDB.cs" />
@@ -111,17 +117,17 @@
     <Compile Include="Dominio\Roles.cs" />
     <Compile Include="Dominio\Usuario.cs" />
     <Compile Include="DTO\PreguntaSecretaDTO.cs" />
-    <Compile Include="Encriptador.cs" />
-    <Compile Include="Listados\FormListado.cs">
+    <Compile Include="Utils\Encriptador.cs" />
+    <Compile Include="Consultas\Listados\FormListado.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Listados\FormListado.Designer.cs">
+    <Compile Include="Consultas\Listados\FormListado.Designer.cs">
       <DependentUpon>FormListado.cs</DependentUpon>
     </Compile>
-    <Compile Include="Facturacion\FormFacturacion.cs">
+    <Compile Include="Consultas\Facturacion\FormFacturacion.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Facturacion\FormFacturacion.Designer.cs">
+    <Compile Include="Consultas\Facturacion\FormFacturacion.Designer.cs">
       <DependentUpon>FormFacturacion.cs</DependentUpon>
     </Compile>
     <Compile Include="Login\FormRolesFuncionalidades.cs">
@@ -146,22 +152,22 @@
     <Compile Include="Tarjetas\FormTarjetas.Designer.cs">
       <DependentUpon>FormTarjetas.cs</DependentUpon>
     </Compile>
-    <Compile Include="Transferencias\FormTransferencia.cs">
+    <Compile Include="Transacciones\Transferencias\FormTransferencia.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Transferencias\FormTransferencia.Designer.cs">
+    <Compile Include="Transacciones\Transferencias\FormTransferencia.Designer.cs">
       <DependentUpon>FormTransferencia.cs</DependentUpon>
     </Compile>
-    <Compile Include="Retiros\FormRetiro.cs">
+    <Compile Include="Transacciones\Retiros\FormRetiro.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Retiros\FormRetiro.Designer.cs">
+    <Compile Include="Transacciones\Retiros\FormRetiro.Designer.cs">
       <DependentUpon>FormRetiro.cs</DependentUpon>
     </Compile>
-    <Compile Include="Depositos\FormDeposito.cs">
+    <Compile Include="Transacciones\Depositos\FormDeposito.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Depositos\FormDeposito.Designer.cs">
+    <Compile Include="Transacciones\Depositos\FormDeposito.Designer.cs">
       <DependentUpon>FormDeposito.cs</DependentUpon>
     </Compile>
     <Compile Include="Login\FormLogin.cs">
@@ -181,7 +187,10 @@
     <EmbeddedResource Include="ABMS\ABM Cuenta\FormABMCuenta.resx">
       <DependentUpon>FormABMCuenta.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ABMS\ABM Rol_\FormRol.resx">
+    <EmbeddedResource Include="ABMS\ABM Rol\FormModificarFuncionalidades.resx">
+      <DependentUpon>FormModificarFuncionalidades.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABMS\ABM Rol\FormRol.resx">
       <DependentUpon>FormRol.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ABMS\ABM Usuario\FormAltaUsuario.resx">
@@ -190,16 +199,16 @@
     <EmbeddedResource Include="ABMS\ABM Usuario\FormModificacionUsuario.resx">
       <DependentUpon>FormModificacionUsuario.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Consulta Saldos\FormConsultaSaldo.resx">
+    <EmbeddedResource Include="Consultas\Consulta Saldos\FormConsultaSaldo.resx">
       <DependentUpon>FormConsultaSaldo.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Depositos\FormDeposito.resx">
+    <EmbeddedResource Include="Transacciones\Depositos\FormDeposito.resx">
       <DependentUpon>FormDeposito.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Facturacion\FormFacturacion.resx">
+    <EmbeddedResource Include="Consultas\Facturacion\FormFacturacion.resx">
       <DependentUpon>FormFacturacion.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Listados\FormListado.resx">
+    <EmbeddedResource Include="Consultas\Listados\FormListado.resx">
       <DependentUpon>FormListado.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login\FormLogin.resx">
@@ -213,7 +222,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Retiros\FormRetiro.resx">
+    <EmbeddedResource Include="Transacciones\Retiros\FormRetiro.resx">
       <DependentUpon>FormRetiro.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tarjetas\FormNuevaTarjeta.resx">
@@ -222,7 +231,7 @@
     <EmbeddedResource Include="Tarjetas\FormTarjetas.resx">
       <DependentUpon>FormTarjetas.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Transferencias\FormTransferencia.resx">
+    <EmbeddedResource Include="Transacciones\Transferencias\FormTransferencia.resx">
       <DependentUpon>FormTransferencia.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">

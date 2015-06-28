@@ -168,9 +168,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(388, 12);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(297, 13);
+            this.label1.Size = new System.Drawing.Size(291, 13);
             this.label1.TabIndex = 20;
-            this.label1.Text = "Seleccione el IdTarjeta a la cual quiere codificar o desasociar";
+            this.label1.Text = "Seleccione el IdTarjeta a la cual quiere asociar o desasociar";
             // 
             // label2
             // 
