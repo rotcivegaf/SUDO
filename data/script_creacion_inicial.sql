@@ -749,57 +749,6 @@ CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255
 	END;
 GO
 
-
---STORED PROCEDURE PARA ALTA DE USUARIO
-IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO
-GO
-CREATE PROCEDURE SUDO.SP_ALTA_USUARIO  
---PARAMETROS DE ENTRADA
-  @USER					VARCHAR(255),
-  @PASSWORD				VARCHAR(255),
-  @FECHACREA			DATETIME,
-  @FECHAMODIF   		DATETIME,
-  @PREGUNTASECRETA  	VARCHAR(255),
-  @RTASECRETA  			VARCHAR(255), 
-  @CANTINTENTOSFALL		TINYINT,
-  @ESTADO				BIT,
---PARAMETRO DE SALIDA
-  @VALOR     INT OUTPUT 
-
-AS
-SET NOCOUNT ON 
-SET ANSI_WARNINGS OFF 
-
-DECLARE @IDUSER     INT
-DECLARE @EXISTE_USER INT
-
-SET @EXISTE_USER = 0
-
-BEGIN TRAN
-
-	SELECT * FROM SUDO.Usuario
-	 WHERE userName     = @USER
-
-	SET @EXISTE_USER = @@ROWCOUNT
-
-	IF @EXISTE_USER = 0
-
-		BEGIN 	
-			INSERT INTO SUDO.Usuario (userName, userPassword, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado)
- 				 VALUES (@USER, @PASSWORD, @FECHACREA, @FECHAMODIF, @PREGUNTASECRETA, @RTASECRETA, @CANTINTENTOSFALL, @ESTADO)
-		    	
-			SET @VALOR = 0
-		    COMMIT TRAN
-        END 
-  
-	ELSE
-
-		BEGIN 
-			SET @VALOR = 1
-            ROLLBACK TRAN
-        END
-GO
-
 ---------------------------------------------------------------------------
 			--  	Creacion de triggers
 ---------------------------------------------------------------------------
@@ -1261,14 +1210,15 @@ EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador General', @UserName= 'a
 PRINT 'Tabla SUDO.Usuario creacion de Usuarios'
 GO
 
+
 --Stores Procedures para agregar al script inicial
 -------------------------------------------------------------------------------------------------------------
 --LISTA LOS USUARIOS .
 -------------------------------------------------------------------------------------------------------------
 --Referencias False = 0 | True = 1
 -------------------------------------------------------------------------------------------------------------
+
 IF OBJECT_ID ('SUDO.SP_LISTADO_USUARIOS') IS NOT NULL DROP PROCEDURE SUDO.SP_LISTADO_USUARIOS
-GO
 CREATE PROCEDURE SUDO.SP_LISTADO_USUARIOS(
 	@USUARIO     	VARCHAR(255) = NULL,
     @ROL   			INTEGER = NULL, 
@@ -1283,17 +1233,15 @@ BEGIN
 	 LEFT JOIN SUDO.UsuarioXRol as UR on UR.idUsuario = U.idUsuario
 	 WHERE ( @USUARIO     IS NULL OR (RTRIM(U.userName)     LIKE RTRIM(@USUARIO) + '%')) 
 		AND ( @ROL     	  IS NULL OR ( UR.idRol = @ROL )) 
-		AND ( @FECHAALTA  IS NULL OR U.fechaCreacion = @FECHAALTA ) 
-		AND ( @FECHAMODIF  IS NULL OR U.fechaDeUltimaModificacion = @FECHAMODIF ) 
+		AND ( @FECHAALTA  IS NULL OR (CONVERT (varchar(10), cast(U.fechaCreacion as DATE), 103)) = (CONVERT (varchar(10), @FECHAALTA, 101)))
+		AND ( @FECHAMODIF  IS NULL OR (CONVERT (varchar(10), cast(U.fechaDeUltimaModificacion as DATE), 103)) = (CONVERT (varchar(10), @FECHAMODIF, 101)) )
      ORDER BY U.fechaDeUltimaModificacion
 END
 GO
 
 ------------------------------------------------------------------------------------------------------------------------------------
-
+IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO
 --STORED PROCEDURE PARA ALTA DE USUARIO
-IF OBJECT_ID ('SUDO.SP_ALTA_USUARIO') IS NOT NULL DROP PROCEDURE SUDO.SP_ALTA_USUARIO 
-GO
 CREATE PROCEDURE SUDO.SP_ALTA_USUARIO  
 --PARAMETROS DE ENTRADA
   @USUARIO				VARCHAR(255),
