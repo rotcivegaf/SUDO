@@ -24,8 +24,10 @@ IF OBJECT_ID ('SUDO.Transferencia') IS NOT NULL DROP TABLE SUDO.Transferencia
 IF OBJECT_ID ('SUDO.Tarjeta') IS NOT NULL DROP TABLE SUDO.Tarjeta
 IF OBJECT_ID ('SUDO.Cheque') IS NOT NULL DROP TABLE SUDO.Cheque
 IF OBJECT_ID ('SUDO.Retiro') IS NOT NULL DROP TABLE SUDO.Retiro
+IF OBJECT_ID ('SUDO.FacturacionCuenta') IS NOT NULL DROP TABLE SUDO.FacturacionCuenta
 IF OBJECT_ID ('SUDO.Cuenta') IS NOT NULL DROP TABLE SUDO.Cuenta
 IF OBJECT_ID ('SUDO.Factura') IS NOT NULL DROP TABLE SUDO.Factura
+IF OBJECT_ID ('SUDO.HistorialClientesInhabilitados') IS NOT NULL DROP TABLE SUDO.HistorialClientesInhabilitados
 IF OBJECT_ID ('SUDO.Cliente') IS NOT NULL DROP TABLE SUDO.Cliente
 IF OBJECT_ID ('SUDO.HistorialLogin') IS NOT NULL DROP TABLE SUDO.HistorialLogin
 IF OBJECT_ID ('SUDO.UsuarioXRol') IS NOT NULL DROP TABLE SUDO.UsuarioXRol
@@ -160,9 +162,16 @@ CREATE TABLE SUDO.Cliente (
 	estado 			BIT DEFAULT 1,
 );
 
+-----------Tabla HistorialClientesInhabilitados-----------
+CREATE TABLE SUDO.HistorialClientesInhabilitados ( 
+	idHistorial	integer IDENTITY(1,1) PRIMARY KEY,
+	idCliente	integer FOREIGN KEY REFERENCES SUDO.Cliente,
+	fecha 		datetime,
+);
+
 -----------Tabla Factura-----------
 CREATE TABLE SUDO.Factura ( 
-	numero		numeric(18,0) PRIMARY KEY,
+	numero		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
 	idCliente	integer FOREIGN KEY REFERENCES SUDO.Cliente,
 	fecha 		datetime,
 );
@@ -178,6 +187,16 @@ CREATE TABLE SUDO.Cuenta (
 	saldo 			numeric(18,2) DEFAULT 0,
 	fechaCreacion 	datetime NOT NULL,
 	fechaCierre 	datetime
+);
+
+-----------Tabla FacturacionCuenta-----------
+CREATE TABLE SUDO.FacturacionCuenta ( 
+	idFactCuenta	integer IDENTITY(1,1) PRIMARY KEY,
+	nroCuenta 		numeric(18,0) FOREIGN KEY REFERENCES SUDO.Cuenta,
+	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
+	fecha 			datetime,
+	descripcion 	varchar(255),
+	importe 		numeric(18,2) NOT NULL,
 );
 
 -----------Tabla Retiro-----------
@@ -228,12 +247,13 @@ CREATE TABLE SUDO.Transferencia (
 
 -----------Tabla Item (Factura)-----------
 CREATE TABLE SUDO.Item ( 
-	idItem			integer IDENTITY(1,1) PRIMARY KEY,
-	numeroFactura	numeric(18,0) FOREIGN KEY REFERENCES SUDO.Factura,
-	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
-	idTrans 		integer FOREIGN KEY REFERENCES SUDO.Transferencia DEFAULT NULL,
-	importe 		numeric(18,2) NOT NULL,
-	descripcion 	varchar(255),
+	idItem				integer IDENTITY(1,1) PRIMARY KEY,
+	numeroFactura		numeric(18,0) FOREIGN KEY REFERENCES SUDO.Factura,
+	idMoneda 			integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
+	idTrans 			integer FOREIGN KEY REFERENCES SUDO.Transferencia DEFAULT NULL,
+	importe 			numeric(18,2) NOT NULL,
+	descripcion 		varchar(255),
+	nombreTipoCuenta	varchar(255),
 );
 
 -----------Tabla Deposito-----------
@@ -300,7 +320,7 @@ CREATE PROCEDURE SUDO.RegistrarLogin(@userNameIng varchar(255), @userPasswordIng
 		WHERE (idUsuario = @idUsuario)
 	END;
 GO
-
+---------------------------------------------------------------------------
 --Form seleccion de Roles y Funcionalidades
 --dado un idUsuario obtiene todos sus roles y sus funcionalidades, cabe aclarar que obtiene los roles "habilitados", con estado = 1
 IF OBJECT_ID ('SUDO.GetRolesXFuncionalidades') IS NOT NULL DROP PROCEDURE SUDO.GetRolesXFuncionalidades
@@ -317,7 +337,7 @@ CREATE PROCEDURE SUDO.GetRolesXFuncionalidades(@idUsuario integer) AS
 	  	ORDER BY idRol
 	END;
 GO
-
+---------------------------------------------------------------------------
 --From Rol
 -- obtiene todos los roles existentes
 IF OBJECT_ID ('SUDO.GetRoles') IS NOT NULL DROP PROCEDURE SUDO.GetRoles
@@ -410,14 +430,14 @@ CREATE PROCEDURE SUDO.AgregarQuitarFuncionalidad (@idRol integer, @funcionalidad
 			END;
 	END;
 GO
-
---From Facturacion
+---------------------------------------------------------------------------
+--Form Facturacion
 -- dado un idUsuario de la tabla usuario obtiene los items a facturar
-IF OBJECT_ID ('SUDO.GetItemsAFacturar') IS NOT NULL DROP PROCEDURE SUDO.GetItemsAFacturar
+IF OBJECT_ID ('SUDO.GetTransferenciasAFacturar') IS NOT NULL DROP PROCEDURE SUDO.GetTransferenciasAFacturar
 GO
-CREATE PROCEDURE SUDO.GetItemsAFacturar(@idUsuario integer) AS 
+CREATE PROCEDURE SUDO.GetTransferenciasAFacturar(@idUsuario integer) AS 
 	BEGIN
-		SELECT 'Comisión por transferencia.' descripcion, costo, importe, B.descripcion moneda, nroCuentaDest, nroCuentaOrigen
+		SELECT costo, importe, B.descripcion moneda, nroCuentaDest, nroCuentaOrigen
 		FROM(
 			SELECT costo, importe, T.idMoneda, nroCuentaDest, nroCuentaOrigen
 	  		FROM (SUDO.Transferencia T JOIN (SELECT nroCuenta 
@@ -428,6 +448,21 @@ CREATE PROCEDURE SUDO.GetItemsAFacturar(@idUsuario integer) AS
 	END;
 GO
 
+-- dado un idUsuario de la tabla usuario obtiene los cambios de cuentas a facturar
+IF OBJECT_ID ('SUDO.GetCambiosCuentaAFacturar') IS NOT NULL DROP PROCEDURE SUDO.GetCambiosCuentaAFacturar
+GO
+CREATE PROCEDURE SUDO.GetCambiosCuentaAFacturar(@idUsuario integer) AS 
+	BEGIN
+		SELECT nroCuenta, B.descripcion moneda, fecha, A.descripcion, importe
+		FROM (
+			 SELECT F.nroCuenta, fecha, descripcion, importe, idMoneda
+			 FROM SUDO.FacturacionCuenta F JOIN (SELECT nroCuenta 
+	  											 FROM SUDO.Cuenta 
+	  											 WHERE idCliente = @idUsuario) C ON (F.nroCuenta = C.nroCuenta)
+			 ) A JOIN SUDO.Moneda B ON B.idMoneda = A.idMoneda
+ 	END;
+GO
+---------------------------------------------------------------------------
 --Tarjetas
 -- dado un idUsuario de la tabla usuario obtiene las tarjetas(que no se han dado de baja) que pertenecen al mismo
 IF OBJECT_ID ('SUDO.GetTarjetas') IS NOT NULL DROP PROCEDURE SUDO.GetTarjetas
@@ -488,7 +523,7 @@ CREATE PROCEDURE SUDO.AsociarTarjeta(@numero VARCHAR(16), @emisorDesc varchar(25
 			END;
 	END;
 GO
-
+---------------------------------------------------------------------------
 --Depositos
 --registra un deposito, verificando el saldo de la cuenta
 IF OBJECT_ID ('SUDO.CrearDeposito') IS NOT NULL DROP PROCEDURE SUDO.CrearDeposito
@@ -515,7 +550,7 @@ CREATE PROCEDURE SUDO.CrearDeposito(@idTarjeta bigint, @moneda varchar(255), @im
 			END;
 	END;
 GO
-
+---------------------------------------------------------------------------
 --Retiros
 --Registra un retiro, verificando el saldo de la cuenta y el dni
 IF OBJECT_ID ('SUDO.CrearRetiro') IS NOT NULL DROP PROCEDURE SUDO.CrearRetiro
@@ -553,7 +588,7 @@ CREATE PROCEDURE SUDO.CrearRetiro(@nroCuenta bigint, @fecha datetime, @moneda va
 			END;
 	END;
 GO
-
+---------------------------------------------------------------------------
 --Form Transferencias
 -- registra una transferencia, verificando el saldo de la cuenta y si la cuenta no esta "Pendiente de activacion" o "Cerrada"
 IF OBJECT_ID ('SUDO.CrearTransferencia') IS NOT NULL DROP PROCEDURE SUDO.CrearTransferencia
@@ -604,8 +639,8 @@ CREATE PROCEDURE SUDO.CrearTransferencia(@nroCuentaOrigen bigint, @importe bigin
 		END;
 	END;
 GO
-
---Consulta Saldo
+---------------------------------------------------------------------------
+--Form Consulta Saldo
 --dado un numero de cuenta obtiene las ultimas 10 transferencias
 IF OBJECT_ID ('SUDO.GetUltimas10Transferencias') IS NOT NULL DROP PROCEDURE SUDO.GetUltimas10Transferencias
 GO
@@ -641,7 +676,105 @@ CREATE PROCEDURE SUDO.GetUltimos5depositos(@nroCuenta bigint) AS
 		ORDER BY fecha desc
 	END;
 GO
+---------------------------------------------------------------------------
+--Form Listado Estadistico
+--obtiene el listado 1
+IF OBJECT_ID ('SUDO.GetListado1') IS NOT NULL DROP PROCEDURE SUDO.GetListado1
+GO
+CREATE PROCEDURE SUDO.GetListado1(@fechaInicio varchar(255), @fechaFin varchar(255)) AS 
+	BEGIN
+		SELECT TOP 5 A.idCliente, userName, Count(A.idCliente) cant
+		FROM (SELECT idCliente
+			  FROM SUDO.HistorialClientesInhabilitados
+			  WHERE fecha BETWEEN Convert(dateTime, @fechaInicio, 121) AND Convert(dateTime, @fechaFin, 121)
+			  )A JOIN (SELECT C.idCliente, userName
+					   FROM SUDO.Cliente C JOIN SUDO.Usuario U ON C.idUsuario = U.idUsuario) C 
+			  ON (A.idCliente = C.idCliente)
+		GROUP BY A.idCliente, userName
+		ORDER BY cant DESC
+	END;
+GO
+--obtiene el listado 2
+IF OBJECT_ID ('SUDO.GetListado2') IS NOT NULL DROP PROCEDURE SUDO.GetListado2
+GO
+CREATE PROCEDURE SUDO.GetListado2(@fechaInicio varchar(255), @fechaFin varchar(255)) AS 
+	BEGIN
+		SELECT idCliente, userName, cant
+		FROM(
+			SELECT TOP 5 C.idUsuario, cant, C.idCliente 
+			FROM (SELECT idCliente, Count(nroCuentaOrigen) cant
+				  FROM (SELECT nroCuentaOrigen
+						FROM SUDO.Transferencia 
+						WHERE (fecha BETWEEN Convert(dateTime, @fechaInicio, 121) AND Convert(dateTime, @fechaFin , 121))AND(facturado = 1)
+				  )A JOIN SUDO.Cuenta C ON (nroCuentaOrigen = nroCuenta)
+				  GROUP BY idCliente) T
+				  JOIN SUDO.Cliente C ON (T.idCliente = C.idCliente)
+				  ORDER BY cant DESC
+			) A JOIN SUDO.Usuario U ON (A.idUsuario= U.idUsuario)
+	END;
+GO
+--obtiene el listado 3
+IF OBJECT_ID ('SUDO.GetListado3') IS NOT NULL DROP PROCEDURE SUDO.GetListado3
+GO
+CREATE PROCEDURE SUDO.GetListado3(@fechaInicio varchar(255), @fechaFin varchar(255)) AS 
+	BEGIN
+		SELECT A.idCliente, userName, cant
+		FROM(
+			SELECT TOP 5 C.idUsuario, cant , C.idCliente 
+			FROM (SELECT idCliente, Count(nroCuentaOrigen) cant
+				  FROM (SELECT nroCuentaOrigen
+						FROM SUDO.Transferencia 
+						WHERE (fecha BETWEEN Convert(dateTime, '2016-01-05 00:00:00.000', 121) AND Convert(dateTime, '2016-01-07 00:00:00.000' , 121))AND(nroCuentaOrigen = nroCuentaDest)
+				  )A JOIN SUDO.Cuenta C ON (nroCuentaOrigen = nroCuenta)
+				  GROUP BY idCliente) T
+				  JOIN SUDO.Cliente C ON (T.idCliente = C.idCliente)
+				  ORDER BY cant DESC
+			) A JOIN SUDO.Usuario U ON (A.idUsuario= U.idUsuario)
+	END;
+GO
+--obtiene el listado 4
+IF OBJECT_ID ('SUDO.GetListado4') IS NOT NULL DROP PROCEDURE SUDO.GetListado4
+GO
+CREATE PROCEDURE SUDO.GetListado4(@fechaInicio varchar(255), @fechaFin varchar(255)) AS 
+	BEGIN
+		SELECT descripcion, cantidad
+		FROM(
+			SELECT TOP 5 idPais, sum(cant) cantidad
+			FROM
+			(
+				SELECT C.idPais, Count(importe) cant
+				FROM (SELECT fecha, idCuenta, importe FROM SUDO.Retiro WHERE fecha BETWEEN Convert(dateTime, @fechaInicio, 121) AND Convert(dateTime, @fechaFin, 121)) R
+					 JOIN SUDO.Cuenta C ON C.nroCuenta = R.idCuenta
+				GROUP BY idPais
+			UNION
+				SELECT C.idPais, Count(importe) cant
+				FROM (SELECT fecha, nroCuenta, importe FROM SUDO.Deposito WHERE fecha BETWEEN Convert(dateTime, @fechaInicio, 121) AND Convert(dateTime, @fechaFin, 121)) R
+					 JOIN SUDO.Cuenta C ON C.nroCuenta = R.nroCuenta
+				GROUP BY idPais
+			)A
+			GROUP BY idPais
+			ORDER BY cantidad DESC
+			) t1 JOIN SUDO.Pais p ON (t1.idPais = p.idPais)
+	END;
+GO
+--obtiene el listado 5
+IF OBJECT_ID ('SUDO.GetListado5') IS NOT NULL DROP PROCEDURE SUDO.GetListado5
+GO
+CREATE PROCEDURE SUDO.GetListado5(@fechaInicio varchar(255), @fechaFin varchar(255)) AS 
+	BEGIN
+		SELECT nombre, total
+		FROM SUDO.TipoCuenta T JOIN(
+			SELECT nombreTipoCuenta, SUM(importe) total
+			FROM(SELECT numero
+			     FROM SUDO.Factura
+				 WHERE (fecha BETWEEN Convert(dateTime, @fechaInicio, 121) AND Convert(dateTime, @fechaFin , 121))
+			) A JOIN SUDO.Item I ON (A.numero = I.numeroFactura)
+			GROUP BY nombreTipoCuenta )A
+		ON (T.nombre = A.nombreTipoCuenta)	
+	END;
+GO
 
+---------------------------------------------------------------------------
 --Procedures utilizados en varias funcionalidades
 --obtiene las monedas existentes
 IF OBJECT_ID ('SUDO.GetMonedas') IS NOT NULL DROP PROCEDURE SUDO.GetMonedas
@@ -735,8 +868,8 @@ CREATE PROCEDURE SUDO.SP_LISTAR_ROLES AS
 		SELECT idRol, nombreRol FROM SUDO.Rol
 	END;
 GO 
-
---procesos utilizados para la creaciion y migracion de la base de datos
+---------------------------------------------------------------------------
+--procesos utilizados para la creacion y migracion de la base de datos
 --retorna obtiene el saldo inicial de la cuenta, aplicando la ecuacion esplicada en el archivo Estrategia.pdf
 IF OBJECT_ID ('SUDO.EncriptarSHA1') IS NOT NULL DROP FUNCTION SUDO.EncriptarSHA1;
 GO
@@ -1011,12 +1144,13 @@ PRINT 'Tabla SUDO.Cliente Migrada'
 GO
 
 -----------Migracion Factura-----------
+SET IDENTITY_INSERT SUDO.Factura ON
 INSERT INTO SUDO.Factura(numero, fecha, idCliente)
 	SELECT DISTINCT Factura_Numero, Factura_Fecha, c.idCliente
 	FROM gd_esquema.Maestra m 
 	JOIN SUDO.Cliente c ON m.Cli_Nro_Doc = c.nroDoc AND m.Cli_Tipo_Doc_Cod = c.idTipoDoc
 	WHERE Factura_Numero IS NOT NULL
-
+SET IDENTITY_INSERT SUDO.Factura OFF
 PRINT 'Tabla SUDO.Factura Migrada'
 GO
 
@@ -1161,8 +1295,8 @@ PRINT 'Tabla SUDO.Transferencia Migrada'
 GO
 
 -----------Migracion Item-----------
-INSERT INTO SUDO.Item(numeroFactura, importe, descripcion, idTrans)
-SELECT Factura_Numero, Item_Factura_Importe, Item_Factura_Descr, idTrans 
+INSERT INTO SUDO.Item(numeroFactura, importe, descripcion, idTrans,nombreTipoCuenta)
+SELECT Factura_Numero, Item_Factura_Importe, Item_Factura_Descr, idTrans , 'Gratuita'
 FROM (select Factura_Numero, Item_Factura_Descr, Item_Factura_Importe, Cuenta_Numero, Cuenta_Dest_Numero, Transf_Fecha, Trans_Importe
 	  from gd_esquema.Maestra
 	  where Item_Factura_Descr IS NOT NULL AND Item_Factura_Importe IS NOT NULL)I
