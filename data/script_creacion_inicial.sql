@@ -1627,8 +1627,8 @@ BEGIN
 	 LEFT JOIN SUDO.UsuarioXRol as UR on UR.idUsuario = U.idUsuario
 	 WHERE ( @USUARIO     IS NULL OR (RTRIM(U.userName)     LIKE RTRIM(@USUARIO) + '%')) 
 		AND ( @ROL     	  IS NULL OR ( UR.idRol = @ROL )) 
-		AND ( @FECHAALTA  IS NULL OR (CONVERT (varchar(10), cast(U.fechaCreacion as DATE), 103)) = (CONVERT (varchar(10), @FECHAALTA, 101)))
-		AND ( @FECHAMODIF  IS NULL OR (CONVERT (varchar(10), cast(U.fechaDeUltimaModificacion as DATE), 103)) = (CONVERT (varchar(10), @FECHAMODIF, 101)) )
+		AND ( @FECHAALTA  IS NULL OR (Convert(date, U.fechaCreacion, 121)) = (Convert(date, @FECHAALTA, 121)))
+		AND ( @FECHAMODIF  IS NULL OR (Convert(date, U.fechaDeUltimaModificacion, 121)) = (Convert(date, @FECHAMODIF, 121)))
      ORDER BY U.fechaDeUltimaModificacion
 END
 GO
