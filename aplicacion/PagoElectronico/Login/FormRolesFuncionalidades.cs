@@ -11,7 +11,7 @@ using System.Data.SqlClient;
 
 using PagoElectronico.ABMS.ABM_Rol;
 using PagoElectronico.ABM_Cliente;
-using PagoElectronico.ABM_Cuenta;
+using PagoElectronico.ABMS.ABM_Cuenta;
 using PagoElectronico.ABM_Usuario;
 using PagoElectronico.Consulta_Saldos;
 using PagoElectronico.Depositos;
@@ -90,8 +90,8 @@ namespace PagoElectronico.Login
                     formModificacionCliente.Show(this);
                     break;
                 case "ABM de cuenta":
-                    FormABMCuenta formABMCuenta = new FormABMCuenta(idUser);
-                    formABMCuenta.Show(this);
+                    FormCuentaModificarAdmin formCuentaModificarAdmin = new FormCuentaModificarAdmin();
+                    formCuentaModificarAdmin.Show(this);
                     break;
                 case "asociar/desasociar tarjetas de credito":
                     FormTarjetas formTarjetas = new FormTarjetas(idUser);

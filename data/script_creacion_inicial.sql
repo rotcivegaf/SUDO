@@ -105,6 +105,7 @@ CREATE TABLE SUDO.Usuario (
 	respuestaSecreta 			varchar(255) NOT NULL,
 	cantIntentosFallidos 		TINYINT DEFAULT 0,
 	estado 						BIT DEFAULT 1,
+	administrador				BIT DEFAULT 0,--utilizado para mostrar opciones de administrador
 );
 
 -----------Tabla Funcionalidad-----------
@@ -171,14 +172,14 @@ CREATE TABLE SUDO.HistorialClientesInhabilitados (
 
 -----------Tabla Factura-----------
 CREATE TABLE SUDO.Factura ( 
-	numero		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
+	numero		numeric(18,0) PRIMARY KEY,
 	idCliente	integer FOREIGN KEY REFERENCES SUDO.Cliente,
 	fecha 		datetime,
 );
 
 -----------Tabla Cuenta-----------
 CREATE TABLE SUDO.Cuenta ( 
-	nroCuenta		numeric(18,0) IDENTITY(1,1) PRIMARY KEY,
+	nroCuenta		numeric(18,0) PRIMARY KEY,
 	idCliente 		integer FOREIGN KEY REFERENCES SUDO.Cliente,
 	idPais 			numeric(18,0) FOREIGN KEY REFERENCES SUDO.Pais,
 	idMoneda 		integer FOREIGN KEY REFERENCES SUDO.Moneda DEFAULT NULL,
@@ -197,6 +198,7 @@ CREATE TABLE SUDO.FacturacionCuenta (
 	fecha 			datetime,
 	descripcion 	varchar(255),
 	importe 		numeric(18,2) NOT NULL,
+	facturado		BIT DEFAULT 0,
 );
 
 -----------Tabla Retiro-----------
@@ -431,37 +433,206 @@ CREATE PROCEDURE SUDO.AgregarQuitarFuncionalidad (@idRol integer, @funcionalidad
 	END;
 GO
 ---------------------------------------------------------------------------
+--Form Cuenta
+--obtiene todos los paises existentes en el sistema
+IF OBJECT_ID ('SUDO.GetPaises') IS NOT NULL DROP PROCEDURE SUDO.GetPaises
+GO
+CREATE PROCEDURE SUDO.GetPaises AS 
+	BEGIN
+		SELECT *
+		FROM SUDO.Pais
+	END;
+GO
+
+--crea una cuenta
+IF OBJECT_ID ('SUDO.CrearCuenta') IS NOT NULL DROP PROCEDURE SUDO.CrearCuenta
+GO
+CREATE PROCEDURE SUDO.CrearCuenta(@nroCuenta bigint, @idUsuario integer, @moneda varchar(255), @pais varchar(255), @tipoCuenta varchar(255), @fechaApertura varchar(255)) AS 
+	BEGIN
+		DECLARE @idCliente integer
+		DECLARE @idPais numeric(18,0)
+		DECLARE @idMoneda integer
+		DECLARE @idTipoCuenta integer
+
+		IF NOT EXISTS(SELECT * FROM SUDO.Cuenta WHERE nroCuenta = @nroCuenta)
+			IF EXISTS(SELECT * FROM SUDO.Usuario WHERE idUsuario= @idUsuario)
+				BEGIN
+					SELECT @idCliente = idCliente
+					FROM SUDO.Cliente
+					WHERE @idUsuario = idUsuario
+
+					SELECT @idPais = idPais
+					FROM SUDO.Pais
+					WHERE @pais = descripcion
+
+					SELECT @idMoneda = idMoneda
+					FROM SUDO.Moneda
+					WHERE @moneda = descripcion
+
+					SELECT @idTipoCuenta = idTipoCuenta
+					FROM SUDO.TipoCuenta
+					WHERE @tipoCuenta = nombre
+					
+					INSERT INTO SUDO.Cuenta (nroCuenta, idCliente, idPais, idMoneda, idTipoCuenta, idEstadoCuenta, saldo, fechaCreacion, fechaCierre)
+					VALUES(@nroCuenta, @idCliente, @idPais, @idMoneda, @idTipoCuenta, 1, 0, Convert(dateTime, @fechaApertura, 121), Convert(dateTime, '2020-12-25 00:00:00.000', 121))
+					
+					INSERT INTO SUDO.FacturacionCuenta (nroCuenta, idMoneda, fecha, descripcion, importe)
+					VALUES(@nroCuenta, @idMoneda, @fechaApertura, 'Apertura de Cuenta', 50)
+				END
+	END;
+GO
+--obtiene los Estados de las Cuentas
+IF OBJECT_ID ('SUDO.GetEstadosCuenta') IS NOT NULL DROP PROCEDURE SUDO.GetEstadosCuenta
+GO
+CREATE PROCEDURE SUDO.GetEstadosCuenta AS 
+	BEGIN
+		SELECT *
+		FROM SUDO.EstadoCuenta
+ 	END;
+GO
+--modifica la cuenta del correspondiente usuario, usado por el admin del sistema
+IF OBJECT_ID ('SUDO.ModificarCuentaAdmin') IS NOT NULL DROP PROCEDURE SUDO.ModificarCuentaAdmin
+GO
+CREATE PROCEDURE SUDO.ModificarCuentaAdmin(@nroCuenta bigint, @tipoCuenta varchar(255), @estadoCuenta varchar(255)) AS 
+	BEGIN
+		DECLARE @idTipoCuenta integer
+		DECLARE @idEstadoCuenta integer
+
+		IF EXISTS(SELECT * FROM SUDO.Cuenta WHERE nroCuenta = @nroCuenta)
+		BEGIN
+			SELECT @idTipoCuenta = idTipoCuenta
+			FROM SUDO.TipoCuenta
+			WHERE @tipoCuenta = nombre
+		
+			SELECT @idEstadoCuenta = idEstadoCuenta
+			FROM SUDO.EstadoCuenta
+			WHERE @estadoCuenta = descripcion
+		
+			UPDATE SUDO.Cuenta
+			SET idTipoCuenta = @idTipoCuenta, idEstadoCuenta = @idEstadoCuenta
+			WHERE nroCuenta = @nroCuenta
+		END
+ 	END;
+GO
+
+
+---------------------------------------------------------------------------
 --Form Facturacion
 -- dado un idUsuario de la tabla usuario obtiene los items a facturar
 IF OBJECT_ID ('SUDO.GetTransferenciasAFacturar') IS NOT NULL DROP PROCEDURE SUDO.GetTransferenciasAFacturar
 GO
-CREATE PROCEDURE SUDO.GetTransferenciasAFacturar(@idUsuario integer) AS 
+CREATE PROCEDURE SUDO.GetTransferenciasAFacturar(@idUsuario integer, @idCuenta bigint) AS 
 	BEGIN
-		SELECT costo, importe, B.descripcion moneda, nroCuentaDest, nroCuentaOrigen
+		SELECT idTrans, costo, importe, B.descripcion moneda, nroCuentaDest, nroCuentaOrigen, fecha 
 		FROM(
-			SELECT costo, importe, T.idMoneda, nroCuentaDest, nroCuentaOrigen
+			SELECT costo, importe, T.idMoneda, nroCuentaDest, nroCuentaOrigen, fecha, idTrans
 	  		FROM (SUDO.Transferencia T JOIN (SELECT nroCuenta 
 	  										 FROM SUDO.Cuenta 
 	  										 WHERE idCliente = @idUsuario) C ON (nroCuentaOrigen = C.nroCuenta))
-			WHERE facturado = 0
+			WHERE (facturado = 0) AND (@idCuenta = nroCuentaOrigen)
 			) A JOIN SUDO.Moneda B ON B.idMoneda = A.idMoneda
 	END;
+GO
+
+--Crea una factura en la tabla factura
+IF OBJECT_ID ('SUDO.CrearFactura') IS NOT NULL DROP PROCEDURE SUDO.CrearFactura
+GO
+CREATE PROCEDURE SUDO.CrearFactura(@idUsuario int, @fecha varchar(255)) AS 
+	BEGIN
+		DECLARE @idCliente integer
+		DECLARE @numeroFactura numeric(18,0)
+		
+		SELECT @idCliente = idCliente
+		FROM SUDO.Cliente
+		WHERE idUsuario = @idUsuario
+		
+		SELECT @numeroFactura = (MAX(numero)+1) 
+		FROM SUDO.Factura
+		
+		INSERT INTO SUDO.Factura (numero, idCliente, fecha)
+		VALUES(@numeroFactura, @idCliente, Convert(dateTime, @fecha, 121));
+		
+		SELECT @numeroFactura idFact
+	END
+GO
+
+IF OBJECT_ID ('SUDO.FacturarTransaccion') IS NOT NULL DROP PROCEDURE SUDO.FacturarTransaccion
+GO
+CREATE PROCEDURE SUDO.FacturarTransaccion(@idTrans bigint, @idFact bigint) AS 
+	BEGIN
+		DECLARE @idMoneda integer
+		DECLARE @costo numeric(18,2)
+		DECLARE @nombreTipoCuenta varchar(255)
+		
+		SELECT @idMoneda = idMoneda, @costo = costo, @nombreTipoCuenta = nombre
+		FROM(SELECT T.idMoneda, importe, idTipoCuenta
+			 FROM SUDO.Transferencia T JOIN SUDO.Cuenta C ON(T.nroCuentaOrigen = C.nroCuenta)) A
+		JOIN SUDO.TipoCuenta B ON (A.idTipoCuenta = B.idTipoCuenta)
+	
+		INSERT INTO SUDO.Item (numeroFactura, idMoneda, idTrans, importe, descripcion, nombreTipoCuenta)
+		VALUES(@idFact, @idMoneda, @idTrans, @costo, 'Comisión por transferencia.', @nombreTipoCuenta);
+		
+		UPDATE SUDO.Transferencia
+		SET facturado = 1
+		WHERE idTrans = @idTrans
+	END;
+GO
+
+-- Inhabilita una Cuenta
+IF OBJECT_ID ('SUDO.InhabilitarCuenta') IS NOT NULL DROP PROCEDURE SUDO.InhabilitarCuenta
+GO
+CREATE PROCEDURE SUDO.InhabilitarCuenta(@idCuenta bigint) AS 
+	BEGIN
+		UPDATE SUDO.Cuenta SET idEstadoCuenta = 3
+		WHERE (nroCuenta = @idCuenta)
+ 	END;
 GO
 
 -- dado un idUsuario de la tabla usuario obtiene los cambios de cuentas a facturar
 IF OBJECT_ID ('SUDO.GetCambiosCuentaAFacturar') IS NOT NULL DROP PROCEDURE SUDO.GetCambiosCuentaAFacturar
 GO
-CREATE PROCEDURE SUDO.GetCambiosCuentaAFacturar(@idUsuario integer) AS 
+CREATE PROCEDURE SUDO.GetCambiosCuentaAFacturar(@idUsuario integer, @idCuenta bigint) AS 
 	BEGIN
-		SELECT nroCuenta, B.descripcion moneda, fecha, A.descripcion, importe
+		SELECT idFactCuenta, nroCuenta, B.descripcion moneda, fecha, A.descripcion, importe
 		FROM (
-			 SELECT F.nroCuenta, fecha, descripcion, importe, idMoneda
+			 SELECT F.nroCuenta, fecha, descripcion, importe, idMoneda, idFactCuenta
 			 FROM SUDO.FacturacionCuenta F JOIN (SELECT nroCuenta 
 	  											 FROM SUDO.Cuenta 
 	  											 WHERE idCliente = @idUsuario) C ON (F.nroCuenta = C.nroCuenta)
+	  		 WHERE F.nroCuenta = @idCuenta
 			 ) A JOIN SUDO.Moneda B ON B.idMoneda = A.idMoneda
  	END;
 GO
+
+IF OBJECT_ID ('SUDO.FacturarCambioCuenta') IS NOT NULL DROP PROCEDURE SUDO.FacturarCambioCuenta
+GO
+CREATE PROCEDURE SUDO.FacturarCambioCuenta(@idFactCuenta int, @idFact bigint) AS 
+	BEGIN
+	
+		DECLARE @idMoneda integer
+		DECLARE @importe numeric(18,2)
+		DECLARE @nombreTipoCuenta varchar(255)
+		DECLARE @descripcion varchar(255)
+		
+		SELECT @idMoneda = idMoneda, @importe = importe, @descripcion = descripcion, @nombreTipoCuenta = nombre
+		FROM(
+			SELECT a.idMoneda, importe, descripcion,idTipoCuenta
+			FROM(
+				SELECT idMoneda, importe, descripcion, nroCuenta
+				FROM SUDO.FacturacionCuenta
+				WHERE idFactCuenta = @idFactCuenta
+			) a join SUDO.Cuenta b on (a.nroCuenta = b.nroCuenta)
+		) a JOIN SUDO.TipoCuenta b ON (a.idTipoCuenta = b.idTipoCuenta)
+		
+		INSERT INTO SUDO.Item (numeroFactura, idMoneda, idTrans, importe, descripcion, nombreTipoCuenta)
+		VALUES(@idFact, @idMoneda, null, @importe, @descripcion, @nombreTipoCuenta);
+		
+		UPDATE SUDO.FacturacionCuenta
+		SET facturado = 1
+		WHERE idFactCuenta = @idFactCuenta
+	END;
+GO
+
 ---------------------------------------------------------------------------
 --Tarjetas
 -- dado un idUsuario de la tabla usuario obtiene las tarjetas(que no se han dado de baja) que pertenecen al mismo
@@ -966,12 +1137,13 @@ GO
 --crea un nuevo usuario
 IF OBJECT_ID ('SUDO.NuevoUsuario') IS NOT NULL DROP PROCEDURE SUDO.NuevoUsuario
 GO
-CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime, @PreguntaSecreta VARCHAR(255), @CantIntentosFallidos TINYINT, @Estado BIT) AS
+CREATE PROCEDURE SUDO.NuevoUsuario(@UserName VARCHAR(255), @Password VARCHAR(255), @FechaCreacion datetime, @FechaDeUltimaModificacion datetime, @PreguntaSecreta VARCHAR(255), @CantIntentosFallidos TINYINT, @Estado BIT, @Administrador BIT) AS
 	BEGIN
-		INSERT INTO SUDO.Usuario(userName, userPassword, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado)
+		INSERT INTO SUDO.Usuario(userName, userPassword, fechaCreacion, fechaDeUltimaModificacion, preguntaSecreta, respuestaSecreta, cantIntentosFallidos, estado, administrador)
 		VALUES(@UserName, ISNULL (@Password , '5rhwUL/LgUP8uNsBcKTcntANkE3dPipK0bHo3A/cm+c='),
 			   ISNULL (@FechaCreacion , GETDATE()), ISNULL (@FechaDeUltimaModificacion , GETDATE()),
-			   @PreguntaSecreta, '6QWKsZj2kI9wIRGwwPtbNvmdAFVFIYhsQOKJGzSdx6E=', @CantIntentosFallidos, @Estado)
+			   @PreguntaSecreta, '6QWKsZj2kI9wIRGwwPtbNvmdAFVFIYhsQOKJGzSdx6E=', @CantIntentosFallidos, @Estado,
+			   @Administrador)
 	END;
 GO
 
@@ -1144,13 +1316,12 @@ PRINT 'Tabla SUDO.Cliente Migrada'
 GO
 
 -----------Migracion Factura-----------
-SET IDENTITY_INSERT SUDO.Factura ON
 INSERT INTO SUDO.Factura(numero, fecha, idCliente)
 	SELECT DISTINCT Factura_Numero, Factura_Fecha, c.idCliente
 	FROM gd_esquema.Maestra m 
 	JOIN SUDO.Cliente c ON m.Cli_Nro_Doc = c.nroDoc AND m.Cli_Tipo_Doc_Cod = c.idTipoDoc
 	WHERE Factura_Numero IS NOT NULL
-SET IDENTITY_INSERT SUDO.Factura OFF
+
 PRINT 'Tabla SUDO.Factura Migrada'
 GO
 
@@ -1192,8 +1363,6 @@ PRINT 'Tabla SUDO.Tarjeta Migrada'
 GO
 
 -----------Migracion Cuenta-----------
-SET IDENTITY_INSERT SUDO.Cuenta ON
-
 INSERT INTO SUDO.Cuenta(nroCuenta, fechaCreacion, fechaCierre, idPais, idEstadoCuenta, idCliente)
 	SELECT Cuenta_Numero, Cuenta_Fecha_Creacion, Cuenta_Fecha_Cierre, idPais, idEstadoCuenta, idCliente
 	FROM ( SELECT Cuenta_Numero, Cuenta_Fecha_Creacion, Cuenta_Fecha_Cierre, descEstadoCuenta, idPais, idCliente
@@ -1205,8 +1374,6 @@ INSERT INTO SUDO.Cuenta(nroCuenta, fechaCreacion, fechaCierre, idPais, idEstadoC
 		   JOIN SUDO.Pais p ON (m_c.Cuenta_Pais_Codigo = p.idPais)
 		) m_c_p 
 	JOIN SUDO.EstadoCuenta ec ON (m_c_p.descEstadoCuenta = ec.descripcion)
-
-SET IDENTITY_INSERT SUDO.Cuenta OFF
 
 UPDATE SUDO.Cuenta SET idTipoCuenta = (SELECT idTipoCuenta
 										FROM SUDO.TipoCuenta
@@ -1345,7 +1512,7 @@ OPEN CursorCli FETCH NEXT FROM CursorCli INTO @Mail, @idUsuario
 WHILE (@@FETCH_STATUS = 0)
 	BEGIN
 		EXEC SUDO.NuevoUsuario @UserName= @Mail, @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,
-							   @PreguntaSecreta='quien?', @CantIntentosFallidos= 0, @Estado= 1
+							   @PreguntaSecreta='quien?', @CantIntentosFallidos= 0, @Estado= 1, @Administrador = 0
 		EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Cliente', @UserName= @Mail
 		UPDATE SUDO.Cliente SET idUsuario =	(SELECT TOP(1) idUsuario
 											 FROM SUDO.Usuario
@@ -1430,7 +1597,7 @@ AS
 GO
 
 -----------Creacion de los Usuarios-----------
-EXEC SUDO.NuevoUsuario @UserName= 'admin', @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @CantIntentosFallidos= 0, @Estado= 1
+EXEC SUDO.NuevoUsuario @UserName= 'admin', @Password= NULL, @FechaCreacion= NULL, @FechaDeUltimaModificacion= NULL,@PreguntaSecreta='quien?', @CantIntentosFallidos= 0, @Estado= 1, @Administrador = 1
 
 EXEC SUDO.AsociarUsuarioXRol @NombreRol = 'Administrador General', @UserName= 'admin'
 

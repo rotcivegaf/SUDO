@@ -168,18 +168,18 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(388, 12);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(291, 13);
+            this.label1.Size = new System.Drawing.Size(271, 13);
             this.label1.TabIndex = 20;
-            this.label1.Text = "Seleccione el IdTarjeta a la cual quiere asociar o desasociar";
+            this.label1.Text = "Seleccione Tarjeta a la cual quiere asociar o desasociar";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(388, 36);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(142, 13);
+            this.label2.Size = new System.Drawing.Size(139, 13);
             this.label2.TabIndex = 21;
-            this.label2.Text = "Seleccione solo un IdTarjeta";
+            this.label2.Text = "Seleccione solo una Tarjeta";
             // 
             // FormTarjetas
             // 
