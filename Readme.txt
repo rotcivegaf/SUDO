@@ -8,10 +8,6 @@ Integrantes:
 	Legajo: 141040-4
 	Curso: K-3013
 
-	Nombre: Juan Ignacio
-	Apellido: Fernández Larriera
-	Legajo: 143375-1
-
 	Nombre: Maria Isabel
 	Apellido: Cruz 
 	Legajo: 110767-7
