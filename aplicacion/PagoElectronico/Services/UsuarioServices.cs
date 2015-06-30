@@ -101,7 +101,7 @@ namespace PagoElectronico.Services
 
         }
 
-        public static DataTable GetUserByFiltros(String user, int rolAsignado, DateTime? fechaAlta, DateTime? fechaModif)
+        public static DataTable GetUserByFiltros(String user, int rolAsignado, String fechaAlta, String fechaModif)
         {
             SqlConnection conn = ConexionDB.conectarDB();
             SqlDataAdapter adapter = new SqlDataAdapter();
